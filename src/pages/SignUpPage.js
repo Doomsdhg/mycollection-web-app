@@ -5,28 +5,34 @@ function SignUpPage() {
 
     const [formValue, setFormValue] = useState({
       email: '',
-      password: ''
+      username: '',
+      password: '',
+      password2: ''
     });
     const [error, setError] = useState(null);
   
     const formChangeHandler = (e) => {
       setFormValue({...formValue, [e.target.name]: e.target.value});
+      console.log(formValue);
     }
   
-    const submitHandler = async () => {
+    const clickHandler = async () => {
       try {
-        const response = await fetch('http://localhost:5000/api/auth/register', 
+        const response = await fetch('http://localhost:8080/api/auth/register', 
         {
           method: 'POST',
           headers: {
-            'Content-Type': 'application/json;charset=utf-8'
+            'Content-Type': 'application/json;charset=utf-8',
           },
           body: JSON.stringify(formValue)
         });
         const data = await response.json();
-        console.log(data)
+        if (!response.ok){
+          throw new Error(data.message);
+        }
+        return data
       } catch (e) {
-        setError('Error has occured:' + e);
+        setError(`${e}`);
         console.log(e)
       }
     }
@@ -62,7 +68,7 @@ function SignUpPage() {
 
                       <div className="mb-md-4 mt-md-4 pb-5">
 
-                        <button className="btn btn-outline-light btn-lg px-5" type="submit" onClick={submitHandler}>Create an account</button>
+                        <button className="btn btn-outline-light btn-lg px-5" type="submit" onClick={clickHandler}>Create an account</button>
 
                       </div>
                       {(()=>{if(error){

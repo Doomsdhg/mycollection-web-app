@@ -1,6 +1,39 @@
 import React, {useState} from 'react';
 
 function AuthenticationPage() {
+
+    const [formValue, setFormValue] = useState({
+      email: '',
+      password: '',
+    });
+    const [error, setError] = useState(null);
+
+  const formChangeHandler = (e) => {
+    setFormValue({...formValue, [e.target.name]: e.target.value});
+    console.log(formValue);
+  }
+  const clickHandler = async () => {
+    try {
+      const response = await fetch('http://localhost:8080/api/auth/authentication', 
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: formValue?JSON.stringify(formValue):null
+      });
+      const data = await response.json();
+      console.log(data);
+      if (!response.ok){
+        throw new Error(data.message);
+      }
+      return data
+    } catch (e) {
+      setError(e);
+      console.log(e)
+    }
+  }
+
     return (
         <section className="vh-100 gradient-custom">
             <div className="container py-0 h-100">
@@ -15,14 +48,14 @@ function AuthenticationPage() {
                         <p className="text-white-50 mb-5">Please enter your email and password</p>
 
                         <div className="form-outline form-white mb-4">
-                          <input type="email" name="email" placeholder='Email' className="form-control form-control-lg" />
+                          <input type="email" name="email" onChange={formChangeHandler} placeholder='Email' className="form-control form-control-lg" />
                         </div>
 
                         <div className="form-outline form-white mb-4">
-                          <input type="password" name="password" id="typePasswordX" placeholder='Password' className="form-control form-control-lg" />
+                          <input type="password" name="password" onChange={formChangeHandler} id="typePasswordX" placeholder='Password' className="form-control form-control-lg" />
                         </div>
                         
-                        <button className="btn btn-outline-light btn-lg px-5" type="submit">Login</button>
+                        <button className="btn btn-outline-light btn-lg px-5" onClick={clickHandler} type="submit">Login</button>
 
                       </div>
 
