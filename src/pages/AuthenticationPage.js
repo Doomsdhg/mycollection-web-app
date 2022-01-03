@@ -14,7 +14,7 @@ function AuthenticationPage() {
   }
   const clickHandler = async () => {
     try {
-      const response = await fetch('https://tranquil-crag-88053.herokuapp.com/api/auth/authentication', 
+      const response = await fetch('https://mycollection-server.herokuapp.com/api/auth/authentication', 
       {
         method: 'POST',
         headers: {

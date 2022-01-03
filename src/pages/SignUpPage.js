@@ -18,7 +18,7 @@ function SignUpPage() {
   
     const clickHandler = async () => {
       try {
-        const response = await fetch('https://tranquil-crag-88053.herokuapp.com/api/auth/register', 
+        const response = await fetch('https://mycollection-server.herokuapp.com/api/auth/register', 
         {
           method: 'POST',
           headers: {
