@@ -14,7 +14,7 @@ function AuthenticationPage() {
   }
   const clickHandler = async () => {
     try {
-      const response = await fetch('http://localhost:8080/api/auth/authentication', 
+      const response = await fetch('https://tranquil-crag-88053.herokuapp.com/api/auth/authentication', 
       {
         method: 'POST',
         headers: {
@@ -29,7 +29,7 @@ function AuthenticationPage() {
       }
       return data
     } catch (e) {
-      setError(e);
+      setError(`${e}`);
       console.log(e)
     }
   }
@@ -58,6 +58,14 @@ function AuthenticationPage() {
                         <button className="btn btn-outline-light btn-lg px-5" onClick={clickHandler} type="submit">Login</button>
 
                       </div>
+
+                      {(()=>{if(error){
+                          return (
+                            <div style={{'color': 'red'}}>
+                            {error}
+                            </div>
+                          )
+                          }})()}
 
                       <div>
                         <p className="mb-0">Don't have an account? <a href="/signup" className="text-white-50 fw-bold">Sign Up</a></p>

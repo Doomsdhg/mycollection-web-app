@@ -18,7 +18,7 @@ function SignUpPage() {
   
     const clickHandler = async () => {
       try {
-        const response = await fetch('http://localhost:8080/api/auth/register', 
+        const response = await fetch('https://tranquil-crag-88053.herokuapp.com/api/auth/register', 
         {
           method: 'POST',
           headers: {
@@ -72,9 +72,8 @@ function SignUpPage() {
 
                       </div>
                       {(()=>{if(error){
-                          console.log(error);
                           return (
-                            <div>
+                            <div style={{'color': 'red'}}>
                             {error}
                             </div>
                           )
