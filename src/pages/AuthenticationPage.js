@@ -1,17 +1,24 @@
 import React, {useState} from 'react';
+import { Navigate } from "react-router-dom";
+import {useDispatch, useSelector} from 'react-redux';
+import {useAuthHooks} from '../hooks/authHooks.js';
 
 function AuthenticationPage() {
-
-    const [formValue, setFormValue] = useState({
-      email: '',
-      password: '',
-    });
-    const [error, setError] = useState(null);
-
+  const dispatch = useDispatch();
+  const userData = useSelector(state => state.userData);
+  const [formValue, setFormValue] = useState({
+    email: '',
+    password: '',
+  });
+  const [error, setError] = useState(null);
+  const {login} = useAuthHooks();
   const formChangeHandler = (e) => {
     setFormValue({...formValue, [e.target.name]: e.target.value});
     console.log(formValue);
   }
+
+  
+
   const clickHandler = async () => {
     try {
       const response = await fetch('https://mycollection-server.herokuapp.com/api/auth/authentication', 
@@ -27,8 +34,9 @@ function AuthenticationPage() {
       if (!response.ok){
         throw new Error(data.message);
       }
-      return data
-    } catch (e) {
+      login(data, dispatch);
+      console.log(userData);
+      } catch (e) {
       setError(`${e}`);
       console.log(e)
     }
@@ -59,6 +67,11 @@ function AuthenticationPage() {
 
                       </div>
 
+                      {(()=>{if (userData.isAuthenticated) {
+                        console.log(userData.isAuthenticated);
+                        return <Navigate to="/"/>
+                      }})()}
+
                       {(()=>{if(error){
                           return (
                             <div style={{'color': 'red'}}>
@@ -66,7 +79,6 @@ function AuthenticationPage() {
                             </div>
                           )
                           }})()}
-
                       <div>
                         <p className="mb-0">Don't have an account? <a href="/signup" className="text-white-50 fw-bold">Sign Up</a></p>
                       </div>
