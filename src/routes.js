@@ -10,8 +10,8 @@ export const useRoutes = (isAuthenticated) => {
     if (isAuthenticated) {
         return (
             <Routes>
-                <Route path="/mycollection" element={<MyCollectionsPage />} />
-                <Route path="/" element={<MainPage isAuthenticated={isAuthenticated} />} />
+                <Route path="/mycollections" element={<MyCollectionsPage />} />
+                <Route path="/" element={<MainPage />} />
             </Routes>
         )
     } else {

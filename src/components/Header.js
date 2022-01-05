@@ -9,16 +9,21 @@ function Header(props) {
   const clickHandler = function(){
     logout(dispatch);
   }
-  console.log(userData);
+  const navClickHandler = function(){
+    const navbar = document.querySelector('#navbar');
+    navbar.classList.toggle('display-none');
+  };
     return (
         <nav className="navbar navbar-expand-lg fixed-top navbar-dark bg-dark" aria-label="Main navigation">
           <div className="container-fluid">
             <a className="navbar-brand" href="/">MyCollection</a>
-            <button className="navbar-toggler p-0 border-0" type="button" id="navbarSideCollapse" aria-label="Toggle navigation">
+            <button className="navbar-toggler p-0 border-0" type="button" 
+            id="navbarSideCollapse" aria-label="Toggle navigation" 
+            onClick={navClickHandler} onTouchStart={navClickHandler}>
               <span className="navbar-toggler-icon"></span>
             </button>
 
-            <div className="navbar-collapse offcanvas-collapse" id="navbarsExampleDefault">
+            <div className="navbar-collapse offcanvas-collapse display-none" id="navbar">
               <ul className="navbar-nav me-auto mb-2 mb-lg-0">
                 <li className="nav-item">
                   <a className="nav-link active" aria-current="page" href="/">Home</a>
@@ -27,10 +32,10 @@ function Header(props) {
                     return (
                       <>
                       <li className="nav-item">
-                        <a className="nav-link" href="/mycollcetions">My collections</a>
+                        <a className="nav-link" href="/mycollections">My collections</a>
                       </li>
                       <li className="nav-item" >
-                      <button type="button" class="btn btn-secondary" onClick={clickHandler}>Log out</button>
+                      <button type="button" className="btn btn-secondary" onClick={clickHandler}>Log out</button>
                       </li>
                       </>
                     )

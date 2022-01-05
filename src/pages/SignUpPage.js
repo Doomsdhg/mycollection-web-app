@@ -1,8 +1,10 @@
-import React, {useState} from 'react'
+import React, {useState} from 'react';
+import {useAuthHooks} from '../hooks/authHooks.js';
+import {useDispatch, useSelector} from 'react-redux';
+import { Navigate } from "react-router-dom";
 
 function SignUpPage() {
   
-
     const [formValue, setFormValue] = useState({
       email: '',
       username: '',
@@ -10,7 +12,10 @@ function SignUpPage() {
       password2: ''
     });
     const [error, setError] = useState(null);
-  
+    const {login} = useAuthHooks();
+    const dispatch = useDispatch();
+    const userData = useSelector(state => state.userData);
+
     const formChangeHandler = (e) => {
       setFormValue({...formValue, [e.target.name]: e.target.value});
       console.log(formValue);
@@ -30,12 +35,36 @@ function SignUpPage() {
         if (!response.ok){
           throw new Error(data.message);
         }
-        return data
+        loginClickHandler()
       } catch (e) {
         setError(`${e}`);
         console.log(e)
       }
     }
+
+    const loginClickHandler = async () => {
+      try {
+        const response = await fetch('https://mycollection-server.herokuapp.com/api/auth/authentication', 
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: formValue?JSON.stringify(formValue):null
+        });
+        const data = await response.json();
+        console.log(data);
+        if (!response.ok){
+          throw new Error(data.message);
+        }
+        login(data, dispatch);
+        console.log(userData);
+        } catch (e) {
+        setError(`${e}`);
+        console.log(e)
+      }
+    }
+
     return (
         <section className="vh-100 gradient-custom">
             <div className="container py-0 h-100">
@@ -71,6 +100,12 @@ function SignUpPage() {
                         <button className="btn btn-outline-light btn-lg px-5" type="submit" onClick={clickHandler}>Create an account</button>
 
                       </div>
+
+                      {(()=>{if (userData.isAuthenticated) {
+                        console.log(userData.isAuthenticated);
+                        return <Navigate to="/"/>
+                      }})()}
+
                       {(()=>{if(error){
                           return (
                             <div style={{'color': 'red'}}>

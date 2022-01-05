@@ -3,13 +3,13 @@ import {BrowserRouter} from 'react-router-dom';
 import {useRoutes} from './routes';
 import {Provider} from 'react-redux';
 import {store} from './store/store.js';
-import {useDispatch} from 'react-redux';
-import { PersistGate } from 'redux-persist/integration/react';
+import {PersistGate} from 'redux-persist/integration/react';
 import {persistor} from './store/store.js';
+import {useSelector} from 'react-redux';
 
 function App() {
-  const dispatch = useDispatch();
-  const routes = useRoutes(false);
+  const userData = useSelector(state => state.userData);
+  const routes = useRoutes(userData.isAuthenticated);
   return (
     
       <BrowserRouter>
