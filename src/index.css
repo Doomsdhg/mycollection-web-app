@@ -20,11 +20,36 @@ code {
 .display-none {
 }
 
+.drag-n-drop-area {
+  border: 2px black dashed;
+  height: 100px;
+  width: 80%;
+  margin: 0 auto;
+
+}
+
+.drag-n-drop.empty {
+  height: 100%;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.drag-n-drop.hovered {
+  height: 100%;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: rgb(201, 236, 252);
+}
 @media screen and (max-width: 992px) {
 
 .display-none {
   display: none
 }
+
 
 
 }

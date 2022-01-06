@@ -4,7 +4,7 @@ import MyCollectionsPage from './pages/MyCollectionsPage';
 import MainPage from './pages/MainPage';
 import AuthenticationPage from './pages/AuthenticationPage';
 import SignUpPage from './pages/SignUpPage';
-
+import CreateCollectionPage from './pages/CreateCollectionPage';
 
 export const useRoutes = (isAuthenticated) => {
     if (isAuthenticated) {
@@ -12,6 +12,7 @@ export const useRoutes = (isAuthenticated) => {
             <Routes>
                 <Route path="/mycollections" element={<MyCollectionsPage />} />
                 <Route path="/" element={<MainPage />} />
+                <Route path="/createcollection" element={<CreateCollectionPage />} />
             </Routes>
         )
     } else {
