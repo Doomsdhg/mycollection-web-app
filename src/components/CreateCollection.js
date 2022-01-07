@@ -1,6 +1,8 @@
 import React, {useState} from 'react';
 
 function CreateCollection() {
+    const [error, setError] = useState();
+    const [itemFields, setItemFields] = useState([]);
     const [drag, setDrag] = useState(false);
     const dragStartHandler = function (e) {
         e.preventDefault();
@@ -27,17 +29,54 @@ function CreateCollection() {
         console.log(response);
         setDrag(false);
     }
+
+    const addField = function(e){
+      try {
+        let fieldType;
+        switch (e.target.name) {
+          case 'number':
+            fieldType = 'number';
+            break;
+          case 'string':
+            fieldType = 'string';
+            break;
+          case 'text':
+            fieldType = 'text';
+            break;
+          case 'date':
+            fieldType = 'date';
+            break;
+          case 'checkbox':
+            fieldType = 'checkbox';
+            break;
+        }
+        let fieldTypeAmount = itemFields.filter(item => item === fieldType) 
+        if (fieldTypeAmount.length >= 3) {
+          throw new Error('3 fields of this type already exist')
+        }
+        if (itemFields.length === 0) {
+          setItemFields([fieldType]);
+          console.log(itemFields)
+        }
+        setItemFields(itemFields.concat([fieldType]));
+        console.log(itemFields);
+      } catch (e) {
+        setError(e);
+        console.log(e)
+      }
+    }
+
     return (
         <div className='container' style={{'marginTop': '100px'}}>  
-            <h3 style={{'marginTop': '80px'}}>Enter data of your future collection</h3>
+            <h3>Enter data of your future collection</h3>
             <div className="input-group mb-3">
-              <span className="input-group-text" id="basic-addon1"></span>
-              <input type="text" className="form-control" placeholder="Collection name" aria-describedby="basic-addon1" />
+              <span className="input-group-text" id="basic-addon1">Collection name</span>
+              <input type="text" className="form-control" placeholder="My collection" aria-describedby="basic-addon1" />
             </div>
 
             <div className="input-group">
               <span className="input-group-text">Collection description</span>
-              <textarea className="form-control" aria-label="With textarea"></textarea>
+              <textarea className="form-control" aria-label="With textarea" placeholder="Text..."></textarea>
             </div>
 
             <div className="input-group mb-3 mt-3">
@@ -57,17 +96,52 @@ function CreateCollection() {
                 onDragLeave={e => {dragLeaveHandler(e)}}
                 onDragOver={e => {dragStartHandler(e)}}
                 onDrop={e => {dropHandler(e)}}
-                >Drop files to upload</div>:
+                >Collection image (optional). Drop files to upload</div>:
                 <div className ="drag-n-drop empty"
                 onDragStart={e => {dragStartHandler(e)}}
                 onDragLeave={e => {dragLeaveHandler(e)}}
                 onDragOver={e => {dragStartHandler(e)}}
-                >Locate files here</div>
+                >Collection image (optional). Drag files here</div>
                 }
             </div>
+            <div className='wrapper' style={{'marginTop': '20px'}}>
+              <h3>Fields for each collection item</h3>
+              {(()=>{
+                if (error) {
+                  return <p style={{'color':'red'}}>{error.message}</p>
+                }
+              })()}
+              <div className="btn-group" role="group" aria-label="Basic outlined example">
+                <button type="button" className="btn btn-outline-success" name="number" id="1337" onClick={e => addField(e)}>Add numeric field</button>
+                <button type="button" className="btn btn-outline-success" name="string" onClick={e => addField(e)}>Add string field</button>
+                <button type="button" className="btn btn-outline-success" name="text" onClick={e => addField(e)}>Add text field</button>
+                <button type="button" className="btn btn-outline-success" name="date" onClick={e => addField(e)}>Add date field</button>
+                <button type="button" className="btn btn-outline-success" name="checkbox" onClick={e => addField(e)}>Add checkbox</button>
+              </div>
+            </div>
+              <p>Each item in this collection will include following fields:</p>
+            <div className="input-group mb-3">
+              <span className="input-group-text" id="basic-addon1">Item name</span>
+              <input type="text" disabled={true} className="form-control" placeholder="My collection" aria-describedby="basic-addon1" />
+            </div>
+
+            <div className="input-group">
+              <span className="input-group-text">Item description</span>
+              <textarea className="form-control"  disabled={true} aria-label="With textarea" placeholder="Text..."></textarea>
+            </div>
+
+            <div className="input-group mt-3">
+              <span className="input-group-text">Tags</span>
+              <textarea className="form-control"  disabled={true} aria-label="With textarea" placeholder="Text..."></textarea>
+            </div>
+            {itemFields.map((item, index) => (
+              <div className="input-group mt-3" key={index}>
+              <span className="input-group-text">{item} field</span>
+              <textarea className="form-control" aria-label="With textarea" placeholder="Type field name here">
+              </textarea>
+              </div>
+            ))}
         </div>
-
-
     )
 }
 

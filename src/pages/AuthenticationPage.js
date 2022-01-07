@@ -19,7 +19,7 @@ function AuthenticationPage() {
 
   
 
-  const clickHandler = async () => {
+  const loginClickHandler = async () => {
     try {
       const response = await fetch('https://mycollection-server.herokuapp.com/api/auth/authentication', 
       {
@@ -63,7 +63,7 @@ function AuthenticationPage() {
                           <input type="password" name="password" onChange={formChangeHandler} id="typePasswordX" placeholder='Password' className="form-control form-control-lg" />
                         </div>
                         
-                        <button className="btn btn-outline-light btn-lg px-5" onClick={clickHandler} type="submit">Login</button>
+                        <button className="btn btn-outline-light btn-lg px-5" onClick={loginClickHandler} type="submit">Login</button>
 
                       </div>
 
