@@ -32,34 +32,15 @@ function CreateCollection() {
 
     const addField = function(e){
       try {
-        let fieldType;
-        switch (e.target.name) {
-          case 'number':
-            fieldType = 'number';
-            break;
-          case 'string':
-            fieldType = 'string';
-            break;
-          case 'text':
-            fieldType = 'text';
-            break;
-          case 'date':
-            fieldType = 'date';
-            break;
-          case 'checkbox':
-            fieldType = 'checkbox';
-            break;
-        }
+        let fieldType = e.target.name;
         let fieldTypeAmount = itemFields.filter(item => item === fieldType) 
         if (fieldTypeAmount.length >= 3) {
-          throw new Error('3 fields of this type already exist')
+          throw new Error('You can not add more than 3 fields of each type')
         }
-        if (itemFields.length === 0) {
-          setItemFields([fieldType]);
-          console.log(itemFields)
-        }
+        
         setItemFields(itemFields.concat([fieldType]));
         console.log(itemFields);
+        setError('');
       } catch (e) {
         setError(e);
         console.log(e)
@@ -68,7 +49,7 @@ function CreateCollection() {
 
     return (
         <div className='container' style={{'marginTop': '100px'}}>  
-            <h3>Enter data of your future collection</h3>
+            <h3>Enter data for your future collection</h3>
             <div className="input-group mb-3">
               <span className="input-group-text" id="basic-addon1">Collection name</span>
               <input type="text" className="form-control" placeholder="My collection" aria-describedby="basic-addon1" />
@@ -106,6 +87,7 @@ function CreateCollection() {
             </div>
             <div className='wrapper' style={{'marginTop': '20px'}}>
               <h3>Fields for each collection item</h3>
+              <p>(You can add up to 3 fields of each type)</p>
               {(()=>{
                 if (error) {
                   return <p style={{'color':'red'}}>{error.message}</p>
