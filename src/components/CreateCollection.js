@@ -1,6 +1,7 @@
 import React, {useState} from 'react';
 
 function CreateCollection() {
+    const [preview, setPreview] = useState();
     const [error, setError] = useState();
     const [itemFields, setItemFields] = useState([]);
     const [drag, setDrag] = useState(false);
@@ -14,19 +15,17 @@ function CreateCollection() {
         setDrag(false);
     }
     const dropHandler = async function (e) {
+      e.preventDefault();
         let files = [...e.dataTransfer.files];
         const formData = new FormData();
         formData.append('file', files[0]);
-        const request = await fetch('https://mycollection-server.herokuapp.com/api/pictureupload', 
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'multipart/form-data',
-          },
-          body: formData
-        });
-        const response = await request.json();
-        console.log(response);
+        const reader = new FileReader();
+        reader.readAsDataURL(files[0]);
+        reader.onloadend = ()=>{
+          setPreview(reader.result);
+          console.log(reader.result)
+        }
+        
         setDrag(false);
     }
 
@@ -44,6 +43,28 @@ function CreateCollection() {
       } catch (e) {
         setError(e);
         console.log(e)
+      }
+    }
+
+    const submitHandler = function (e) {
+      if (!preview) {return}
+      uploadImage(preview)
+    }
+
+    const uploadImage = async function(image){
+      try {
+        const request = await fetch('https://mycollection-server.herokuapp.com/api/uploadimage', 
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({data: image})
+        });
+        const response = await request.json();
+        console.log(response);
+      } catch (error) {
+        console.error(error)
       }
     }
 
@@ -70,7 +91,10 @@ function CreateCollection() {
               </select>
             </div>
 
-            <div className="drag-n-drop-area">
+            
+              {preview?
+              <img src={preview} alt='' style={{'height':'100px'}}/>:
+              <div className="drag-n-drop-area">
                 {drag?
                 <div className ="drag-n-drop hovered"
                 onDragStart={e => {dragStartHandler(e)}}
@@ -84,7 +108,8 @@ function CreateCollection() {
                 onDragOver={e => {dragStartHandler(e)}}
                 >Collection image (optional). Drag files here</div>
                 }
-            </div>
+              </div>}
+            
             <div className='wrapper' style={{'marginTop': '20px'}}>
               <h3>Fields for each collection item</h3>
               <p>(You can add up to 3 fields of each type)</p>
@@ -123,6 +148,7 @@ function CreateCollection() {
               </textarea>
               </div>
             ))}
+            <button type="button" className="btn btn-success mt-3 mb-3" onClick={submitHandler}>Create</button>
         </div>
     )
 }

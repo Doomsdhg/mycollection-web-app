@@ -23,7 +23,7 @@ function SignUpPage() {
   
     const clickHandler = async () => {
       try {
-        const response = await fetch('https://mycollection-server.herokuapp.com/api/auth/register', 
+        const response = await fetch('https://mycollection-server.herokuapp.com/api/register', 
         {
           method: 'POST',
           headers: {
@@ -44,7 +44,7 @@ function SignUpPage() {
 
     const loginClickHandler = async () => {
       try {
-        const response = await fetch('https://mycollection-server.herokuapp.com/api/auth/authentication', 
+        const response = await fetch('https://mycollection-server.herokuapp.com/api/authentication', 
         {
           method: 'POST',
           headers: {
