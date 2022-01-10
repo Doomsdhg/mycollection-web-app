@@ -10,7 +10,7 @@ export default function MyCollections() {
         <div className='container' style={{'marginTop': '100px'}}>  
               <div className="my-3 p-3 bg-body rounded shadow-sm">
               <h1 style={{'display': 'inline'}}>Your collections</h1>
-                <button type="button" class="btn btn-primary" onClick={routeChange}
+                <button type="button" className="btn btn-primary" onClick={routeChange}
                 style={{'display': 'inline', 'marginLeft': '20px', 'marginTop': '-20px', 'backgroundColor': '#4CAF50', 'border': 'none'}}>
                   + Create new collection</button>
 

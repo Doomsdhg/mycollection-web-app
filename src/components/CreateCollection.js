@@ -1,6 +1,7 @@
 import React, {useState} from 'react';
 
 function CreateCollection() {
+    const [formValue, setFormValue] = useState({});
     const [preview, setPreview] = useState();
     const [error, setError] = useState();
     const [itemFields, setItemFields] = useState([]);
@@ -8,7 +9,6 @@ function CreateCollection() {
     const dragStartHandler = function (e) {
         e.preventDefault();
         setDrag(true);
-
     }
     const dragLeaveHandler = function (e) {
         e.preventDefault();
@@ -29,6 +29,12 @@ function CreateCollection() {
         setDrag(false);
     }
 
+    const changeHandler = async function(e){
+      console.log(e.target);
+      setFormValue({...formValue, [e.target.name]: e.target.value});
+      console.log(formValue);
+    }
+
     const addField = function(e){
       try {
         let fieldType = e.target.name;
@@ -47,47 +53,83 @@ function CreateCollection() {
     }
 
     const submitHandler = function (e) {
-      if (!preview) {return}
-      uploadImage(preview)
+      if (!preview) {
+        uploadCollection()
+      } else {
+        uploadImage(preview)
+      }
     }
 
     const uploadImage = async function(image){
+        try {
+          const request = await fetch('https://mycollection-server.herokuapp.com/api/uploadimage', 
+          {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({data: image})
+          });
+          const response = await request.json();
+          console.log(response);
+          uploadCollection(response.url);
+        } catch (error) {
+          console.error(error)
+        }
+    }
+
+    const uploadCollection = async function(imageURL){
+      if (imageURL) {
+      setFormValue({...formValue, imageURL});
+      } 
       try {
-        const request = await fetch('https://mycollection-server.herokuapp.com/api/uploadimage', 
+        const request = await fetch('https://mycollection-server.herokuapp.com/api/uploadcollection', 
         {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify({data: image})
+          body: JSON.stringify({data: formValue})
         });
         const response = await request.json();
-        console.log(response);
+        console.log(response.message);
       } catch (error) {
         console.error(error)
+      }
+    }
+
+    const getIndex = function(formName, formIndex){
+      const fieldsArr = [...itemFields];
+      fieldsArr.sort();
+      if (formIndex === fieldsArr.indexOf(formName)) {
+        return 1
+      } else if (formIndex === fieldsArr.lastIndexOf(formName)) {
+        return 3
+      } else {
+        return 2
       }
     }
 
     return (
         <div className='container' style={{'marginTop': '100px'}}>  
             <h3>Enter data for your future collection</h3>
-            <div className="input-group mb-3">
-              <span className="input-group-text" id="basic-addon1">Collection name</span>
-              <input type="text" className="form-control" placeholder="My collection" aria-describedby="basic-addon1" />
+            <div className="mb-3">
+              <span className="text" id="basic-addon1">Collection name</span>
+              <input type="text" className="form-control" name='name' placeholder="My collection" onChange={changeHandler} aria-describedby="basic-addon1" />
             </div>
 
-            <div className="input-group">
-              <span className="input-group-text">Collection description</span>
-              <textarea className="form-control" aria-label="With textarea" placeholder="Text..."></textarea>
+            <div className="">
+              <span className="-text">Collection description</span>
+              <textarea className="form-control" name='description' aria-label="With textarea" onChange={changeHandler} placeholder="Text..."></textarea>
             </div>
 
-            <div className="input-group mb-3 mt-3">
-              <label className="input-group-text" htmlFor="inputGroupSelect01">Topic</label>
-              <select className="form-select" id="inputGroupSelect01">
+            <div className="mb-3 mt-3">
+              <label className="-text" htmlFor="inputGroupSelect01">Topic</label>
+              <select className="form-select" name='topic' id="inputGroupSelect01" onChange={changeHandler}>
                 <option defaultValue={true}>Choose...</option>
-                <option value="1">Books</option>
-                <option value="2">Alcohol</option>
-                <option value="3">Other</option>
+                <option value="Books">Books</option>
+                <option value="Alcohol">Alcohol</option>
+                <option value="Other">Other</option>
               </select>
             </div>
 
@@ -127,24 +169,24 @@ function CreateCollection() {
               </div>
             </div>
               <p>Each item in this collection will include following fields:</p>
-            <div className="input-group mb-3">
-              <span className="input-group-text" id="basic-addon1">Item name</span>
+            <div className="mb-3">
+              <span className="-text" id="basic-addon1">Item name</span>
               <input type="text" disabled={true} className="form-control" placeholder="My collection" aria-describedby="basic-addon1" />
             </div>
 
-            <div className="input-group">
-              <span className="input-group-text">Item description</span>
+            <div className="">
+              <span className="-text">Item description</span>
               <textarea className="form-control"  disabled={true} aria-label="With textarea" placeholder="Text..."></textarea>
             </div>
 
-            <div className="input-group mt-3">
-              <span className="input-group-text">Tags</span>
+            <div className="mt-3">
+              <span className="-text">Tags</span>
               <textarea className="form-control"  disabled={true} aria-label="With textarea" placeholder="Text..."></textarea>
             </div>
             {itemFields.map((item, index) => (
-              <div className="input-group mt-3" key={index}>
-              <span className="input-group-text">{item} field</span>
-              <textarea className="form-control" aria-label="With textarea" placeholder="Type field name here">
+              <div className="mt-3" key={index}>
+              <span className="-text">{item} field</span>
+              <textarea className="form-control" name={item + "Field" + getIndex(item, index)} aria-label="With textarea" onChange={changeHandler} placeholder="Type field name here">
               </textarea>
               </div>
             ))}
