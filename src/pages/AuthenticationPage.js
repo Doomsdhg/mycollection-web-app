@@ -21,7 +21,7 @@ function AuthenticationPage() {
 
   const loginClickHandler = async () => {
     try {
-      const response = await fetch('https://mycollection-server.herokuapp.com/api/authentication', 
+      const response = await fetch('https://mycollection-app.herokuapp.com/api/authentication', 
       {
         method: 'POST',
         headers: {

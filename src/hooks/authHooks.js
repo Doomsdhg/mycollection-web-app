@@ -12,7 +12,8 @@ export const useAuthHooks = () => {
     if (data.token && data.userId) {
       localStorage.setItem(storageName, JSON.stringify({
         userId: data.userId, 
-        jwt: data.token
+        jwt: data.token,
+        email: data.email
       }))
       dispatch(setUserData(data));
     }

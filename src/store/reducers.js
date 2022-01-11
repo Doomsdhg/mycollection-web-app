@@ -7,7 +7,8 @@ function userStateReducer(state = 0, action){
                 ...state,
                 jwt: action.payload.jwt,
                 userId: action.payload.userId,
-                isAuthenticated: true
+                isAuthenticated: true,
+                email: action.payload.email
             }
         }
         case 'LOGOUT':{
@@ -15,7 +16,8 @@ function userStateReducer(state = 0, action){
                 ...state,
                 jwt: action.payload.jwt,
                 userId: action.payload.userId,
-                isAuthenticated: false
+                isAuthenticated: false,
+                email: action.payload.email
             }
         }
         default:
@@ -30,11 +32,13 @@ export const rootReducer = combineReducers({
 export const setUserData = (userData) => ({type: 'LOGIN', payload: {
     jwt: userData.token,
     userId: userData.userId,
-    isAuthenticated: true
+    isAuthenticated: true,
+    email: userData.email
 }})
 
 export const deleteUserData = () => ({type: 'LOGOUT', payload: {
     jwt: '',
     userId: '',
-    isAuthenticated: false
+    isAuthenticated: false,
+    email: ''
 }})

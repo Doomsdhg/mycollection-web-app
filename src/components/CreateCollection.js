@@ -1,6 +1,9 @@
 import React, {useState} from 'react';
+import {useDispatch, useSelector} from 'react-redux';
 
 function CreateCollection() {
+    const dispatch = useDispatch();
+    const userData = useSelector(state => state.userData);
     const [formValue, setFormValue] = useState({});
     const [preview, setPreview] = useState();
     const [error, setError] = useState();
@@ -32,7 +35,6 @@ function CreateCollection() {
     const changeHandler = async function(e){
       console.log(e.target);
       setFormValue({...formValue, [e.target.name]: e.target.value});
-      console.log(formValue);
     }
 
     const addField = function(e){
@@ -79,11 +81,12 @@ function CreateCollection() {
     }
 
     const uploadCollection = async function(imageURL){
+      setFormValue({...formValue, creator: userData.email})
       if (imageURL) {
       setFormValue({...formValue, imageURL});
       } 
       try {
-        const request = await fetch('https://mycollection-server.herokuapp.com/api/uploadcollection', 
+        const request = await fetch('https://mycollection-app.herokuapp.com/api/uploadcollection', 
         {
           method: 'POST',
           headers: {

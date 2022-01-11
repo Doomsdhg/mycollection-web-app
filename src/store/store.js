@@ -17,7 +17,8 @@ import {configureStore} from '@reduxjs/toolkit';
 const initialState = {
     jwt: '',
     userId: '',
-    isAuthenticated: false
+    isAuthenticated: false,
+    email: ''
 }
 
 const persistConfig = {
