@@ -86,7 +86,7 @@ function CreateCollection() {
       setFormValue({...formValue, imageURL});
       } 
       try {
-        const request = await fetch('https://mycollection-app.herokuapp.com/api/uploadcollection', 
+        const request = await fetch('https://mycollection-server.herokuapp.com/api/uploadcollection', 
         {
           method: 'POST',
           headers: {
