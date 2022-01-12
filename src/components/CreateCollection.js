@@ -1,8 +1,11 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import {useDispatch, useSelector} from 'react-redux';
+import {useNavigate} from 'react-router-dom';
+import { ToastContainer, toast } from 'react-toastify';
+
 
 function CreateCollection() {
-    const dispatch = useDispatch();
+    const navigate = useNavigate();
     const userData = useSelector(state => state.userData);
     const [formValue, setFormValue] = useState({});
     const [preview, setPreview] = useState();
@@ -32,8 +35,12 @@ function CreateCollection() {
         setDrag(false);
     }
 
+    const addCreator = useEffect(()=>{
+      setFormValue({creator: userData.userId});
+    },[]);
+
+
     const changeHandler = async function(e){
-      console.log(e.target);
       setFormValue({...formValue, [e.target.name]: e.target.value});
     }
 
@@ -55,6 +62,7 @@ function CreateCollection() {
     }
 
     const submitHandler = function (e) {
+      
       if (!preview) {
         uploadCollection()
       } else {
@@ -74,17 +82,19 @@ function CreateCollection() {
           });
           const response = await request.json();
           console.log(response);
-          uploadCollection(response.url);
+          console.log(userData.email);
+          
+          if (response.url) {
+            setFormValue({...formValue, imageURL: response.url});
+            } 
+          uploadCollection();
         } catch (error) {
           console.error(error)
         }
     }
 
-    const uploadCollection = async function(imageURL){
-      setFormValue({...formValue, creator: userData.email})
-      if (imageURL) {
-      setFormValue({...formValue, imageURL});
-      } 
+    const uploadCollection = async function(){
+      console.log(formValue)
       try {
         const request = await fetch('https://mycollection-server.herokuapp.com/api/uploadcollection', 
         {
@@ -96,6 +106,11 @@ function CreateCollection() {
         });
         const response = await request.json();
         console.log(response.message);
+        navigate('/mycollections');
+        setTimeout(()=>{
+          toast('Collection created successfully!');
+        },100)
+
       } catch (error) {
         console.error(error)
       }
@@ -194,6 +209,7 @@ function CreateCollection() {
               </div>
             ))}
             <button type="button" className="btn btn-success mt-3 mb-3" onClick={submitHandler}>Create</button>
+            <ToastContainer />
         </div>
     )
 }

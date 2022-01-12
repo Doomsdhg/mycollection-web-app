@@ -6,6 +6,7 @@ import '../node_modules/bootstrap/dist/css/bootstrap.css';
 import '../node_modules/react-bootstrap/dist/react-bootstrap.js';
 import "../node_modules/bootstrap-icons/font/bootstrap-icons.css";
 import './index.css';
+import 'react-toastify/dist/ReactToastify.css';
 import {Provider} from 'react-redux';
 import {store} from './store/store.js';
 
