@@ -2,9 +2,13 @@ import React, {useEffect, useState} from 'react';
 import {useNavigate} from 'react-router-dom';
 import {useSelector} from 'react-redux';
 import { ToastContainer } from 'react-toastify';
+import { useDispatch } from 'react-redux';
+import {setCollectionId} from '../store/reducers';
 
 
 export default function MyCollections() {
+
+  const dispatch = useDispatch();
   const userData = useSelector(state => state.userData);
   const navigate = useNavigate();
   const noImage = 'https://st4.depositphotos.com/14953852/24787/v/600/depositphotos_247872612-stock-illustration-no-image-available-icon-vector.jpg';
@@ -34,7 +38,10 @@ export default function MyCollections() {
   useEffect(() => {
     fetchCollections()
   },[])
-  const handler = function (){
+  const collectionPageRedirect = async function (e){
+    console.log(e.target.parentNode.dataset.id);
+    dispatch(setCollectionId(e.target.parentNode.dataset.id));
+    navigate('/collectionpage')
     
   }
     return (
@@ -51,11 +58,11 @@ export default function MyCollections() {
                       <img src={collection.imageURL?collection.imageURL:noImage} className="card-img-top" alt="..." style={{'width': '10%',
                       'height': '10%', 'maxHeight': '100px', 'maxWidth': '100px', 'marginTop': '20px', 'marginLeft': '20px' 
                       }} />
-                      <div className="card-body">
+                      <div className="card-body" data-id={collection._id}>
                       
                         <h5 className="card-title" style={{'display': 'inline-block', 'width': '80%'}}>{collection.name}</h5><br/>
                         <p className="card-text" style={{'display': 'inline-block'}}>{collection.description}</p><br/>
-                        <a className="btn btn-primary">Open collection</a>
+                        <a className="btn btn-primary" onClick={collectionPageRedirect}>Open collection</a>
                         
                       </div>
                     </div>

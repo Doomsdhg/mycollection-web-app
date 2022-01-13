@@ -188,12 +188,12 @@ function CreateCollection() {
             </div>
               <p>Each item in this collection will include following fields:</p>
             <div className="mb-3">
-              <span className="-text" id="basic-addon1">Item name</span>
+              <span className="-text" id="basic-addon1">Item id</span>
               <input type="text" disabled={true} className="form-control" placeholder="My collection" aria-describedby="basic-addon1" />
             </div>
 
             <div className="">
-              <span className="-text">Item description</span>
+              <span className="-text">Item name</span>
               <textarea className="form-control"  disabled={true} aria-label="With textarea" placeholder="Text..."></textarea>
             </div>
 

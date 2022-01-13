@@ -20,6 +20,12 @@ function userStateReducer(state = 0, action){
                 email: action.payload.email
             }
         }
+        case 'COLLECTION_RENDER':{
+            return {
+                ...state,
+                collectionId: action.payload.collectionId
+            }
+        }
         default:
             return state
     }   
@@ -28,6 +34,10 @@ function userStateReducer(state = 0, action){
 export const rootReducer = combineReducers({
     userData: userStateReducer
 })
+
+export const setCollectionId = (collectionData) => ({type: 'COLLECTION_RENDER', payload: {
+    collectionId: collectionData
+}})
 
 export const setUserData = (userData) => ({type: 'LOGIN', payload: {
     jwt: userData.token,
