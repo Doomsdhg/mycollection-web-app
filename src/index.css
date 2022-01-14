@@ -14,12 +14,10 @@ code {
     monospace;
 }
 
-#navbar {
-
-}
-
 .display-none {
+  display: none
 }
+
 
 .drag-n-drop-area {
   border: 2px black dashed;
