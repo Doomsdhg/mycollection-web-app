@@ -4,8 +4,10 @@ import {useSelector} from 'react-redux';
 import BTable from 'react-bootstrap/Table';
 import { ToastContainer, toast } from 'react-toastify';
 import {useNavigate} from 'react-router-dom';
+import MDEditor from '@uiw/react-md-editor';
 
 function CollectionTable() {
+    const [markdownValue, setMarkdownValue] = useState();
     const [collectionFormValue, setCollectionFormValue] = useState([]);
     const [collectionDataDisabled, setCollectionFormsDisabled] = useState(true);
     const [collectionData, setCollectionData] = useState('');
@@ -51,6 +53,7 @@ function CollectionTable() {
           const response = await request.json();
           console.log(response);
           setCollectionData(response);
+          setMarkdownValue(response.description);
       } catch (error) {
         console.log(error);
       }
@@ -184,8 +187,15 @@ function CollectionTable() {
           </div>
           <div className="">
             <span className="-text">Collection description</span>
-            <textarea className="form-control" defaultValue={collectionData.description} onChange={collectionDataChangeHandler}
-             name='description' disabled={collectionDataDisabled?true:false} aria-label="With textarea" placeholder="Text..."></textarea>
+            <MDEditor
+              value={markdownValue}
+              onChange={setMarkdownValue}
+              name='description'
+            />
+            
+          </div>
+          <div className="container">
+            
           </div>
           <div className="mb-3 mt-3">
             <label className="-text" htmlFor="inputGroupSelect01">Topic</label>
