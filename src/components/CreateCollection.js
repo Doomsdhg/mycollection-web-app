@@ -42,6 +42,7 @@ function CreateCollection() {
 
     const changeHandler = async function(e){
       setFormValue({...formValue, [e.target.name]: e.target.value});
+      console.log(formValue)
     }
 
     const addField = function(e){
