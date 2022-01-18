@@ -2,9 +2,10 @@ import React, {useState, useEffect} from 'react';
 import {useDispatch, useSelector} from 'react-redux';
 import {useNavigate} from 'react-router-dom';
 import { ToastContainer, toast } from 'react-toastify';
-
+import MDEditor from '@uiw/react-md-editor';
 
 function CreateCollection() {
+  const [markdownValue, setMarkdownValue] = useState();
     const navigate = useNavigate();
     const userData = useSelector(state => state.userData);
     const [formValue, setFormValue] = useState({});
@@ -35,12 +36,17 @@ function CreateCollection() {
         setDrag(false);
     }
 
-    const addCreator = useEffect(()=>{
+    useEffect(()=>{
+      setFormValue({...formValue, description: markdownValue});
+      console.log(markdownValue);
+    },[markdownValue])
+
+    useEffect(()=>{
       setFormValue({creator: userData.userId});
     },[]);
 
 
-    const changeHandler = async function(e){
+    const changeHandler = function(e){
       setFormValue({...formValue, [e.target.name]: e.target.value});
       console.log(formValue)
     }
@@ -97,7 +103,7 @@ function CreateCollection() {
     const uploadCollection = async function(){
       console.log(formValue)
       try {
-        const request = await fetch('https://mycollection-server.herokuapp.com/api/uploadcollection', 
+        const request = await fetch('http://localhost:8080/api/uploadcollection', 
         {
           method: 'POST',
           headers: {
@@ -129,6 +135,8 @@ function CreateCollection() {
       }
     }
 
+    
+
     return (
         <div className='container' style={{'marginTop': '100px'}}>  
             <h3>Enter data for your future collection</h3>
@@ -137,10 +145,11 @@ function CreateCollection() {
               <input type="text" className="form-control" name='name' placeholder="My collection" onChange={changeHandler} aria-describedby="basic-addon1" />
             </div>
 
-            <div className="">
-              <span className="-text">Collection description</span>
-              <textarea className="form-control" name='description' aria-label="With textarea" onChange={changeHandler} placeholder="Text..."></textarea>
-            </div>
+            <MDEditor
+                value={markdownValue}
+                onChange={setMarkdownValue}
+                name='description'
+              />
 
             <div className="mb-3 mt-3">
               <label className="-text" htmlFor="inputGroupSelect01">Topic</label>
@@ -180,7 +189,7 @@ function CreateCollection() {
                 }
               })()}
               <div className="btn-group" role="group" aria-label="Basic outlined example">
-                <button type="button" className="btn btn-outline-success" name="number" id="1337" onClick={e => addField(e)}>Add numeric field</button>
+                <button type="button" className="btn btn-outline-success" name="number" onClick={e => addField(e)}>Add numeric field</button>
                 <button type="button" className="btn btn-outline-success" name="string" onClick={e => addField(e)}>Add string field</button>
                 <button type="button" className="btn btn-outline-success" name="text" onClick={e => addField(e)}>Add text field</button>
                 <button type="button" className="btn btn-outline-success" name="date" onClick={e => addField(e)}>Add date field</button>
@@ -202,7 +211,7 @@ function CreateCollection() {
               <span className="-text">Tags</span>
               <textarea className="form-control"  disabled={true} aria-label="With textarea" placeholder="Text..."></textarea>
             </div>
-            {itemFields.map((item, index) => (
+            {itemFields.sort().map((item, index) => (
               <div className="mt-3" key={index}>
               <span className="-text">{item} field</span>
               <textarea className="form-control" name={item + "Field" + getIndex(item, index)} aria-label="With textarea" onChange={changeHandler} placeholder="Type field name here">

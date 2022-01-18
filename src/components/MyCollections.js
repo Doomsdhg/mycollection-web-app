@@ -4,6 +4,7 @@ import {useSelector} from 'react-redux';
 import { ToastContainer } from 'react-toastify';
 import { useDispatch } from 'react-redux';
 import {setCollectionId} from '../store/reducers';
+import MDEditor from '@uiw/react-md-editor';
 
 
 export default function MyCollections() {
@@ -54,14 +55,18 @@ export default function MyCollections() {
 
                 {collections.map((collection, index) => {
                   return (
-                    <div className="card" key={index} style={{"width": "99%", "marginTop":"20px", 'flexDirection': 'row'}}>
+                    <div className="card" key={index} 
+                    style={{"width": "99%", "marginTop":"20px", 'flexDirection': 'row', 'word-break': 'break-word'}}>
                       <img src={collection.imageURL?collection.imageURL:noImage} className="card-img-top" alt="..." style={{'width': '10%',
                       'height': '10%', 'maxHeight': '100px', 'maxWidth': '100px', 'marginTop': '20px', 'marginLeft': '20px' 
                       }} />
                       <div className="card-body" data-id={collection._id}>
                       
                         <h5 className="card-title" style={{'display': 'inline-block', 'width': '80%'}}>{collection.name}</h5><br/>
-                        <p className="card-text" style={{'display': 'inline-block'}}>{collection.description}</p><br/>
+                        <p className="card-text" style={{'display': 'inline-block'}}>
+                        <MDEditor.Markdown 
+                          source={collection.description} 
+                        /></p><br/>
                         <a className="btn btn-primary" onClick={collectionPageRedirect}>Open collection</a>
                         
                       </div>

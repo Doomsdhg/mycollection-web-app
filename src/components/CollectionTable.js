@@ -1,10 +1,12 @@
 import React, {useEffect, useState, useMemo} from 'react';
-import {useTable} from 'react-table';
+import {useTable, useSortBy} from 'react-table';
 import {useSelector} from 'react-redux';
 import BTable from 'react-bootstrap/Table';
 import { ToastContainer, toast } from 'react-toastify';
 import {useNavigate} from 'react-router-dom';
 import MDEditor from '@uiw/react-md-editor';
+import { useDispatch } from 'react-redux';
+import {setItemId} from '../store/reducers';
 
 function CollectionTable() {
     const [markdownValue, setMarkdownValue] = useState();
@@ -12,6 +14,7 @@ function CollectionTable() {
     const [collectionDataDisabled, setCollectionFormsDisabled] = useState(true);
     const [collectionData, setCollectionData] = useState('');
     const navigate = useNavigate();
+    const dispatch = useDispatch();
     const [itemFormValue, setItemFormValue] = useState([]);
     const [displayForms, setDisplayForms] = useState(false);
     const [headers, setHeaders] = useState([]);
@@ -27,7 +30,12 @@ function CollectionTable() {
     const userData = useSelector(store => store.userData);
 
     useEffect(()=>{
-      setItemFormValue({...itemFormValue, collectionRef: userData.collectionId});
+      setItemFormValue({...itemFormValue, 
+        collectionRef: userData.collectionId,
+        checkboxField1: false,
+        checkboxField2: false,
+        checkboxField3: false
+      });
       fetchCollectionData();
       fetchCollectionTable();
     },[])
@@ -81,14 +89,21 @@ function CollectionTable() {
               setHeaders([{
                 Header: '',
                 accessor: 'select'
-              } , ...response.headers]);
+              } , 
+              ...response.headers, 
+              {
+                Header: 'Item page',
+                accessor: 'itemRef'
+              }])
               setItems(response.items)
           } catch (error) {
             console.log(error);
           }
     }
     
-    const table = useTable({columns, data});
+    const table = useTable(
+      {columns, data},
+      useSortBy);
     
     const {
         getTableProps,
@@ -99,8 +114,11 @@ function CollectionTable() {
       } = table;
       
     const formChangeHandler = function(e){
-      console.log(e);
-      setItemFormValue({...itemFormValue, [e.target.name]: e.target.value});
+      if (e.target.name.includes('checkbox')) {
+        setItemFormValue({...itemFormValue, [e.target.name]: String(e.target.checked)})
+        return null
+      }
+      setItemFormValue({...itemFormValue, [e.target.name]: String(e.target.value)});
       console.log(itemFormValue)
     }
 
@@ -172,7 +190,7 @@ function CollectionTable() {
         console.log(itemFormValue);
         
         try {
-          const request = await fetch('https://mycollection-server.herokuapp.com/api/uploaditem', 
+          const request = await fetch('http://localhost:8080/api/uploaditem', 
           {
             method: 'POST',
             headers: {
@@ -190,6 +208,12 @@ function CollectionTable() {
           console.error(error)
         }
         fetchCollectionTable()
+    }
+
+    const goToItemPage = function (e) {
+      dispatch(setItemId(e.target.dataset.id));
+      console.log(userData);
+      navigate('/itempage');
     }
 
     const getFormType = function (string) {
@@ -281,8 +305,9 @@ function CollectionTable() {
               {headerGroups.map(headerGroup => (
                 <tr {...headerGroup.getHeaderGroupProps()}>
                   {headerGroup.headers.map(column => (
-                    <th {...column.getHeaderProps()}>
+                    <th {...column.getHeaderProps(column.getSortByToggleProps())}>
                       {column.render('Header')}
+                      {column.isSorted ? (column.isSortedDesc ? " ▲" : " ▼") : ""}
                     </th>
                   ))}
                 </tr>
@@ -295,16 +320,23 @@ function CollectionTable() {
                   <tr {...row.getRowProps()}>
                     {row.cells.map((cell, index) => {
                       if (index === 0) {
-                        
                         return (
                           <td {...cell.getCellProps()}>
                           {cell.render('Cell')}
-                          <input type='checkbox' />
+                          <input type='checkbox'/>
                         </td>
                         )
                       } 
-                      console.log(cell);
-                      if (cell.column.fieldType.includes('text')) {
+                      if (index === headers.length - 1) {
+                        return (
+                          <td {...cell.getCellProps()}>
+                          {cell.render('Cell')}
+                          <button type="button" className="btn btn-primary" data-id={row.values._id} onClick={(e)=>{goToItemPage(e)}}>
+                            Open</button>
+                        </td>
+                        )
+                      }
+                      if (cell.column.fieldType && cell.column.fieldType.includes('text')) {
                         return (
                           <td {...cell.getCellProps()}>
                           <MDEditor.Markdown 
@@ -331,12 +363,14 @@ function CollectionTable() {
                 {displayForms?'Close console':'Open console of item adding'}</button>
           <div className={displayForms?'wrapper':'display-none'}>
             {headers.map((header, index)=>{
-              if (index === 0 || index === 1) return null
+              if (index === 0 || index === 1 || header.Header === 'Item page') return null
               const type = header.fieldType.substring(0, header.fieldType.length - 6);
+              
               if (type === 'checkbox') {
                 return (
                   <div className="mb-3 form" key={index}>
-                    <input type="checkbox" name="horns" />
+                    <input type="checkbox" value={false} name={header.fieldType}
+                    onChange={formChangeHandler}/>
                     <span className="text ms-3" id="basic-addon1">{header.Header}</span>
                   </div>
                 )

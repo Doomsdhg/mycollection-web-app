@@ -26,6 +26,12 @@ function userStateReducer(state = 0, action){
                 collectionId: action.payload.collectionId
             }
         }
+        case 'ITEM_RENDER':{
+            return {
+                ...state,
+                itemId: action.payload.itemId
+            }
+        }
         default:
             return state
     }   
@@ -37,6 +43,10 @@ export const rootReducer = combineReducers({
 
 export const setCollectionId = (collectionData) => ({type: 'COLLECTION_RENDER', payload: {
     collectionId: collectionData
+}})
+
+export const setItemId = (itemData) => ({type: 'ITEM_RENDER', payload: {
+    itemId: itemData
 }})
 
 export const setUserData = (userData) => ({type: 'LOGIN', payload: {

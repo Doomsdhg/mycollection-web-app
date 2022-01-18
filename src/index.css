@@ -9,6 +9,31 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
+td {
+  text-align: center;
+  /* center checkbox horizontally */
+  vertical-align: middle;
+  /* center checkbox vertically */
+  overflow: auto;
+
+}
+
+table {
+  border: 1px solid;
+  width: 200px;
+  word-break: break-word;
+}
+
+tr {
+  height: 50px;
+}
+
+th {
+  text-align: center;
+  /* center checkbox horizontally */
+  vertical-align: middle;
+}
+
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
