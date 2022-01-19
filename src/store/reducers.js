@@ -32,9 +32,15 @@ function userStateReducer(state = 0, action){
                 itemId: action.payload.itemId
             }
         }
+        case 'SEARCH':{
+            return {
+                ...state,
+                query: action.payload.query
+            }
+        }
         default:
             return state
-    }   
+    }
 }
 
 export const rootReducer = combineReducers({
@@ -47,6 +53,10 @@ export const setCollectionId = (collectionData) => ({type: 'COLLECTION_RENDER', 
 
 export const setItemId = (itemData) => ({type: 'ITEM_RENDER', payload: {
     itemId: itemData
+}})
+
+export const setsearchQuery = (searchQuery) => ({type: 'SEARCH', payload: {
+    query: searchQuery
 }})
 
 export const setUserData = (userData) => ({type: 'LOGIN', payload: {

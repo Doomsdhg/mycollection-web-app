@@ -19,7 +19,7 @@ function ItemInfo() {
     const getItem = async function(){
         
         try {
-          const request = await fetch('http://localhost:8080/api/getitem', 
+          const request = await fetch('https://mycollection-server.herokuapp.com/api/getitem', 
           {
             method: 'POST',
             headers: {
@@ -53,7 +53,7 @@ function ItemInfo() {
 
     const getHeaders = async function () {
         try {
-            const request = await fetch('http://localhost:8080/api/getcollectiontable', 
+            const request = await fetch('https://mycollection-server.herokuapp.com/api/getcollectiontable', 
             {
               method: 'POST',
               headers: {

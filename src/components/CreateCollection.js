@@ -103,7 +103,7 @@ function CreateCollection() {
     const uploadCollection = async function(){
       console.log(formValue)
       try {
-        const request = await fetch('http://localhost:8080/api/uploadcollection', 
+        const request = await fetch('https://mycollection-server.herokuapp.com/api/uploadcollection', 
         {
           method: 'POST',
           headers: {

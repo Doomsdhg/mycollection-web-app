@@ -1,8 +1,8 @@
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import {useSelector, useDispatch} from 'react-redux';
 import {useAuthHooks} from '../hooks/authHooks.js';
 import {useNavigate} from 'react-router-dom';
-
+import {setsearchQuery} from '../store/reducers';
 
 
 function Header(props) {
@@ -10,6 +10,7 @@ function Header(props) {
   const dispatch = useDispatch();
   const {logout} = useAuthHooks();
   const navigate = useNavigate();
+  const [searchFormValue, setSearchFormValue] = useState('');
   const clickHandler = function(){
     logout(dispatch);
     navigate('/')
@@ -18,6 +19,9 @@ function Header(props) {
     const navbar = document.querySelector('#navbar');
     navbar.classList.toggle('display-none');
   };
+
+  
+
     return (
         <nav className="navbar navbar-expand-lg fixed-top navbar-dark bg-dark" aria-label="Main navigation">
           <div className="container-fluid">
@@ -58,8 +62,15 @@ function Header(props) {
                   }})()}
               </ul>
               <form className="d-flex">
-                <input className="form-control me-2" type="search" placeholder="Search" aria-label="Search" />
-                <button className="btn btn-outline-success" type="submit">Search</button>
+                <input className="form-control me-2" type="search" placeholder="Search" aria-label="Search" 
+                onChange={(e)=>{
+                  setSearchFormValue(e.target.value)
+                  }} />
+                <button className="btn btn-outline-success" type="submit" 
+                  onClick={(e)=>{
+                  dispatch(setsearchQuery(searchFormValue));
+                  navigate('/search')
+                  }}>Search</button>
               </form>
             </div>
           </div>

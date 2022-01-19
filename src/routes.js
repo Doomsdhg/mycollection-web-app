@@ -7,6 +7,7 @@ import SignUpPage from './pages/SignUpPage';
 import CreateCollectionPage from './pages/CreateCollectionPage';
 import CollectionPage from './pages/CollectionPage';
 import ItemPage from './pages/ItemPage';
+import SearchPage from './pages/SearchPage';
 
 export const useRoutes = (isAuthenticated) => {
     if (isAuthenticated) {
@@ -17,6 +18,7 @@ export const useRoutes = (isAuthenticated) => {
                 <Route path="/createcollection" element={<CreateCollectionPage />} />
                 <Route path="/collectionpage" element={<CollectionPage />} />
                 <Route path="/itempage" element={<ItemPage />} />
+                <Route path="/search" element={<SearchPage />} />
             </Routes>
         )
     } else {
@@ -25,6 +27,9 @@ export const useRoutes = (isAuthenticated) => {
                 <Route path="/auth" element={<AuthenticationPage />} />
                 <Route path="/" element={<MainPage />} />
                 <Route path="/signup" element={<SignUpPage />} />
+                <Route path="/collectionpage" element={<CollectionPage />} />
+                <Route path="/itempage" element={<ItemPage />} />
+                <Route path="/search" element={<SearchPage />} />
             </Routes>
         )
     }

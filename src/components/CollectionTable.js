@@ -190,7 +190,7 @@ function CollectionTable() {
         console.log(itemFormValue);
         
         try {
-          const request = await fetch('http://localhost:8080/api/uploaditem', 
+          const request = await fetch('https://mycollection-server.herokuapp.com/api/uploaditem', 
           {
             method: 'POST',
             headers: {
