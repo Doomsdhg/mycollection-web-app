@@ -23,7 +23,7 @@ function SignUpPage() {
   
     const clickHandler = async () => {
       try {
-        const response = await fetch('https://mycollection-server.herokuapp.com/api/register', 
+        const response = await fetch('http://localhost:8080/api/register', 
         {
           method: 'POST',
           headers: {
@@ -83,7 +83,7 @@ function SignUpPage() {
                         </div>
 
                         <div className="form-outline form-white mb-4">
-                          <input type="text" name="username" onChange={formChangeHandler} className="form-control form-control-lg" placeholder='Username'/>
+                          <input type="text" name="userName" onChange={formChangeHandler} className="form-control form-control-lg" placeholder='Username'/>
                         </div>
 
                         <div className="form-outline form-white mb-4">

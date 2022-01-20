@@ -10,12 +10,12 @@ import {setItemId} from '../store/reducers';
 
 function CollectionTable() {
     const [markdownValue, setMarkdownValue] = useState();
-    const [collectionFormValue, setCollectionFormValue] = useState([]);
+    const [collectionFormValue, setCollectionFormValue] = useState({});
     const [collectionDataDisabled, setCollectionFormsDisabled] = useState(true);
     const [collectionData, setCollectionData] = useState('');
     const navigate = useNavigate();
     const dispatch = useDispatch();
-    const [itemFormValue, setItemFormValue] = useState([]);
+    const [itemFormValue, setItemFormValue] = useState({});
     const [displayForms, setDisplayForms] = useState(false);
     const [headers, setHeaders] = useState([]);
     const [items, setItems] = useState([]);
@@ -30,19 +30,19 @@ function CollectionTable() {
     const userData = useSelector(store => store.userData);
 
     useEffect(()=>{
-      setItemFormValue({...itemFormValue, 
+      console.log(userData.collectionId)
+      setItemFormValue({ ...itemFormValue,
         collectionRef: userData.collectionId,
-        checkboxField1: false,
-        checkboxField2: false,
-        checkboxField3: false
       });
+      
       fetchCollectionData();
       fetchCollectionTable();
+      
     },[])
     
     const toggleForms = function(){
       setDisplayForms(current => !current)
-      console.log(displayForms);
+      console.log(itemFormValue);
 
     }
 
@@ -86,6 +86,13 @@ function CollectionTable() {
               })
               const response = await request.json();
               console.log(response);
+              response.headers.map((header)=>{
+                if (header.fieldType.includes('checkbox')) {
+                  setItemFormValue({...itemFormValue, 
+                    [header.fieldType]: false,
+                  });
+                }
+              })
               setHeaders([{
                 Header: '',
                 accessor: 'select'
@@ -116,10 +123,10 @@ function CollectionTable() {
     const formChangeHandler = function(e){
       if (e.target.name.includes('checkbox')) {
         setItemFormValue({...itemFormValue, [e.target.name]: String(e.target.checked)})
-        return null
-      }
+      } else {
       setItemFormValue({...itemFormValue, [e.target.name]: String(e.target.value)});
       console.log(itemFormValue)
+      }
     }
 
     const markdownChangeHandler = function(e, formName){
@@ -143,6 +150,7 @@ function CollectionTable() {
     },[markdownValue])
 
     const updateCollectionData = async function (){
+
       try {
         const request = await fetch('https://mycollection-server.herokuapp.com/api/updatecollection', 
         {

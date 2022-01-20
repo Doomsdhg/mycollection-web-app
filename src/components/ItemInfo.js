@@ -77,7 +77,6 @@ function ItemInfo() {
             <div className="my-3 p-3 bg-body rounded shadow-sm">
             <h1 className="border-bottom pb-2 mb-0">Item data</h1>
             {fieldsArray.map((field, index)=>{
-                console.log(headersArray);
                 return field.name.includes('text')?
                     <div className="d-flex text-muted pt-3">
                         <p className="pb-3 mb-0 small lh-sm border-bottom border-dark border-1">

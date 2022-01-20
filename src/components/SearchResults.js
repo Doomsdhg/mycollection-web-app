@@ -3,7 +3,7 @@ import {useSelector} from 'react-redux';
 import MDEditor from '@uiw/react-md-editor';
 import {useDispatch} from 'react-redux';
 import {useNavigate} from 'react-router-dom';
-import {setCollectionId} from '../store/reducers';
+import {setItemId} from '../store/reducers';
 
 function SearchResults() {
     const navigate = useNavigate();
@@ -38,46 +38,73 @@ function SearchResults() {
         }
       }
 
-      const collectionPageRedirect = async function (e){
+      const itemPageRedirect = async function (e){
         console.log(e.target.parentNode.dataset.id);
-        dispatch(setCollectionId(e.target.parentNode.dataset.id));
-        navigate('/collectionpage')
+        dispatch(setItemId(e.target.parentNode.dataset.id));
+        navigate('/itempage')
         
       }
 
     return (
-        <div className='container' style={{'marginTop': '100px'}}>
-            <div className="my-3 p-3 bg-body rounded shadow-sm">
-              <h1 style={{'display': 'inline'}}>Search results</h1>
-            {collectionsArray && itemsArray?
-            collectionsArray.length !== 0 || itemsArray.length !== 0?
-            collectionsArray.map((collection, index)=>{
+      <div className='container' style={{'marginTop': '100px'}}>
+      <h1>Search results</h1>
+        <div className='d-flex p-2 bd-highlight' style={{'marginTop': '100px', 'margin':'0 auto'}}>
+            
+            <div className="d-inline-flex p-2 bd-highlight" style={{'flex': '1', 'flexDirection': 'column', 'alignItems': 'left'}}>
+              <h2>Items found by seeking in item info</h2>
+            {itemsArray?
+            itemsArray.length !== 0?
+            itemsArray.map((item, index)=>{
                 return (
                 <div className="card" key={index} 
-                    style={{"width": "99%", "marginTop":"20px", 'flexDirection': 'row', 'word-break': 'break-word'}}>
-                      <img src={collection.imageURL?collection.imageURL:noImage} className="card-img-top" alt="..." 
-                      style={{'width': '10%',
-                      'height': '10%', 'maxHeight': '100px', 'maxWidth': '100px', 'marginTop': '20px', 'marginLeft': '20px' }} />
-                      <div className="card-body" data-id={collection._id}>
+                    style={{"marginTop":"20px", 'width': '80%', 'word-break': 'break-word'}}>
+                      <div className="card-body" data-id={item._id}>
                       
-                        <h5 className="card-title" style={{'display': 'inline-block', 'width': '80%'}}>{collection.name}</h5><br/>
+                        <h5 className="card-title" style={{'display': 'inline-block', 'width': '80%'}}>{item.name}</h5><br/>
                         <p className="card-text" style={{'display': 'inline-block'}}>
                         <MDEditor.Markdown 
-                          source={collection.description} 
+                          source={item.description} 
                         /></p><br/>
-                        <a className="btn btn-primary" onClick={collectionPageRedirect}>Open collection</a>
+                        <a className="btn btn-primary" onClick={itemPageRedirect}>Open item</a>
                         
                       </div>
                     </div>)
             })
             : <div style={{
-                'position': 'absolute',
                 'marginTop': '70px',
-                'textAlign': 'center',
-                'width': '85vw'}}><h1>No results</h1></div>
+                'textAlign': 'center'}}><h1>No results</h1></div>
             : null
             }
             </div>
+            
+            <div className="d-inline-flex p-2 bd-highlight" style={{'flex': '1', 'flexDirection': 'column', 'alignItems': 'left'}}>
+            <h2>Items found by seeking in collection info</h2>
+            {collectionsArray?
+            collectionsArray.length !== 0?
+            collectionsArray.map((item, index)=>{
+              if (!item) return null
+                return (
+                <div className="card" key={index} 
+                    style={{"marginTop":"20px", 'width': '80%', 'word-break': 'break-word'}}>
+                      <div className="card-body" data-id={item._id}>
+                      
+                        <h5 className="card-title" style={{'display': 'inline-block', 'width': '80%'}}>{item.name}</h5><br/>
+                        <p className="card-text" style={{'display': 'inline-block'}}>
+                        <MDEditor.Markdown 
+                          source={item.description} 
+                        /></p><br/>
+                        <a className="btn btn-primary" onClick={itemPageRedirect}>Open item</a>
+                        
+                      </div>
+                    </div>)
+            })
+            : <div style={{
+                'marginTop': '70px',
+                'textAlign': 'center'}}><h1>No results</h1></div>
+            : null
+            }
+            </div>
+        </div>
         </div>
     )
 }
