@@ -9,6 +9,7 @@ import { useDispatch } from 'react-redux';
 import {setItemId} from '../store/reducers';
 
 function CollectionTable() {
+    const [selectedItems, setSelectedItems] = useState([]);
     const [markdownValue, setMarkdownValue] = useState();
     const [collectionFormValue, setCollectionFormValue] = useState({});
     const [collectionDataDisabled, setCollectionFormsDisabled] = useState(true);
@@ -31,22 +32,21 @@ function CollectionTable() {
 
     useEffect(()=>{
       console.log(userData.collectionId)
-      setItemFormValue({ ...itemFormValue,
-        collectionRef: userData.collectionId,
-      });
-      
       fetchCollectionData();
-      fetchCollectionTable();
-      
-    },[])
+    }, [])
     
     const toggleForms = function(){
+      setItemFormValue({...itemFormValue, 
+        collectionRef: userData.collectionId,
+        creator: userData.userId,
+      })
       setDisplayForms(current => !current)
       console.log(itemFormValue);
 
     }
 
     const fetchCollectionData = async function(){
+      console.log(itemFormValue)
       try {
         const request = await fetch('https://mycollection-server.herokuapp.com/api/getcollectiondata', 
           {
@@ -62,14 +62,35 @@ function CollectionTable() {
           console.log(response);
           setCollectionData(response);
           setMarkdownValue(response.description);
+          console.log(userData.userId === response.creator);
+          if (userData.userId === response.creator) {
+            setHeaders([{
+              Header: 'select',
+              accessor: 'select'
+            }])
+          }
+          fetchCollectionTable()
       } catch (error) {
         console.log(error);
+      }
+    }
+
+    const checkPermission = function(){
+      if (userData.userId === collectionData.creator) {
+        setHeaders([{
+          Header: 'select',
+          accessor: 'select'
+        }])
       }
     }
 
     const collectionDataChangeHandler = async function(e){
       setCollectionFormValue({...collectionFormValue, [e.target.name]: e.target.value});
       console.log(collectionFormValue)
+    }
+
+    const clearMarkdown = function () {
+      setMarkdownValue('')
     }
 
     const fetchCollectionTable = async function(){
@@ -93,15 +114,23 @@ function CollectionTable() {
                   });
                 }
               })
-              setHeaders([{
-                Header: '',
-                accessor: 'select'
-              } , 
+              console.log(response.headers)
+              
+              setHeaders(prev => [
+              ...prev,
               ...response.headers, 
               {
                 Header: 'Item page',
                 accessor: 'itemRef'
               }])
+              response.headers.map((header)=>{
+                console.log(header);
+                setItemFormValue((prev) => {return {...prev, 
+                  [header.fieldType]: '',
+                }})
+              })
+              
+              
               setItems(response.items)
           } catch (error) {
             console.log(error);
@@ -121,11 +150,11 @@ function CollectionTable() {
       } = table;
       
     const formChangeHandler = function(e){
+      console.log(itemFormValue);
       if (e.target.name.includes('checkbox')) {
         setItemFormValue({...itemFormValue, [e.target.name]: String(e.target.checked)})
       } else {
-      setItemFormValue({...itemFormValue, [e.target.name]: String(e.target.value)});
-      console.log(itemFormValue)
+        setItemFormValue({...itemFormValue, [e.target.name]: String(e.target.value)});
       }
     }
 
@@ -194,6 +223,19 @@ function CollectionTable() {
       
     }
 
+    const selectHandler = function(e){
+      console.log(selectedItems);
+      if (e.target.checked) {
+        setSelectedItems((prev)=>{return prev.concat(e.target.dataset.id)})
+      } else {
+        const indexOfItem = selectedItems.indexOf(e.target.dataset.id);
+        setSelectedItems((prev)=>{ 
+          prev.splice(indexOfItem, 1)
+          return prev
+        })
+      }
+    }
+
     const uploadItem = async function(){
         console.log(itemFormValue);
         
@@ -208,14 +250,15 @@ function CollectionTable() {
           });
           const response = await request.json();
           console.log(response.message);
+          await checkPermission()
           setTimeout(()=>{
             toast('item added successfully!');
           },100)
-  
+          fetchCollectionTable()
         } catch (error) {
           console.error(error)
         }
-        fetchCollectionTable()
+        
     }
 
     const goToItemPage = function (e) {
@@ -224,27 +267,50 @@ function CollectionTable() {
       navigate('/itempage');
     }
 
-    const getFormType = function (string) {
-      const formType = string.substring(0, string.length - 1);
-      switch (formType) {
-        case 'numberField':
-          return 'number'
-        case 'stringField':
-          return 'string'
-        case 'textField':
-          return 'text'
-        case 'checkboxField':
-          return 'checkbox'
-        case 'dateField':
-          return 'date'
+
+    const uncheckSelectedItems = function(){
+      const cells = document.querySelectorAll('.checkbox-cell');
+      cells.forEach((checkbox)=>{
+        checkbox.checked = false;
+      })
+      console.log(cells);
+    }
+
+    const deleteItems = async function(){
+      try {
+        const request = await fetch('https://mycollection-server.herokuapp.com/api/deleteitems', 
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({data: [...selectedItems]})
+        });
+        const response = await request.json();
+        console.log(response);
+        await checkPermission()
+        setTimeout(()=>{
+          toast('item(s) deleted successfully!');
+        },100)
+        uncheckSelectedItems()
+        setSelectedItems([]);
+        fetchCollectionTable()
+      } catch (error) {
+        console.error(error)
       }
+      
     }
 
     return (
       <>
         <div className='container' style={{'marginTop': '100px'}}> 
+        {userData.userId === collectionData.creator ?
+        <>
           <button type="button" className="btn btn-primary mb-3" onClick={toggleCollectionDataForms}>Edit collection data</button>
           <button type="button" className="btn btn-danger ms-3 mb-3" onClick={deleteCollection}>Delete collection</button>
+        </>
+          : null
+        }
           <div className="my-3 p-3 bg-body rounded shadow-sm" style={collectionDataDisabled?null:{'display':'none'}}>
             <h1 className="border-bottom pb-2 mb-0">Collection data</h1>
             <div className="d-flex text-muted pt-3">
@@ -287,6 +353,7 @@ function CollectionTable() {
                 value={markdownValue}
                 onChange={setMarkdownValue}
                 name='description'
+                id='description'
               />
               
 
@@ -305,9 +372,13 @@ function CollectionTable() {
                 <option selected={collectionData.topic==='Other'?true:false} value="Other">Other</option>
               </select>
             </div>
-            <button type="button" className="btn btn-success mb-3" onClick={updateCollectionData}>Save edited collection data</button>
+            <button type="button" className="btn btn-success mb-3" onClick={updateCollectionData}>Save collection info changes</button>
           </div>
           
+          { userData.userId === collectionData.creator && selectedItems.length !== 0?
+          <button type="button" className="btn btn-danger mb-3 mt-3" onClick={deleteItems}>Delete selected items</button>
+          : null
+          }
           <BTable striped bordered hover size="sm" {...getTableProps()}>
             <thead>
               {headerGroups.map(headerGroup => (
@@ -327,11 +398,12 @@ function CollectionTable() {
                 return (
                   <tr {...row.getRowProps()}>
                     {row.cells.map((cell, index) => {
-                      if (index === 0) {
+                      console.log();
+                      if (cell.column.Header === 'select') {
                         return (
                           <td {...cell.getCellProps()}>
                           {cell.render('Cell')}
-                          <input type='checkbox'/>
+                          <input type='checkbox' className='checkbox-cell' data-id={cell.row.original._id} onChange={selectHandler} />
                         </td>
                         )
                       } 
@@ -365,12 +437,16 @@ function CollectionTable() {
               })}
             </tbody>
           </BTable>
+          {userData.userId === collectionData.creator ?
           <button type="button" className="btn btn-primary mb-3" onClick={toggleForms}
               style={displayForms?{'display': 'inline', 'backgroundColor': 'grey', 'border': 'none'}
               :{'display': 'inline', 'backgroundColor': '#4CAF50', 'border': 'none'}}>
                 {displayForms?'Close console':'Open console of item adding'}</button>
+            : null
+          }
           <div className={displayForms?'wrapper':'display-none'}>
             {headers.map((header, index)=>{
+              
               if (index === 0 || index === 1 || header.Header === 'Item page') return null
               const type = header.fieldType.substring(0, header.fieldType.length - 6);
               

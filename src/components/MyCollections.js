@@ -57,9 +57,9 @@ export default function MyCollections() {
                   return (
                     <div className="card" key={index} 
                     style={{"width": "99%", "marginTop":"20px", 'flexDirection': 'row', 'word-break': 'break-word'}}>
-                      <img src={collection.imageURL?collection.imageURL:noImage} className="card-img-top" alt="..." style={{'width': '10%',
-                      'height': '10%', 'maxHeight': '100px', 'maxWidth': '100px', 'marginTop': '20px', 'marginLeft': '20px' 
-                      }} />
+                      <img src={collection.imageURL?collection.imageURL:noImage} className="card-img-top" alt="..." 
+                      style={{'width': '10%',
+                      'height': '10%', 'maxHeight': '100px', 'maxWidth': '100px', 'marginTop': '20px', 'marginLeft': '20px' }} />
                       <div className="card-body" data-id={collection._id}>
                       
                         <h5 className="card-title" style={{'display': 'inline-block', 'width': '80%'}}>{collection.name}</h5><br/>
