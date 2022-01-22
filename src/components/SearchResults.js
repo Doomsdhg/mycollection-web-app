@@ -60,7 +60,7 @@ function SearchResults() {
                     style={{"marginTop":"20px", 'width': '80%', 'word-break': 'break-word'}}>
                       <div className="card-body" data-id={item._id}>
                       
-                        <h5 className="card-title" style={{'display': 'inline-block', 'width': '80%'}}>{item.name}</h5><br/>
+                        <h5 className="card-title" style={{'display': 'inline-block', 'width': '80%'}}>{item.name?item.name:'no name'}</h5><br/>
                         <p className="card-text" style={{'display': 'inline-block'}}>
                         <MDEditor.Markdown 
                           source={item.description} 

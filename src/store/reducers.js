@@ -38,6 +38,12 @@ function userStateReducer(state = 0, action){
                 query: action.payload.query
             }
         }
+        case 'IMAGE_UPLOAD' :{
+            return {
+                ...state,
+                imageURL: action.payload.imageURL
+            }
+        }
         default:
             return state
     }
@@ -57,6 +63,10 @@ export const setItemId = (itemData) => ({type: 'ITEM_RENDER', payload: {
 
 export const setsearchQuery = (searchQuery) => ({type: 'SEARCH', payload: {
     query: searchQuery
+}})
+
+export const setImageURL = (imageURL) => ({type: 'IMAGE_UPLOAD', payload: {
+    imageURL: imageURL
 }})
 
 export const setUserData = (userData) => ({type: 'LOGIN', payload: {

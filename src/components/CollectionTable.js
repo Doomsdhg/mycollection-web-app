@@ -263,7 +263,6 @@ function CollectionTable() {
 
     const goToItemPage = function (e) {
       dispatch(setItemId(e.target.dataset.id));
-      console.log(userData);
       navigate('/itempage');
     }
 

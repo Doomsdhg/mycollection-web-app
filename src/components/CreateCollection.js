@@ -3,9 +3,11 @@ import {useDispatch, useSelector} from 'react-redux';
 import {useNavigate} from 'react-router-dom';
 import { ToastContainer, toast } from 'react-toastify';
 import MDEditor from '@uiw/react-md-editor';
+import {setImageURL} from '../store/reducers'
 
 function CreateCollection() {
-  const [markdownValue, setMarkdownValue] = useState();
+    const dispatch = useDispatch();
+    const [markdownValue, setMarkdownValue] = useState();
     const navigate = useNavigate();
     const userData = useSelector(state => state.userData);
     const [formValue, setFormValue] = useState({});
@@ -68,12 +70,13 @@ function CreateCollection() {
       }
     }
 
-    const submitHandler = function (e) {
+    const submitHandler = async function (e) {
       
       if (!preview) {
         uploadCollection()
       } else {
-        uploadImage(preview)
+        await uploadImage(preview);
+        setTimeout(()=>{uploadCollection()})
       }
     }
 
@@ -90,18 +93,20 @@ function CreateCollection() {
           const response = await request.json();
           console.log(response);
           console.log(userData.email);
+          const imageURL = response.url;
+          dispatch(setImageURL(imageURL))
           
-          if (response.url) {
-            setFormValue({...formValue, imageURL: response.url});
-            } 
-          uploadCollection();
+          
+          console.log(formValue)
+          
+            
+          
         } catch (error) {
           console.error(error)
         }
     }
 
     const uploadCollection = async function(){
-      console.log(formValue)
       try {
         const request = await fetch('https://mycollection-server.herokuapp.com/api/uploadcollection', 
         {
@@ -109,10 +114,11 @@ function CreateCollection() {
           headers: {
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify({data: formValue})
+          body: JSON.stringify({data: {...formValue, imageURL: userData.imageURL}})
         });
         const response = await request.json();
         console.log(response.message);
+        dispatch(setImageURL(''))
         navigate('/mycollections');
         setTimeout(()=>{
           toast('Collection created successfully!');

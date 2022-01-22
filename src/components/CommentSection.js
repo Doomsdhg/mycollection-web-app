@@ -4,19 +4,20 @@ import {useSelector} from 'react-redux';
 function CommentSection() {
     const userData = useSelector(state => state.userData);
     const [commentFormValue, setCommentFormValue] = useState();
-    const [comments, setComments] = useState();
+    const [comments, setComments] = useState([]);
     const formChangeHandler = function (e) {
         setCommentFormValue(e.target.value);
-        console.log(commentFormValue)
     }
 
     useEffect(()=>{
+      getComments()
+      setInterval(()=>{
         getComments()
+      }, 3000)
     },[])
 
     const getComments = async function (){
         try {
-            console.log(userData)
           const request = await fetch('https://mycollection-server.herokuapp.com/api/getcomments', 
             {
               method: 'POST',
@@ -28,7 +29,6 @@ function CommentSection() {
               }})
             })
             const response = await request.json();
-            console.log(response);
             setComments(response);
         } catch (error) {
           console.log(error);
@@ -71,10 +71,10 @@ function CommentSection() {
         </form>
         <div className='container'>
             <h2>Comments:</h2>
-        {comments?
+        {comments.length !== 0?
         comments.map((comment, index)=>{
             return (
-            <div class="card mt-1" style={{"width": "60vw"}}>
+            <div class="card mt-1 mb-3" style={{"width": "50vw"}}>
               <div class="card-body">
                 <h5 class="card-title" style={{"textDecoration": "underline"}}>{comment.userName}</h5>
                 <p class="card-text">{comment.text}</p>
@@ -82,7 +82,7 @@ function CommentSection() {
             </div>
             )
         })
-        :<h3>No comments yet</h3>}
+        :<h4>No comments yet</h4>}
         </div>
     </div>
     
