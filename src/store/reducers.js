@@ -8,7 +8,8 @@ function userStateReducer(state = 0, action){
                 jwt: action.payload.jwt,
                 userId: action.payload.userId,
                 isAuthenticated: true,
-                email: action.payload.email
+                email: action.payload.email,
+                admin: action.payload.admin
             }
         }
         case 'LOGOUT':{
@@ -17,7 +18,8 @@ function userStateReducer(state = 0, action){
                 jwt: action.payload.jwt,
                 userId: action.payload.userId,
                 isAuthenticated: false,
-                email: action.payload.email
+                email: action.payload.email,
+                admin: false
             }
         }
         case 'COLLECTION_RENDER':{
@@ -44,6 +46,12 @@ function userStateReducer(state = 0, action){
                 imageURL: action.payload.imageURL
             }
         }
+        case 'PROFILE_RENDER' :{
+            return {
+                ...state,
+                profileId: action.payload.profileId
+            }
+        }
         default:
             return state
     }
@@ -55,6 +63,10 @@ export const rootReducer = combineReducers({
 
 export const setCollectionId = (collectionData) => ({type: 'COLLECTION_RENDER', payload: {
     collectionId: collectionData
+}})
+
+export const setProfileId = (userId) => ({type: 'PROFILE_RENDER', payload: {
+    profileId: userId
 }})
 
 export const setItemId = (itemData) => ({type: 'ITEM_RENDER', payload: {
@@ -73,7 +85,8 @@ export const setUserData = (userData) => ({type: 'LOGIN', payload: {
     jwt: userData.token,
     userId: userData.userId,
     isAuthenticated: true,
-    email: userData.email
+    email: userData.email,
+    admin: userData.admin
 }})
 
 export const deleteUserData = () => ({type: 'LOGOUT', payload: {

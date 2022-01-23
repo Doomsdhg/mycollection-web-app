@@ -39,6 +39,12 @@ function CreateCollection() {
     }
 
     useEffect(()=>{
+      toast('wait for image to upload')
+      uploadImage(preview);
+    },[preview])
+
+
+    useEffect(()=>{
       setFormValue({...formValue, description: markdownValue});
       console.log(markdownValue);
     },[markdownValue])
@@ -70,14 +76,11 @@ function CreateCollection() {
       }
     }
 
-    const submitHandler = async function (e) {
+    const submitHandler = function (e) {
       
-      if (!preview) {
-        uploadCollection()
-      } else {
-        await uploadImage(preview);
-        setTimeout(()=>{uploadCollection()})
-      }
+      
+      uploadCollection()
+      
     }
 
     const uploadImage = async function(image){
@@ -94,12 +97,12 @@ function CreateCollection() {
           console.log(response);
           console.log(userData.email);
           const imageURL = response.url;
-          dispatch(setImageURL(imageURL))
+          await dispatch(setImageURL(imageURL))
+          console.log(imageURL);
+          
+          toast('image successfully uploaded to server!');
           
           
-          console.log(formValue)
-          
-            
           
         } catch (error) {
           console.error(error)
@@ -107,6 +110,7 @@ function CreateCollection() {
     }
 
     const uploadCollection = async function(){
+      await userData.imageURL;
       try {
         const request = await fetch('https://mycollection-server.herokuapp.com/api/uploadcollection', 
         {
