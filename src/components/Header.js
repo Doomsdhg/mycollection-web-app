@@ -19,7 +19,9 @@ function Header(props) {
     const navbar = document.querySelector('#navbar');
     navbar.classList.toggle('display-none');
   };
-
+  const adminPanelRedirect = function(){
+    navigate('/adminpage')
+  }
   
 
     return (
@@ -60,6 +62,12 @@ function Header(props) {
                         </>
                     )
                   }})()}
+                  {userData.admin ? 
+                    <li className="nav-item">
+                      <button className="btn btn-warning ms-3 adm" href="/adminpanel" onClick={adminPanelRedirect}>Admin panel</button>
+                    </li>
+                    :null
+                  }
               </ul>
               <form className="d-flex">
                 <input className="form-control me-2" type="search" placeholder="Search" aria-label="Search" 

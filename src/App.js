@@ -9,7 +9,7 @@ import {useSelector} from 'react-redux';
 
 function App() {
   const userData = useSelector(state => state.userData);
-  const routes = useRoutes(userData.isAuthenticated);
+  const routes = useRoutes(userData.isAuthenticated, userData.admin);
   return (
     
       <BrowserRouter>

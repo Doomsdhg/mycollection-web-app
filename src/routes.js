@@ -8,8 +8,9 @@ import CreateCollectionPage from './pages/CreateCollectionPage';
 import CollectionPage from './pages/CollectionPage';
 import ItemPage from './pages/ItemPage';
 import SearchPage from './pages/SearchPage';
+import AdminPage from './pages/AdminPage'
 
-export const useRoutes = (isAuthenticated) => {
+export const useRoutes = (isAuthenticated, admin) => {
     if (isAuthenticated) {
         return (
             <Routes>
@@ -18,6 +19,10 @@ export const useRoutes = (isAuthenticated) => {
                 <Route path="/createcollection" element={<CreateCollectionPage />} />
                 <Route path="/collectionpage" element={<CollectionPage />} />
                 <Route path="/itempage" element={<ItemPage />} />
+                {admin?
+                <Route path="/adminpage" element={<AdminPage />} />
+                : null
+                }
                 <Route path="/search" element={<SearchPage />} />
             </Routes>
         )

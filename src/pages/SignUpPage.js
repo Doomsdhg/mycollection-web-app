@@ -9,7 +9,8 @@ function SignUpPage() {
       email: '',
       username: '',
       password: '',
-      password2: ''
+      password2: '',
+      admin: false
     });
     const [error, setError] = useState(null);
     const {login} = useAuthHooks();
@@ -23,7 +24,7 @@ function SignUpPage() {
   
     const clickHandler = async () => {
       try {
-        const response = await fetch('http://localhost:8080/api/register', 
+        const response = await fetch('https://mycollection-server.herokuapp.com/api/register', 
         {
           method: 'POST',
           headers: {

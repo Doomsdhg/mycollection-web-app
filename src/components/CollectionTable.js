@@ -1,5 +1,5 @@
 import React, {useEffect, useState, useMemo} from 'react';
-import {useTable, useSortBy} from 'react-table';
+import {useTable, useSortBy, useFilters, useGlobalFilter, useAsyncDebounce} from 'react-table';
 import {useSelector} from 'react-redux';
 import BTable from 'react-bootstrap/Table';
 import { ToastContainer, toast } from 'react-toastify';
@@ -7,6 +7,8 @@ import {useNavigate} from 'react-router-dom';
 import MDEditor from '@uiw/react-md-editor';
 import { useDispatch } from 'react-redux';
 import {setItemId} from '../store/reducers';
+import {TableRenderer} from './table';
+import {GlobalFilter} from './table';
 
 function CollectionTable() {
     const [selectedItems, setSelectedItems] = useState([]);
@@ -139,7 +141,10 @@ function CollectionTable() {
     
     const table = useTable(
       {columns, data},
-      useSortBy);
+      
+      useFilters,
+      useGlobalFilter,
+      useSortBy,);
     
     const {
         getTableProps,
@@ -390,6 +395,20 @@ function CollectionTable() {
                   ))}
                 </tr>
               ))}
+              <tr>
+                <th
+                  colSpan={table.visibleColumns.length}
+                  style={{
+                    textAlign: 'left',
+                  }}
+                >
+                  <GlobalFilter
+                    preGlobalFilteredRows={table.preGlobalFilteredRows}
+                    globalFilter={table.state.globalFilter}
+                    setGlobalFilter={table.setGlobalFilter}
+                  />
+                </th>
+              </tr>
             </thead>
             <tbody>
               {rows.map((row, i) => {

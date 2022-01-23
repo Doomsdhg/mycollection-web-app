@@ -3,12 +3,12 @@ import {useNavigate} from 'react-router-dom';
 import {useSelector} from 'react-redux';
 import { ToastContainer } from 'react-toastify';
 import { useDispatch } from 'react-redux';
-import {setCollectionId} from '../store/reducers';
+import {setCollectionId, setProfileId} from '../store/reducers';
 import MDEditor from '@uiw/react-md-editor';
 
 
 export default function MyCollections() {
-
+  const [owner, setOwner] = useState();
   const dispatch = useDispatch();
   const userData = useSelector(state => state.userData);
   const navigate = useNavigate();
@@ -19,19 +19,21 @@ export default function MyCollections() {
   }
   const fetchCollections = async function(){
     try {
-      const request = await fetch('https://mycollection-server.herokuapp.com/api/fetchcollections', 
+      const request = await fetch('http://localhost:8080/api/fetchcollections', 
         {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({data: {
-            userId: userData.userId
+            userId: userData.profileId?userData.profileId:userData.userId
           }})
         });
         const response = await request.json();
         console.log(response);
-        setCollections(response);
+        setCollections(response.collections);
+        setOwner(response.owner);
+        dispatch(setProfileId(''));
     } catch (error) {
       console.log(error);
     }
@@ -48,7 +50,7 @@ export default function MyCollections() {
     return (
         <div className='container' style={{'marginTop': '100px'}}>  
               <div className="my-3 p-3 bg-body rounded shadow-sm">
-              <h1 style={{'display': 'inline'}}>Your collections</h1>
+              <h1 style={{'display': 'inline'}}>{owner && userData.userId !== owner.id ? owner.name + "'s":'Your'} collections</h1>
                 <button type="button" className="btn btn-primary" onClick={routeChange}
                 style={{'display': 'inline', 'marginLeft': '20px', 'marginTop': '-20px', 'backgroundColor': '#4CAF50', 'border': 'none'}}>
                   + Create new collection</button>

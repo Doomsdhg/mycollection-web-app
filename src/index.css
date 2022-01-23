@@ -19,16 +19,22 @@ td {
 }
 
 table {
-  border: 1px solid;
-  width: 200px;
+  
   word-break: break-word;
+
 }
 
 tr {
   height: 50px;
 }
 
+.table-filter{
+  width: 30%;
+  height: 50px;
+}
+
 th {
+
   text-align: center;
   /* center checkbox horizontally */
   vertical-align: middle;
@@ -74,7 +80,10 @@ code {
   display: none
 }
 
-
+.adm {
+  margin-top: 8px;
+  margin-left: 0 !important;
+}
 
 }
 

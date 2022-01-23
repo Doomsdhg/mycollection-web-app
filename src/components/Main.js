@@ -1,7 +1,7 @@
 import React, {useState, useEffect} from 'react';
 import { TagCloud } from 'react-tagcloud';
 import {setsearchQuery, setItemId, setCollectionId} from '../store/reducers';
-import {useDispatch} from 'react-redux';
+import {useDispatch, useSelector} from 'react-redux';
 import {useNavigate} from 'react-router-dom';
 
 function Main() {

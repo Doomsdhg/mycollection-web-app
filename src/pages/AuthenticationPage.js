@@ -34,6 +34,9 @@ function AuthenticationPage() {
       if (!response.ok){
         throw new Error(data.message);
       }
+      if (response.blocked) {
+        
+      }
       login(data, dispatch);
       console.log(userData);
       } catch (e) {
