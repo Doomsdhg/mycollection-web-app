@@ -9,11 +9,14 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
+.tag-cloud-tag:hover {
+  cursor: pointer; 
+}
+
+
 td {
   text-align: center;
-  /* center checkbox horizontally */
   vertical-align: middle;
-  /* center checkbox vertically */
   overflow: auto;
 
 }
@@ -36,7 +39,6 @@ tr {
 th {
 
   text-align: center;
-  /* center checkbox horizontally */
   vertical-align: middle;
 }
 

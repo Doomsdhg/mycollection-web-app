@@ -2,28 +2,29 @@ import React, {useState, useEffect, useMemo} from 'react';
 import {useTable} from 'react-table';
 import BTable from 'react-bootstrap/Table';
 import {useNavigate} from 'react-router-dom';
-import {useDispatch} from 'react-redux';
+import {useDispatch, useSelector} from 'react-redux';
 import {setProfileId} from '../store/reducers';
 
 function AdminPanel() {
+    const userData = useSelector(state=>state.userData);
     const dispatch = useDispatch();
     const navigate = useNavigate();
     const [users, setUsers] = useState([]);
     const [headers, setHeaders] = useState([
         {
-            Header: 'id',
+            Header: userData.language==='en'?'id':'идентифиактор',
             accessor: 'id'
         },
         {
-            Header: 'username',
+            Header: userData.language==='en'?'username':'имя',
             accessor: 'username'
         },
         {
-            Header: 'email',
+            Header: userData.language==='en'?'email':'почта',
             accessor: 'email'
         },
         {
-            Header: 'user actions',
+            Header: userData.language==='en'?'actions':'действия',
             accessor: 'useractions'
         }
     ]);
@@ -48,6 +49,7 @@ function AdminPanel() {
         } = table;
 
     useEffect(()=>{
+        console.log(userData.language);
         fetchUsers();
     },[])
 
@@ -113,11 +115,11 @@ function AdminPanel() {
                             <td {...cell.getCellProps()}>
                                 {cell.render('Cell')}
                                 <div class="btn-group" role="group" aria-label="Basic mixed styles example">
-                                  <button type="button" class="btn btn-danger" onClick={e=>changeUser(row.original.id, 'delete')}>delete</button>
-                                  <button type="button" class="btn btn-warning" onClick={e=>{changeUser(row.values.id, 'block')}}>{row.original.blocked?'unblock':'block'}</button>
+                                  <button type="button" class="btn btn-danger" onClick={e=>changeUser(row.original.id, 'delete')}>{userData.language==='en'?'delete':'удалить'}</button>
+                                  <button type="button" class="btn btn-warning" onClick={e=>{changeUser(row.values.id, 'block')}}>{userData.language==='en'?row.original.blocked?'unblock':'block':row.original.blocked?'разблокировать':'заблокировать'}</button>
                                   <button type="button" class="btn btn-success" 
-                                  onClick={e=>changeUser(row.values.id, 'promote')}>{row.original.admin?'demote to regular user':'promote to admin'}</button>
-                                  <button type="button" class="btn btn-primary" onClick={e=>userPageRedirect(row.original.id)}>open page</button>
+                                  onClick={e=>changeUser(row.values.id, 'promote')}>{userData.language==='en'?row.original.admin?'demote to regular user':'promote to admin':row.original.admin?'сделать обычным пользователем':'сделать администратором'}</button>
+                                  <button type="button" class="btn btn-primary" onClick={e=>userPageRedirect(row.original.id)}>{userData.language==='en'?'open':'открыть'}</button>
                                 </div>
                             </td>
                         )

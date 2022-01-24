@@ -3,7 +3,8 @@ import {useDispatch, useSelector} from 'react-redux';
 import {useNavigate} from 'react-router-dom';
 import { ToastContainer, toast } from 'react-toastify';
 import MDEditor from '@uiw/react-md-editor';
-import {setImageURL} from '../store/reducers'
+import {setImageURL} from '../store/reducers';
+import Autosuggest from 'react-autosuggest';
 
 function CreateCollection() {
     const dispatch = useDispatch();
@@ -11,7 +12,6 @@ function CreateCollection() {
     const navigate = useNavigate();
     const userData = useSelector(state => state.userData);
     const [formValue, setFormValue] = useState({});
-    const [preview, setPreview] = useState();
     const [error, setError] = useState();
     const [itemFields, setItemFields] = useState([]);
     const [drag, setDrag] = useState(false);
@@ -31,18 +31,14 @@ function CreateCollection() {
         const reader = new FileReader();
         reader.readAsDataURL(files[0]);
         reader.onloadend = ()=>{
-          setPreview(reader.result);
-          console.log(reader.result)
+          toast('wait for image to upload')
+          uploadImage(reader.result);
         }
         
         setDrag(false);
     }
 
-    useEffect(()=>{
-      toast('wait for image to upload')
-      uploadImage(preview);
-    },[preview])
-
+    
 
     useEffect(()=>{
       setFormValue({...formValue, description: markdownValue});
@@ -50,7 +46,8 @@ function CreateCollection() {
     },[markdownValue])
 
     useEffect(()=>{
-      setFormValue({creator: userData.userId});
+      console.log(userData);
+      setFormValue({creator: userData.profileId});
     },[]);
 
 
@@ -172,8 +169,8 @@ function CreateCollection() {
             </div>
 
             
-              {preview?
-              <img src={preview} alt='' style={{'height':'100px'}}/>:
+              {userData.imageURL?
+              <img src={userData.imageURL} alt='' style={{'height':'100px'}}/>:
               <div className="drag-n-drop-area">
                 {drag?
                 <div className ="drag-n-drop hovered"

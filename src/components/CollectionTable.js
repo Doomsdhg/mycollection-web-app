@@ -9,8 +9,14 @@ import { useDispatch } from 'react-redux';
 import {setItemId} from '../store/reducers';
 import {TableRenderer} from './table';
 import {GlobalFilter} from './table';
+import Autosuggest from 'react-autosuggest';
+import autocomplete from 'autocompleter';
+import TextInput from 'react-autocomplete-input';
+import 'react-autocomplete-input/dist/bundle.css';
+
 
 function CollectionTable() {
+    const [tags, setTags] = useState();
     const [selectedItems, setSelectedItems] = useState([]);
     const [markdownValue, setMarkdownValue] = useState();
     const [collectionFormValue, setCollectionFormValue] = useState({});
@@ -35,6 +41,7 @@ function CollectionTable() {
     useEffect(()=>{
       console.log(userData.collectionId)
       fetchCollectionData();
+      fetchTags();
     }, [])
     
     const toggleForms = function(){
@@ -45,6 +52,17 @@ function CollectionTable() {
       setDisplayForms(current => !current)
       console.log(itemFormValue);
 
+    }
+
+    const fetchTags = async function(){
+      try {
+        const request = await fetch('https://mycollection-server.herokuapp.com/api/gettags')
+        const response = await request.json();
+        console.log(response)
+        setTags(Object.keys(response));
+      } catch (error) {
+        console.log(error);
+      }
     }
 
     const fetchCollectionData = async function(){
@@ -467,7 +485,14 @@ function CollectionTable() {
               
               if (index === 0 || index === 1 || header.Header === 'Item page') return null
               const type = header.fieldType.substring(0, header.fieldType.length - 6);
-              
+              if(header.Header === 'tags') {
+                return (
+                  <div className="mb-3 form" >
+                    <span className="d-block" id="basic-addon1">{header.Header}</span>
+                    <TextInput class='form-control' key={index} trigger={["#"]} options={{"#": tags}}/>
+                  </div>
+                )
+              }
               if (type === 'checkbox') {
                 return (
                   <div className="mb-3 form" key={index}>
