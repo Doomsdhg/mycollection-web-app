@@ -20,7 +20,7 @@ function SearchResults() {
         try {
           console.log(userData.query);
             console.log('trying')
-          const request = await fetch('http://localhost:8080/api/search', 
+          const request = await fetch('https://mycollection-server.herokuapp.com/api/search', 
             {
               method: 'POST',
               headers: {

@@ -19,7 +19,7 @@ export default function MyCollections() {
   }
   const fetchCollections = async function(){
     try {
-      const request = await fetch('http://localhost:8080/api/fetchcollections', 
+      const request = await fetch('https://mycollection-server.herokuapp.com/api/fetchcollections', 
         {
           method: 'POST',
           headers: {
