@@ -15,10 +15,13 @@ import storage from 'redux-persist/lib/storage';
 import {configureStore} from '@reduxjs/toolkit';
 
 const initialState = {
+  userData: {
     jwt: '',
     userId: '',
     isAuthenticated: false,
-    email: ''
+    email: '',
+    language: 'en',
+  }
 }
 
 const persistConfig = {
@@ -36,6 +39,7 @@ export const store = configureStore({
         ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER],
       },
     }),
+    preloadedState: initialState,
 })
 
 export const persistor = persistStore(store);

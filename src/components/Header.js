@@ -2,7 +2,7 @@ import React, {useEffect, useState} from 'react';
 import {useSelector, useDispatch} from 'react-redux';
 import {useAuthHooks} from '../hooks/authHooks.js';
 import {useNavigate} from 'react-router-dom';
-import {setsearchQuery} from '../store/reducers';
+import {setSearchQuery, setProfileId, setLanguage} from '../store/reducers';
 
 
 function Header(props) {
@@ -22,7 +22,16 @@ function Header(props) {
   const adminPanelRedirect = function(){
     navigate('/adminpage')
   }
+
+  const myCollectionsRedirect = function(){
+    dispatch(setProfileId(userData.userId))
+  }
   
+  const changeLanguage = function(){
+    userData.language === 'en'?
+    dispatch(setLanguage('ru')):
+    dispatch(setLanguage('en'))
+  }
 
     return (
         <nav className="navbar navbar-expand-lg fixed-top navbar-dark bg-dark" aria-label="Main navigation">
@@ -43,7 +52,7 @@ function Header(props) {
                     return (
                       <>
                       <li className="nav-item">
-                        <a className="nav-link" href="/mycollections">My collections</a>
+                        <a className="nav-link" href='/mycollections' onClick={myCollectionsRedirect}>My collections</a>
                       </li>
                       <li className="nav-item" >
                       <button type="button" className="btn btn-secondary" onClick={clickHandler}>Log out</button>
@@ -68,6 +77,9 @@ function Header(props) {
                     </li>
                     :null
                   }
+                  <li className="nav-item" >
+                    <button type="button" className="btn btn-success ms-3" onClick={changeLanguage}>{userData.language === 'en'?'lang: EN | change' : 'язык: РУ | сменить'}</button>
+                  </li>
               </ul>
               <form className="d-flex">
                 <input className="form-control me-2" type="search" placeholder="Search" aria-label="Search" 
@@ -76,7 +88,7 @@ function Header(props) {
                   }} />
                 <button className="btn btn-outline-success" type="submit" 
                   onClick={(e)=>{
-                  dispatch(setsearchQuery(searchFormValue));
+                  dispatch(setSearchQuery(searchFormValue));
                   navigate('/search')
                   }}>Search</button>
               </form>

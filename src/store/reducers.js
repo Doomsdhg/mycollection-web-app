@@ -1,4 +1,5 @@
 import {combineReducers} from 'redux';
+import { REHYDRATE } from 'redux-persist';
 
 function userStateReducer(state = 0, action){
     switch (action.type) {
@@ -52,6 +53,12 @@ function userStateReducer(state = 0, action){
                 profileId: action.payload.profileId
             }
         }
+        case 'LANGUAGE_CHANGE' :{
+            return {
+                ...state,
+                language: action.payload.language
+            }
+        }
         default:
             return state
     }
@@ -65,6 +72,10 @@ export const setCollectionId = (collectionData) => ({type: 'COLLECTION_RENDER', 
     collectionId: collectionData
 }})
 
+export const setLanguage = (language) => ({type: 'LANGUAGE_CHANGE', payload: {
+    language: language
+}})
+
 export const setProfileId = (userId) => ({type: 'PROFILE_RENDER', payload: {
     profileId: userId
 }})
@@ -73,7 +84,7 @@ export const setItemId = (itemData) => ({type: 'ITEM_RENDER', payload: {
     itemId: itemData
 }})
 
-export const setsearchQuery = (searchQuery) => ({type: 'SEARCH', payload: {
+export const setSearchQuery = (searchQuery) => ({type: 'SEARCH', payload: {
     query: searchQuery
 }})
 
@@ -93,5 +104,6 @@ export const deleteUserData = () => ({type: 'LOGOUT', payload: {
     jwt: '',
     userId: '',
     isAuthenticated: false,
-    email: ''
+    email: '',
+    admin: false
 }})

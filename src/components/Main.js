@@ -1,6 +1,6 @@
 import React, {useState, useEffect} from 'react';
 import { TagCloud } from 'react-tagcloud';
-import {setsearchQuery, setItemId, setCollectionId} from '../store/reducers';
+import {setSearchQuery, setItemId, setCollectionId} from '../store/reducers';
 import {useDispatch, useSelector} from 'react-redux';
 import {useNavigate} from 'react-router-dom';
 
@@ -51,7 +51,7 @@ function Main() {
 
   const fetchTags = async function(){
     try {
-      const request = await fetch('https://mycollection-server.herokuapp.com/api/gettags')
+      const request = await fetch('http://localhost:8080/api/gettags')
       const response = await request.json();
       console.log(response)
       const keys = Object.keys(response);
@@ -77,13 +77,19 @@ function Main() {
   }
 
   const searchByTag = async function(query){
-    dispatch(setsearchQuery(query));
+    dispatch(setSearchQuery(query));
     navigate('/search')
   }
 
   const redirectToCollection = function(e){
     dispatch(setCollectionId(e.target.dataset.id));
     navigate('/collectionpage')
+  }
+
+  const renderTag = function(tag, size, color){
+    return (
+      <span key={tag.value} style={{ color }} className={'tag-' + size}>{tag.value} </span>
+    )
   }
 
     return (
@@ -144,7 +150,7 @@ function Main() {
             </div>
 
           <div className="align-items-center p-3 my-3 text-white bg-purple rounded shadow-sm">
-            <div className="lh-1" style={{'marginTop':'0px','textAlign':'center','display': 'block', 'borderBottom':'1px solid #bdc3c7'}}>
+            <div className="lh-1" id="tag-cloud-header" style={{'marginTop':'0px','textAlign':'center','display': 'block', 'borderBottom':'1px solid #bdc3c7'}}>
               <h3 style={{color: 'black'}}>Tag cloud</h3>
             </div>
             
@@ -152,7 +158,7 @@ function Main() {
 
           <p style={{'display': 'block', 'textAlign' : 'center', 'marginTop':'70px'}}>
             <p className='p-5' 
-            style={{'boxShadow':'0 .5rem 1rem #b8ddff','display':'inline-block','border': '1px solid #bdc3c7', 'borderRadius':'5px'}}>
+            style={{'boxShadow':'0 .5rem 1rem #b8ddff','display':'inline-block','border': '1px solid #bdc3c7', 'borderRadius':'40%'}}>
             <TagCloud
             minSize={12}
             maxSize={35}

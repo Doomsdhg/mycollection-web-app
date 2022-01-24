@@ -26,14 +26,14 @@ export default function MyCollections() {
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({data: {
-            userId: userData.profileId?userData.profileId:userData.userId
+            userId: userData.profileId
           }})
         });
         const response = await request.json();
         console.log(response);
         setCollections(response.collections);
         setOwner(response.owner);
-        dispatch(setProfileId(''));
+        
     } catch (error) {
       console.log(error);
     }
@@ -50,7 +50,7 @@ export default function MyCollections() {
     return (
         <div className='container' style={{'marginTop': '100px'}}>  
               <div className="my-3 p-3 bg-body rounded shadow-sm">
-              <h1 style={{'display': 'inline'}}>{owner && userData.userId !== owner.id ? owner.name + "'s":'Your'} collections</h1>
+              <h1 style={{'display': 'inline'}}>{owner && userData.profileId !== userData.userId ? owner.name + "'s" : 'Your' } collections</h1>
                 <button type="button" className="btn btn-primary" onClick={routeChange}
                 style={{'display': 'inline', 'marginLeft': '20px', 'marginTop': '-20px', 'backgroundColor': '#4CAF50', 'border': 'none'}}>
                   + Create new collection</button>
