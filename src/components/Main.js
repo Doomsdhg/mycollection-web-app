@@ -51,7 +51,7 @@ function Main() {
 
   const fetchTags = async function(){
     try {
-      const request = await fetch('http://localhost:8080/api/gettags')
+      const request = await fetch('https://mycollection-server.herokuapp.com/api/gettags')
       const response = await request.json();
       console.log(response)
       const keys = Object.keys(response);
