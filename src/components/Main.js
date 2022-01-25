@@ -11,6 +11,7 @@ function Main() {
   const [currentlyAddedItems, setCurrentlyAddedItems] = useState([]);
   const [tags, setTags] = useState([]);
   const [biggestCollections, setBiggestCollections] = useState([]);
+  const userData = useSelector(state=>state.userData)
   const defaultTags = [
     { value: 'JavaScript', count: 38 },
     { value: 'React', count: 30 },
@@ -86,23 +87,17 @@ function Main() {
     navigate('/collectionpage')
   }
 
-  const renderTag = function(tag, size, color){
-    return (
-      <span key={tag.value} style={{ color }} className={'tag-' + size}>{tag.value} </span>
-    )
-  }
-
     return (
         <main className="container" style={{marginTop: '80px'}}>
           <div className="d-flex align-items-center p-3 my-3 text-white bg-purple rounded shadow-sm">
             <div className="lh-1">
-              <h1 className="display-1" style={{color: 'black'}}>Feed</h1>
-              <small style={{color: 'black'}}>Latest updates on MyCollection</small>
+              <h1 className="display-1" style={{color: 'black'}}>{userData.language === 'en'?'Feed':'Лента событий'}</h1>
+              <small style={{color: 'black'}}>{userData.language === 'en'?'Latest updates':'Последние обновления'}</small>
             </div>
           </div>
 
           <div className="my-3 p-3 bg-body rounded shadow-sm">
-            <h6 className="border-bottom pb-2 mb-0">Currently added items</h6>
+            <h6 className="border-bottom pb-2 mb-0">{userData.language === 'en'?'Currently added items':'Последние добавленные предметы'}</h6>
             {currentlyAddedItems.map((item)=>{
               return (
               <div className="text-muted pt-3">
@@ -111,9 +106,9 @@ function Main() {
               <p className="pb-3 mb-0 small lh-sm border-bottom">
                 <strong className="d-block text-gray-dark">{item.name?item.name:'no name'}
                 <button style={{'float': 'right'}} type="button" className="btn btn-primary" data-id={item._id} onClick={(e)=>{goToItemPage(e)}}>
-                Open</button>
+                {userData.language === 'en'?'Open':'Открыть'}</button>
                 </strong>
-                {item.tags?item.tags:'no tags'}
+                {item.tags?item.tags:userData.language === 'en'?'No tags':'Без тэгов'}
                 
               </p>
               
@@ -124,7 +119,7 @@ function Main() {
           </div>
 
           <div className="my-3 p-3 bg-body rounded shadow-sm">
-            <h6 className="border-bottom pb-2 mb-0">Collections with biggest amounts of items</h6>
+            <h6 className="border-bottom pb-2 mb-0">{userData.language === 'en'?'Collections with biggest amount of items':'Коллекции с наибольшим количеством предметов'}</h6>
             
             
               {
@@ -135,13 +130,13 @@ function Main() {
                       style={{'display':'inline-block','width': '10%',
                       'height': '10%', 'maxHeight': '100px', 'maxWidth': '100px', 'marginTop':'20px', 'marginLeft':'20px' }} />
                       <div style={{'display':'inline-block','marginTop':'20px', 'marginLeft':'20px'}}>
-                        <span className="text-gray-dark" >Collection name: <b>{collection.name}</b></span><br/>
+                        <span className="text-gray-dark" >{userData.language === 'en'?'Collection name: ':'Название коллекции: '}<b>{collection.name}</b></span><br/>
                         
-                        <span>Collection description: <i>{collection.description}</i></span><br/>
-                        <span>Topic: <b>{collection.topic}</b></span><br/>
-                        <span>Amount of items: <b>{collection.items.length}</b></span><br/>
+                        <span>{userData.language === 'en'?'Collection description: ':'Описание коллекции'}<i>{collection.description}</i></span><br/>
+                        <span>{userData.language === 'en'?'Topic: ':'Категория: '}<b>{collection.topic}</b></span><br/>
+                        <span>{userData.language === 'en'?'Amount of items: ':'Количество предметов: '}<b>{collection.items.length}</b></span><br/>
                         <button className='btn btn-primary' style={{'display': 'inline-block', 'float':'left'}} data-id={collection._id} 
-                        onClick={e=>redirectToCollection(e)}>Open</button>
+                        onClick={e=>redirectToCollection(e)}>{userData.language === 'en'?'Open':'Открыть'}</button>
                       </div>
                     </div>
                   )
@@ -151,7 +146,7 @@ function Main() {
 
           <div className="align-items-center p-3 my-3 text-white bg-purple rounded shadow-sm">
             <div className="lh-1" id="tag-cloud-header" style={{'marginTop':'0px','textAlign':'center','display': 'block', 'borderBottom':'1px solid #bdc3c7'}}>
-              <h3 style={{color: 'black'}}>Tag cloud</h3>
+              <h3 style={{color: 'black'}}>{userData.language === 'en'?'Tag cloud':'Облако тегов'}</h3>
             </div>
             
           

@@ -70,7 +70,7 @@ function CommentSection() {
             </div>
         </form>
         <div className='container'>
-            <h2>Comments:</h2>
+            <h2>{userData.language === 'en'?'Comments:':'Комментарии'}</h2>
         {comments.length !== 0?
         comments.map((comment, index)=>{
             return (
@@ -82,7 +82,7 @@ function CommentSection() {
             </div>
             )
         })
-        :<h4>No comments yet</h4>}
+        :<h4>{userData.language === 'en'?'No comments yet:':'Комментариев пока нет'}</h4>}
         </div>
     </div>
     

@@ -104,18 +104,34 @@ function ItemInfo() {
           }
           console.log(response);
           setItemData(response);
+          let indexesToDelete = [];
           let fields = Object.values(response);
-          const keys = Object.keys(response);
-          fields.splice(0,2);
-          fields.splice(-3);
-          keys.splice(0,2);
-          keys.splice(-3);
-          const index = keys.indexOf('likes');
-          keys.splice(index, 1);
-          fields.splice(index, 1);
+          let keys = Object.keys(response);
+          
+          indexesToDelete.push(keys.indexOf('likes'));
+          indexesToDelete.push(keys.indexOf('comments'));
+          indexesToDelete.push(keys.indexOf('creator'));
+          indexesToDelete.push(keys.indexOf('collectionRef'));
+          indexesToDelete.push(keys.indexOf('__v'));
+          indexesToDelete.push(keys.indexOf('_id'));
+          console.log(indexesToDelete);
+          indexesToDelete.map(index=>{
+            delete keys[index];
+            delete fields[index];
+          })
+
+          keys = keys.filter(function( element ) {
+            return element !== undefined;
+          });
+
+          fields = fields.filter(function( element ) {
+            return element !== undefined;
+          });
+          
           console.log(fields);
           fields = fields.map((field, index)=>{
-            let obj;
+            console.log(field)
+            if (!field) {return null}
             if (field === 'name') {
               console.log(field)
               console.log(headersArray[index]);
@@ -131,6 +147,10 @@ function ItemInfo() {
                 type: 'tags'
               }
             } else {
+              console.log(keys);
+              console.log(fields);
+              console.log(headersArray)
+              console.log(headersArray[index])
               return {
                 name: headersArray[index].Header,
                 value: field,
@@ -170,9 +190,6 @@ function ItemInfo() {
           }
     }
 
-    const getEditForms = function(){
-
-    }
 
     const toggleItemForms = function(){
       setDisplayForms(prev=>!prev)
@@ -193,7 +210,7 @@ function ItemInfo() {
         const response = await request.json();
         console.log(response);
         setTimeout(()=>{
-          toast('item deleted successfully!');
+          toast(userData.language === 'en'?'item deleted successfully!':'Предмет удалён');
         },100)
         navigate('/mycollections');
       } catch (error) {
@@ -237,7 +254,7 @@ function ItemInfo() {
         const response = await request.json();
         console.log(response);
         setTimeout(()=>{
-          toast('item updated successfully!');
+          toast(userData.language === 'en'?'Item info updated successfully!':'Информация обновлена');
         },100)
         getItem()
       } catch (error) {
@@ -252,14 +269,14 @@ function ItemInfo() {
 
     return (
         <div className='container' style={{'marginTop': '100px'}}>
-           {itemData && userData.userId === itemData.creator ?
+           {itemData && userData.userId === itemData.creator || userData.admin ?
             <div className={displayButtons ? null  : 'display-none'}>
-              <button type="button" className="btn btn-primary mb-3" onClick={toggleItemForms}>Edit item data</button>
+              <button type="button" className="btn btn-primary mb-3" onClick={toggleItemForms}>{userData.language === 'en'?'Edit item info':'Редактировать информацию о предмете'}</button>
               <button type="button" className="btn btn-danger ms-3 mb-3" 
-              data-id={userData.itemId} onClick={deleteItem}>Delete item</button>
+              data-id={userData.itemId} onClick={deleteItem}>{userData.language === 'en'?'Delete item':'Удалить предмет'}</button>
               <div>
               <div className={displayForms?"form-group":'display-none'}>
-              <h1 className="border-bottom pb-2 mb-0">Item data</h1>
+              <h1 className="border-bottom pb-2 mb-0">{userData.language === 'en'?'Item info':'Информация о предмете'}</h1>
               {fieldsArray.map((field, index) => {
 
                 const type = field.type.substring(0, field.type.length - 6);
@@ -297,18 +314,18 @@ function ItemInfo() {
                 </div>
                 )
               })}
-              <button type="button" className="btn btn-primary mb-3" onClick={updateItem}>Save changes</button>
+              <button type="button" className="btn btn-primary mb-3" onClick={updateItem}>{userData.language === 'en'?'Save changes':'Сохранить изменения'}</button>
               </div>
               </div>
             </div>
               : null
             }
             <div className={displayForms?"display-none":"my-3 p-3 bg-body rounded shadow-sm"}>
-            <h1 className="border-bottom pb-2 mb-0">Item data
+            <h1 className="border-bottom pb-2 mb-0">{userData.language === 'en'?'Item info':'Информация о предмете'}
               <button type="button" className="btn btn-primary mb-3 mt-1 ms-3" onClick={rate}>
               <img 
               src={liked ? redHeart : whiteHeart}
-              style={{'width': '20px'}} /> Like | {likesAmount}</button>
+              style={{'width': '20px'}} />{userData.language === 'en'?'Like':'Нравится'} | {likesAmount}</button>
             </h1>
             {fieldsArray.map((field, index)=>{
                 return field.name.includes('text')?

@@ -4,7 +4,7 @@ import {useNavigate} from 'react-router-dom';
 import { ToastContainer, toast } from 'react-toastify';
 import MDEditor from '@uiw/react-md-editor';
 import {setImageURL} from '../store/reducers';
-import Autosuggest from 'react-autosuggest';
+
 
 function CreateCollection() {
     const dispatch = useDispatch();
@@ -31,7 +31,7 @@ function CreateCollection() {
         const reader = new FileReader();
         reader.readAsDataURL(files[0]);
         reader.onloadend = ()=>{
-          toast('wait for image to upload')
+          toast(userData.language === 'en'?'Wait for image to upload':'Подождите пока картинка загрузится')
           uploadImage(reader.result);
         }
         
@@ -61,7 +61,7 @@ function CreateCollection() {
         let fieldType = e.target.name;
         let fieldTypeAmount = itemFields.filter(item => item === fieldType) 
         if (fieldTypeAmount.length >= 3) {
-          throw new Error('You can not add more than 3 fields of each type')
+          throw new Error(userData.language === 'en'?'You can not add more than 3 fields of each type':'Вы не можете добавить больше 3-х полей каждого типа')
         }
         
         setItemFields(itemFields.concat([fieldType]));
@@ -97,7 +97,7 @@ function CreateCollection() {
           await dispatch(setImageURL(imageURL))
           console.log(imageURL);
           
-          toast('image successfully uploaded to server!');
+          toast(userData.language === 'en'?'Image successfully uploaded to server!':'Картинка успешно загружена на сервер');
           
           
           
@@ -122,7 +122,7 @@ function CreateCollection() {
         dispatch(setImageURL(''))
         navigate('/mycollections');
         setTimeout(()=>{
-          toast('Collection created successfully!');
+          toast(userData.language === 'en'?'Collection created successfully!':'Коллекция создана!');
         },100)
 
       } catch (error) {
@@ -146,10 +146,10 @@ function CreateCollection() {
 
     return (
         <div className='container' style={{'marginTop': '100px'}}>  
-            <h3>Enter data for your future collection</h3>
+            <h3>{userData.language === 'en'?'Enter data for your future collection':'Введите информацию о коллекции'}</h3>
             <div className="mb-3">
-              <span className="text" id="basic-addon1">Collection name</span>
-              <input type="text" className="form-control" name='name' placeholder="My collection" onChange={changeHandler} aria-describedby="basic-addon1" />
+              <span className="text" id="basic-addon1">{userData.language === 'en'?'Collection name':'Название коллекции'}</span>
+              <input type="text" className="form-control" name='name' placeholder={userData.language === 'en'?'My collection':'Моя коллекция'} onChange={changeHandler} aria-describedby="basic-addon1" />
             </div>
 
             <MDEditor
@@ -159,12 +159,12 @@ function CreateCollection() {
               />
 
             <div className="mb-3 mt-3">
-              <label className="-text" htmlFor="inputGroupSelect01">Topic</label>
+              <label className="-text" htmlFor="inputGroupSelect01">{userData.language === 'en'?'Topic':'Категория'}</label>
               <select className="form-select" name='topic' id="inputGroupSelect01" onChange={changeHandler}>
-                <option defaultValue={true}>Choose...</option>
-                <option value="Books">Books</option>
-                <option value="Alcohol">Alcohol</option>
-                <option value="Other">Other</option>
+                <option defaultValue={true}>{userData.language === 'en'?'Choose...':'Выберите...'}</option>
+                <option value="Books">{userData.language === 'en'?'Books':'Книги'}</option>
+                <option value="Alcohol">{userData.language === 'en'?'Alcohol':'Алкоголь'}</option>
+                <option value="Other">{userData.language === 'en'?'Other':'Другое'}</option>
               </select>
             </div>
 
@@ -178,18 +178,18 @@ function CreateCollection() {
                 onDragLeave={e => {dragLeaveHandler(e)}}
                 onDragOver={e => {dragStartHandler(e)}}
                 onDrop={e => {dropHandler(e)}}
-                >Collection image (optional). Drop files to upload</div>:
+                >{userData.language === 'en'?'Collection image (optional). Drop files to upload':'Картинка коллекции (опционально). Отпустите файлы, чтобы загрузить'}</div>:
                 <div className ="drag-n-drop empty"
                 onDragStart={e => {dragStartHandler(e)}}
                 onDragLeave={e => {dragLeaveHandler(e)}}
                 onDragOver={e => {dragStartHandler(e)}}
-                >Collection image (optional). Drag files here</div>
+                >{userData.language === 'en'?'Collection image (optional). Drag files here':'Картинка коллекции (опционально). Перенесите файлы сюда'}</div>
                 }
               </div>}
             
             <div className='wrapper' style={{'marginTop': '20px'}}>
-              <h3>Fields for each collection item</h3>
-              <p>(You can add up to 3 fields of each type)</p>
+              <h3>{userData.language === 'en'?'Fields for each collection item':'Поля, которые будут применены для каждого предмета коллекции'}</h3>
+              <p>{userData.language === 'en'?'(You can add up to 3 fields of each type)':'Вы можете добавить до 3-х полей каждого типа'}</p>
               {(()=>{
                 if (error) {
                   return <p style={{'color':'red'}}>{error.message}</p>
@@ -203,29 +203,29 @@ function CreateCollection() {
                 <button type="button" className="btn btn-outline-success" name="checkbox" onClick={e => addField(e)}>Add checkbox</button>
               </div>
             </div>
-              <p>Each item in this collection will include following fields:</p>
+              <p>{userData.language === 'en'?'Each item in this collection will include following fields:':'Каждый предмет в этой коллекции будет содержать следующие поля:'}</p>
             <div className="mb-3">
-              <span className="-text" id="basic-addon1">Item id</span>
-              <input type="text" disabled={true} className="form-control" placeholder="My collection" aria-describedby="basic-addon1" />
+              <span className="-text" id="basic-addon1">{userData.language === 'en'?'Item id':'Идентефикатор предмета'}</span>
+              <input type="text" disabled={true} className="form-control" placeholder="61efc441359278e47069939b" aria-describedby="basic-addon1" />
             </div>
 
             <div className="">
-              <span className="-text">Item name</span>
-              <textarea className="form-control"  disabled={true} aria-label="With textarea" placeholder="Text..."></textarea>
+              <span className="-text">{userData.language === 'en'?'Item name':'Название предмета'}</span>
+              <textarea className="form-control"  disabled={true} aria-label="With textarea" placeholder={userData.language === 'en'?'Item name':'Название предмета'}></textarea>
             </div>
 
             <div className="mt-3">
-              <span className="-text">Tags</span>
-              <textarea className="form-control"  disabled={true} aria-label="With textarea" placeholder="Text..."></textarea>
+              <span className="-text">{userData.language === 'en'?'Tags':'Тэги'}</span>
+              <textarea className="form-control"  disabled={true} aria-label="With textarea" placeholder='#qwe #zxc'></textarea>
             </div>
             {itemFields.sort().map((item, index) => (
               <div className="mt-3" key={index}>
               <span className="-text">{item} field</span>
-              <textarea className="form-control" name={item + "Field" + getIndex(item, index)} aria-label="With textarea" onChange={changeHandler} placeholder="Type field name here">
+              <textarea className="form-control" name={item + "Field" + getIndex(item, index)} aria-label="With textarea" onChange={changeHandler} placeholder={userData.language === 'en'?'Type field name here':'Введите название поля'}>
               </textarea>
               </div>
             ))}
-            <button type="button" className="btn btn-success mt-3 mb-3" onClick={submitHandler}>Create</button>
+            <button type="button" className="btn btn-success mt-3 mb-3" onClick={submitHandler}>{userData.language === 'en'?'Create':'Создать'}</button>
             <ToastContainer />
         </div>
     )

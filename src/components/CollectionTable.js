@@ -7,10 +7,7 @@ import {useNavigate} from 'react-router-dom';
 import MDEditor from '@uiw/react-md-editor';
 import { useDispatch } from 'react-redux';
 import {setItemId} from '../store/reducers';
-import {TableRenderer} from './table';
 import {GlobalFilter} from './table';
-import Autosuggest from 'react-autosuggest';
-import autocomplete from 'autocompleter';
 import TextInput from 'react-autocomplete-input';
 import 'react-autocomplete-input/dist/bundle.css';
 
@@ -83,9 +80,20 @@ function CollectionTable() {
           setCollectionData(response);
           setMarkdownValue(response.description);
           console.log(userData.userId === response.creator);
-          if (userData.userId === response.creator) {
+          switch (response.topic) {
+            case 'Books':
+              response.topic = userData.language === 'en' ? 'Books' : 'Книги';
+            case 'Alcohol':
+              response.topic = userData.language === 'en' ? 'Alcohol' : 'Алкоголь';
+            case 'Other':
+              response.topic = userData.language === 'en' ? 'Other' : 'Другое';
+            default:
+              break
+          }
+
+          if (userData.userId === response.creator || userData.admin) {
             setHeaders([{
-              Header: 'select',
+              Header: userData.language==='en'?'select':'Выбрать',
               accessor: 'select'
             }])
           }
@@ -98,7 +106,7 @@ function CollectionTable() {
     const checkPermission = function(){
       if (userData.userId === collectionData.creator) {
         setHeaders([{
-          Header: 'select',
+          Header: userData.language==='en'?'select':'Выбрать',
           accessor: 'select'
         }])
       }
@@ -135,12 +143,27 @@ function CollectionTable() {
                 }
               })
               console.log(response.headers)
+              const headers = response.headers.map(header=>{
+                if (header.fieldType === 'id') {
+                  header.Header = userData.language === 'en' ? 'id' : 'Идентефикатор';
+                  return header
+                } else if (header.fieldType === 'name') {
+                  header.Header = userData.language === 'en' ? 'name' : 'Название';
+                  return header
+                } else if (header.fieldType === 'tags') {
+                  header.Header = userData.language === 'en' ? 'tags' : 'Тэги';
+                  return header
+                } else {
+                  return header
+                }
+
+              })
               
               setHeaders(prev => [
               ...prev,
-              ...response.headers, 
+              ...headers, 
               {
-                Header: 'Item page',
+                Header: userData.language==='en'?'Item page':'Страница предмета',
                 accessor: 'itemRef'
               }])
               response.headers.map((header)=>{
@@ -216,7 +239,7 @@ function CollectionTable() {
         console.log(response.message);
         fetchCollectionData();
         setTimeout(()=>{
-          toast('changes saved successfully!');
+          toast(userData.language==='en'?'changes saved successfully!':'изменения сохранены');
         },100)
 
       } catch (error) {
@@ -237,7 +260,7 @@ function CollectionTable() {
         const response = await request.json();
         console.log(response.message);
         setTimeout(()=>{
-          toast('Collection deleted successfully!');
+          toast(userData.language==='en'?'Collection deleted successfully!':'Коллекция удалена');
         },100)
         navigate('/mycollections')
       } catch (error) {
@@ -275,7 +298,7 @@ function CollectionTable() {
           console.log(response.message);
           await checkPermission()
           setTimeout(()=>{
-            toast('item added successfully!');
+            toast(userData.language==='en'?'item added successfully!':'предмет успешно добавлен в коллекцию!');
           },100)
           fetchCollectionTable()
         } catch (error) {
@@ -312,7 +335,7 @@ function CollectionTable() {
         console.log(response);
         await checkPermission()
         setTimeout(()=>{
-          toast('item(s) deleted successfully!');
+          toast(userData.language==='en'?'item(s) deleted successfully!':'Предметы(ы) удалены');
         },100)
         uncheckSelectedItems()
         setSelectedItems([]);
@@ -328,18 +351,18 @@ function CollectionTable() {
         <div className='container' style={{'marginTop': '100px'}}> 
         {userData.userId === collectionData.creator ?
         <>
-          <button type="button" className="btn btn-primary mb-3" onClick={toggleCollectionDataForms}>Edit collection data</button>
-          <button type="button" className="btn btn-danger ms-3 mb-3" onClick={deleteCollection}>Delete collection</button>
+          <button type="button" className="btn btn-primary mb-3" onClick={toggleCollectionDataForms}>{userData.language==='en'?'Edit collection info':'Изменить информацию о коллекции'}</button>
+          <button type="button" className="btn btn-danger ms-3 mb-3" onClick={deleteCollection}>{userData.language==='en'?'Delete collection':'Удалить коллекцию'}</button>
         </>
           : null
         }
           <div className="my-3 p-3 bg-body rounded shadow-sm" style={collectionDataDisabled?null:{'display':'none'}}>
-            <h1 className="border-bottom pb-2 mb-0">Collection data</h1>
+            <h1 className="border-bottom pb-2 mb-0">{userData.language==='en'?'Collection data':'Информация о коллекции'}</h1>
             <div className="d-flex text-muted pt-3">
               
 
               <p className="pb-3 mb-0 small lh-sm border-bottom">
-                <strong className="d-block text-gray-dark">Collection name</strong>
+                <strong className="d-block text-gray-dark">{userData.language==='en'?'Collection name':'Название коллекции'}</strong>
               {collectionData.name}
               </p>
             </div>
@@ -347,7 +370,7 @@ function CollectionTable() {
               
 
               <p className="pb-3 mb-0 small lh-sm border-bottom">
-                <strong className="d-block text-gray-dark">Collection description</strong>
+                <strong className="d-block text-gray-dark">{userData.language==='en'?'Collection description':'Описание коллекции'}</strong>
                 <MDEditor.Markdown 
                   source={markdownValue} 
                 />
@@ -357,20 +380,20 @@ function CollectionTable() {
               
 
               <p className="pb-3 mb-0 small lh-sm border-bottom">
-                <strong className="d-block text-gray-dark">Collection topic</strong>
+                <strong className="d-block text-gray-dark">{userData.language==='en'?'Collection topic':'Категория'}</strong>
                 {collectionData.topic}
               </p>
             </div>
           </div>
           <div className='form-group' style={collectionDataDisabled?{'display':'none'}:null}>
-          <h1 className="border-bottom pb-2 mb-0">Collection data</h1>
+          <h1 className="border-bottom pb-2 mb-0">{userData.language==='en'?'Collection data':'Информация о коллекции'}</h1>
             <div className="mb-3 mt-3">
-              <span className="text" id="basic-addon1">Collection name</span>
+              <span className="text" id="basic-addon1">{userData.language==='en'?'Collection name':'Название коллекции'}</span>
               <input type="text" className="form-control" defaultValue={collectionData.name} onChange={collectionDataChangeHandler} 
               name='name' disabled={collectionDataDisabled?true:false} placeholder="My collection" aria-describedby="basic-addon1" />
             </div>
             <div className="">
-              <span className="-text">Collection description</span>
+              <span className="-text">{userData.language==='en'?'Collection description':'Описание коллекции'}</span>
               <MDEditor
                 value={markdownValue}
                 onChange={setMarkdownValue}
@@ -388,29 +411,31 @@ function CollectionTable() {
               <label className="-text" htmlFor="inputGroupSelect01">Topic</label>
               <select className="form-select" onChange={collectionDataChangeHandler} name='topic' 
               disabled={collectionDataDisabled?true:false} id="inputGroupSelect01">
-                <option >Choose...</option>
-                <option selected={collectionData.topic==='Books'?true:false} value="Books">Books</option>
-                <option selected={collectionData.topic==='Alcohol'?true:false} value="Alcohol">Alcohol</option>
-                <option selected={collectionData.topic==='Other'?true:false} value="Other">Other</option>
+                <option >{userData.language==='en'?'Choose...':'Выберите'}</option>
+                <option selected={collectionData.topic==='Books'?true:false} value="Books">{userData.language==='en'?'Books':''}</option>
+                <option selected={collectionData.topic==='Alcohol'?true:false} value="Alcohol">{userData.language==='en'?'Alcohol':'Алкоголь'}</option>
+                <option selected={collectionData.topic==='Other'?true:false} value="Other">{userData.language==='en'?'Other':'Другое'}</option>
               </select>
             </div>
-            <button type="button" className="btn btn-success mb-3" onClick={updateCollectionData}>Save collection info changes</button>
+            <button type="button" className="btn btn-success mb-3" onClick={updateCollectionData}>{userData.language==='en'?'Save collection info changes':'Сохранить изменённые данные'}</button>
           </div>
           
           { userData.userId === collectionData.creator && selectedItems.length !== 0?
-          <button type="button" className="btn btn-danger mb-3 mt-3" onClick={deleteItems}>Delete selected items</button>
+          <button type="button" className="btn btn-danger mb-3 mt-3" onClick={deleteItems}>{userData.language==='en'?'Delete selected items':'Удалить выбранные предметы'}</button>
           : null
           }
           <BTable striped bordered hover size="sm" {...getTableProps()}>
             <thead>
               {headerGroups.map(headerGroup => (
                 <tr {...headerGroup.getHeaderGroupProps()}>
-                  {headerGroup.headers.map(column => (
+                  {headerGroup.headers.map(column => {
+                    console.log(column);
+                    return (
                     <th {...column.getHeaderProps(column.getSortByToggleProps())}>
                       {column.render('Header')}
                       {column.isSorted ? (column.isSortedDesc ? " ▲" : " ▼") : ""}
-                    </th>
-                  ))}
+                    </th>)
+                  })}
                 </tr>
               ))}
               <tr>
@@ -435,7 +460,7 @@ function CollectionTable() {
                   <tr {...row.getRowProps()}>
                     {row.cells.map((cell, index) => {
                       console.log();
-                      if (cell.column.Header === 'select') {
+                      if (index === 0) {
                         return (
                           <td {...cell.getCellProps()}>
                           {cell.render('Cell')}
@@ -448,7 +473,7 @@ function CollectionTable() {
                           <td {...cell.getCellProps()}>
                           {cell.render('Cell')}
                           <button type="button" className="btn btn-primary" data-id={row.values._id} onClick={(e)=>{goToItemPage(e)}}>
-                            Open</button>
+                          {userData.language==='en'?'Open':'Открыть'}</button>
                         </td>
                         )
                       }
@@ -477,13 +502,13 @@ function CollectionTable() {
           <button type="button" className="btn btn-primary mb-3" onClick={toggleForms}
               style={displayForms?{'display': 'inline', 'backgroundColor': 'grey', 'border': 'none'}
               :{'display': 'inline', 'backgroundColor': '#4CAF50', 'border': 'none'}}>
-                {displayForms?'Close console':'Open console of item adding'}</button>
+                {userData.language==='en'?displayForms?'Close console':'Open console of item adding':displayForms?'Закрыть консоль':'Открыть консоль добавления предмета'}</button>
             : null
           }
           <div className={displayForms?'wrapper':'display-none'}>
             {headers.map((header, index)=>{
               
-              if (index === 0 || index === 1 || header.Header === 'Item page') return null
+              if (index === 0 || index === 1 || header.accessor === 'itemRef') return null
               const type = header.fieldType.substring(0, header.fieldType.length - 6);
               if(header.Header === 'tags') {
                 return (
@@ -525,7 +550,7 @@ function CollectionTable() {
             </div>
               )
             })}
-            <button type="button" className="btn btn-success mb-3" onClick={uploadItem}>Create new item</button>
+            <button type="button" className="btn btn-success mb-3" onClick={uploadItem}>{userData.language === 'en'?'Add new item':'Добавить новый предмет'}</button>
           </div>
         </div>
       <ToastContainer />
