@@ -50,10 +50,10 @@ export default function MyCollections() {
     return (
         <div className='container' style={{'marginTop': '100px'}}>  
               <div className="my-3 p-3 bg-body rounded shadow-sm">
-              <h1 style={{'display': 'inline'}}>{owner && userData.profileId !== userData.userId ? owner.name + "'s" : 'Your' } collections</h1>
+              <h1 style={{'display': 'inline'}}>{owner && userData.profileId !== userData.userId ? userData.language === 'en' ? owner.name + "'s collections" : 'Коллекции' + owner.name: userData.language === 'en' ? 'Your collections' : 'Ваши коллекции'} </h1>
                 <button type="button" className="btn btn-primary" onClick={routeChange}
                 style={{'display': 'inline', 'marginLeft': '20px', 'marginTop': '-20px', 'backgroundColor': '#4CAF50', 'border': 'none'}}>
-                  + Create new collection</button>
+                  + {userData.language === 'en'?'Create new collection':'Создать новую коллекцию'}</button>
 
                 {collections.map((collection, index) => {
                   return (
@@ -69,7 +69,7 @@ export default function MyCollections() {
                         <MDEditor.Markdown 
                           source={collection.description} 
                         /></p><br/>
-                        <a className="btn btn-primary" onClick={collectionPageRedirect}>Open collection</a>
+                        <a className="btn btn-primary" onClick={collectionPageRedirect}>{userData.language === 'en'?'Open collection':'Просмотреть коллекцию'}</a>
                         
                       </div>
                     </div>

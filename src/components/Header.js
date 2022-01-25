@@ -3,7 +3,7 @@ import {useSelector, useDispatch} from 'react-redux';
 import {useAuthHooks} from '../hooks/authHooks.js';
 import {useNavigate} from 'react-router-dom';
 import {setSearchQuery, setProfileId, setLanguage} from '../store/reducers';
-
+import themeSwitcher from 'theme-switcher';
 
 function Header(props) {
   const userData = useSelector(state => state.userData);
@@ -15,6 +15,12 @@ function Header(props) {
     logout(dispatch);
     navigate('/')
   }
+  const { switcher, getTheme } = themeSwitcher({
+    themeMap: {
+      dark: '../../node_modules/bootstrap/dist/css/bootstrap dark.css',
+      light: '../../node_modules/bootstrap/dist/css/bootstrap.css',
+    }
+  });
   const navClickHandler = function(){
     const navbar = document.querySelector('#navbar');
     navbar.classList.toggle('display-none');
@@ -33,6 +39,13 @@ function Header(props) {
     dispatch(setLanguage('en'))
   }
 
+  const switchTheme = function(){
+    switcher({
+      theme: 'dark',
+    });
+    
+  }
+
     return (
         <nav className="navbar navbar-expand-lg fixed-top navbar-dark bg-dark" aria-label="Main navigation">
           <div className="container-fluid">
@@ -46,16 +59,16 @@ function Header(props) {
             <div className="navbar-collapse offcanvas-collapse display-none" id="navbar">
               <ul className="navbar-nav me-auto mb-2 mb-lg-0">
                 <li className="nav-item">
-                  <a className="nav-link active" aria-current="page" href="/">Home</a>
+                  <a className="nav-link active" aria-current="page" href="/">{userData.language === 'en'?'Home':'Домой'}</a>
                 </li>
                 {(() => {if (userData.isAuthenticated) {
                     return (
                       <>
                       <li className="nav-item">
-                        <a className="nav-link" href='/mycollections' onClick={myCollectionsRedirect}>My collections</a>
+                        <a className="nav-link" href='/mycollections' onClick={myCollectionsRedirect}>{userData.language === 'en'?'My collections':'Мои коллекции'}</a>
                       </li>
                       <li className="nav-item" >
-                      <button type="button" className="btn btn-secondary" onClick={clickHandler}>Log out</button>
+                      <button type="button" className="btn btn-secondary" onClick={clickHandler}>{userData.language === 'en'?'Log out':'Выйти'}</button>
                       </li>
                       </>
                     )
@@ -63,26 +76,27 @@ function Header(props) {
                     return (
                         <>
                         <li className="nav-item">
-                          <a className="nav-link" href="/auth"><link href='/auth' />Log in</a>
+                          <a className="nav-link" href="/auth"><link href='/auth' />{userData.language === 'en'?'Log in':'Войти'}</a>
                         </li>
                         <li className="nav-item">
-                          <a className="nav-link" href="/signup">Sign up</a>
+                          <a className="nav-link" href="/signup">{userData.language === 'en'?'Sign up':'Зарегистрироваться'}</a>
                         </li>
                         </>
                     )
                   }})()}
                   {userData.admin ? 
                     <li className="nav-item">
-                      <button className="btn btn-warning ms-3 adm" href="/adminpanel" onClick={adminPanelRedirect}>Admin panel</button>
+                      <button className="btn btn-warning ms-3 adm" href="/adminpanel" onClick={adminPanelRedirect}>{userData.language === 'en'?'Admin panel':'Панель администратора'}</button>
                     </li>
                     :null
                   }
                   <li className="nav-item" >
-                    <button type="button" className="btn btn-success ms-3" onClick={changeLanguage}>{userData.language === 'en'?'lang: EN | change' : 'язык: РУ | сменить'}</button>
+                    <button type="button" className="btn btn-success ms-3" onClick={()=>{changeLanguage()}}>{userData.language === 'en'?'lang: EN | change' : 'язык: РУ | сменить'}</button>
                   </li>
               </ul>
               <form className="d-flex">
-                <input className="form-control me-2" type="search" placeholder="Search" aria-label="Search" 
+                <button type='button' onClick={switchTheme}>{userData.language === 'en'?'switch theme':'поменять тему'}</button>
+                <input className="form-control me-2" type="search" placeholder={userData.language === 'en'?'Search':'Поиск'} aria-label="Search" 
                 onChange={(e)=>{
                   setSearchFormValue(e.target.value)
                   }} />
@@ -90,7 +104,7 @@ function Header(props) {
                   onClick={(e)=>{
                   dispatch(setSearchQuery(searchFormValue));
                   navigate('/search')
-                  }}>Search</button>
+                  }}>{userData.language === 'en'?'Search':'Поиск'}</button>
               </form>
             </div>
           </div>

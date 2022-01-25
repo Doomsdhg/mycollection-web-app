@@ -52,7 +52,7 @@ function SearchResults() {
         <div className='d-flex p-2 bd-highlight' style={{'marginTop': '100px', 'margin':'0 auto'}}>
             
             <div className="d-inline-flex p-2 bd-highlight" style={{'flex': '1', 'flexDirection': 'column', 'alignItems': 'left'}}>
-              <h2>Items found by seeking in item info</h2>
+              <h2>{userData.language === 'en'?'Items found by seeking in item info/comments':'Предметы найденные по ключевым словам в инфмормации о предмете/комментариях'}</h2>
             {itemsArray?
             itemsArray.length !== 0?
             itemsArray.map((item, index)=>{
@@ -61,25 +61,25 @@ function SearchResults() {
                     style={{"marginTop":"20px", 'width': '80%', 'word-break': 'break-word'}}>
                       <div className="card-body" data-id={item._id}>
                       
-                        <h5 className="card-title" style={{'display': 'inline-block', 'width': '80%'}}>{item.name?item.name:'no name'}</h5><br/>
+                        <h5 className="card-title" style={{'display': 'inline-block', 'width': '80%'}}>{item.name?item.name:userData.language === 'en'?'no name':'без имени'}</h5><br/>
                         <p className="card-text" style={{'display': 'inline-block'}}>
                         <MDEditor.Markdown 
                           source={item.description} 
                         /></p><br/>
-                        <a className="btn btn-primary" onClick={itemPageRedirect}>Open item</a>
+                        <a className="btn btn-primary" onClick={itemPageRedirect}>{userData.language === 'en'?'Open item':'Просмотр предмета'}</a>
                         
                       </div>
                     </div>)
             })
             : <div style={{
                 'marginTop': '70px',
-                'textAlign': 'center'}}><h1>No results</h1></div>
+                'textAlign': 'center'}}><h1>{userData.language === 'en'?'No results':'Нет результатов'}</h1></div>
             : null
             }
             </div>
             
             <div className="d-inline-flex p-2 bd-highlight" style={{'flex': '1', 'flexDirection': 'column', 'alignItems': 'left'}}>
-            <h2>Items found by seeking in collection info</h2>
+            <h2>{userData.language === 'en'?'Items found by seeking in collection info':'Предметы, найденные по содержанию ключевых слов в информации коллекции'}</h2>
             {collectionsArray?
             collectionsArray.length !== 0?
             collectionsArray.map((item, index)=>{
@@ -94,14 +94,14 @@ function SearchResults() {
                         <MDEditor.Markdown 
                           source={item.description} 
                         /></p><br/>
-                        <a className="btn btn-primary" onClick={itemPageRedirect}>Open item</a>
+                        <a className="btn btn-primary" onClick={itemPageRedirect}>{userData.language === 'en'?'Open item':'Просмотр'}</a>
                         
                       </div>
                     </div>)
             })
             : <div style={{
                 'marginTop': '70px',
-                'textAlign': 'center'}}><h1>No results</h1></div>
+                'textAlign': 'center'}}><h1>{userData.language === 'en'?'No results':'Нет результатов'}</h1></div>
             : null
             }
             </div>
