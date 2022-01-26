@@ -4,8 +4,10 @@ import BTable from 'react-bootstrap/Table';
 import {useNavigate} from 'react-router-dom';
 import {useDispatch, useSelector} from 'react-redux';
 import {setProfileId} from '../store/reducers';
+import {useTableRender} from '../hooks/tableHooks';
 
 function AdminPanel() {
+    const {renderAdminTable} = useTableRender();
     const userData = useSelector(state=>state.userData);
     const dispatch = useDispatch();
     const navigate = useNavigate();
@@ -89,7 +91,7 @@ function AdminPanel() {
     }
 
 
-    return (<div className='container' style={{'marginTop': '100px'}}>
+    return (<div className='container'>
         <BTable striped bordered hover size="sm" {...getTableProps()}>
             <thead>
               {headerGroups.map(headerGroup => (
@@ -136,6 +138,7 @@ function AdminPanel() {
               })}
             </tbody>
           </BTable>
+          {renderAdminTable(table, headers, changeUser, userPageRedirect, userData)}
     </div>);
 }
 

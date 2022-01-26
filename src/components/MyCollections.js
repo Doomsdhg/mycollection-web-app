@@ -48,24 +48,20 @@ export default function MyCollections() {
     
   }
     return (
-        <div className='container' style={{'marginTop': '100px'}}>  
+        <div className='container'>  
               <div className="my-3 p-3 bg-body rounded shadow-sm">
-              <h1 style={{'display': 'inline'}}>{owner && userData.profileId !== userData.userId ? userData.language === 'en' ? owner.name + "'s collections" : 'Коллекции' + owner.name: userData.language === 'en' ? 'Your collections' : 'Ваши коллекции'} </h1>
-                <button type="button" className="btn btn-primary" onClick={routeChange}
-                style={{'display': 'inline', 'marginLeft': '20px', 'marginTop': '-20px', 'backgroundColor': '#4CAF50', 'border': 'none'}}>
+                <h1 className='d-inline-block'>{owner && userData.profileId !== userData.userId ? userData.language === 'en' ? owner.name + "'s collections" : 'Коллекции ' + owner.name: userData.language === 'en' ? 'Your collections' : 'Ваши коллекции'} </h1>
+                <button type="button" className="btn btn-success d-inline-block float-end" onClick={routeChange}>
                   + {userData.language === 'en'?'Create new collection':'Создать новую коллекцию'}</button>
 
                 {collections.map((collection, index) => {
                   return (
-                    <div className="card" key={index} 
-                    style={{"width": "99%", "marginTop":"20px", 'flexDirection': 'row', 'word-break': 'break-word'}}>
-                      <img src={collection.imageURL?collection.imageURL:noImage} className="card-img-top" alt="..." 
-                      style={{'width': '10%',
-                      'height': '10%', 'maxHeight': '100px', 'maxWidth': '100px', 'marginTop': '20px', 'marginLeft': '20px' }} />
+                    <div className="card flex-row w-90 mt-2 text-break" key={index} >
+                      <img src={collection.imageURL?collection.imageURL:noImage} className="card-img-top mt-3 ms-3" alt="..." />
                       <div className="card-body" data-id={collection._id}>
                       
-                        <h5 className="card-title" style={{'display': 'inline-block', 'width': '80%'}}>{collection.name}</h5><br/>
-                        <p className="card-text" style={{'display': 'inline-block'}}>
+                        <h5 className="card-title d-inline-block w-80">{collection.name}</h5><br/>
+                        <p className="card-text d-inline-block">
                         <MDEditor.Markdown 
                           source={collection.description} 
                         /></p><br/>

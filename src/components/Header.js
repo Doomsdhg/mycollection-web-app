@@ -17,7 +17,7 @@ function Header(props) {
   }
   const { switcher, getTheme } = themeSwitcher({
     themeMap: {
-      dark: '../../node_modules/bootstrap/dist/css/bootstrap dark.css',
+      dark: '../../node_modules/bootstrap/dist/css/bootstrap-dark.css',
       light: '../../node_modules/bootstrap/dist/css/bootstrap.css',
     }
   });
@@ -40,10 +40,17 @@ function Header(props) {
   }
 
   const switchTheme = function(){
-    switcher({
-      theme: 'dark',
-    });
-    
+    const currentTheme = getTheme();
+    if (currentTheme === 'light') {
+      switcher({
+        theme: 'dark',
+      });
+    } else {
+      switcher({
+        theme: 'light',
+      });
+    }
+    console.log(getTheme());
   }
 
     return (
@@ -94,8 +101,9 @@ function Header(props) {
                     <button type="button" className="btn btn-success ms-3" onClick={()=>{changeLanguage()}}>{userData.language === 'en'?'lang: EN | change' : 'язык: РУ | сменить'}</button>
                   </li>
               </ul>
+              <button type='button' className='btn btn-success me-3' onClick={switchTheme}>{userData.language === 'en'?'switch theme':'поменять тему'}</button>
               <form className="d-flex">
-                <button type='button' onClick={switchTheme}>{userData.language === 'en'?'switch theme':'поменять тему'}</button>
+                
                 <input className="form-control me-2" type="search" placeholder={userData.language === 'en'?'Search':'Поиск'} aria-label="Search" 
                 onChange={(e)=>{
                   setSearchFormValue(e.target.value)

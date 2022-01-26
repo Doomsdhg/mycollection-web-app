@@ -50,7 +50,7 @@ function AuthenticationForm() {
             <div className="container py-0 h-100">
               <div className="row d-flex justify-content-center align-items-center h-100">
                 <div className="col-12 col-md-8 col-lg-6 col-xl-5">
-                  <div className="card bg-dark text-white" style={{borderRadius: '1rem'}}>
+                  <div className="card bg-dark text-white rounded">
                     <div className="card-body p-5 text-center">
 
                       <div className="mb-md-5 mt-md-4 pb-5">
@@ -77,7 +77,7 @@ function AuthenticationForm() {
 
                       {(()=>{if(error){
                           return (
-                            <div style={{'color': 'red'}}>
+                            <div className='text-danger'>
                             {error}
                             </div>
                           )
