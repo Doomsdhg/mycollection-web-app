@@ -268,7 +268,7 @@ function ItemInfo() {
     }
 
     return (
-        <div className='container' style={{'marginTop': '100px'}}>
+        <div className='container'>
            {itemData && userData.userId === itemData.creator || userData.admin ?
             <div className={displayButtons ? null  : 'display-none'}>
               <button type="button" className="btn btn-primary mb-3" onClick={toggleItemForms}>{userData.language === 'en'?'Edit item info':'Редактировать информацию о предмете'}</button>
@@ -324,8 +324,8 @@ function ItemInfo() {
             <h1 className="border-bottom pb-2 mb-0">{userData.language === 'en'?'Item info':'Информация о предмете'}
               <button type="button" className="btn btn-primary mb-3 mt-1 ms-3" onClick={rate}>
               <img 
-              src={liked ? redHeart : whiteHeart}
-              style={{'width': '20px'}} />{userData.language === 'en'?'Like':'Нравится'} | {likesAmount}</button>
+              id="heart"
+              src={liked ? redHeart : whiteHeart} />{userData.language === 'en'?'Like':'Нравится'} | {likesAmount}</button>
             </h1>
             {fieldsArray.map((field, index)=>{
                 return field.name.includes('text')?

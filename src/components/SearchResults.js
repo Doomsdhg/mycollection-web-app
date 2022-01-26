@@ -47,50 +47,43 @@ function SearchResults() {
       }
 
     return (
-      <div className='container' style={{'marginTop': '100px'}}>
+      <div className='container'>
       <h1>Search results</h1>
-        <div className='d-flex p-2 bd-highlight' style={{'marginTop': '100px', 'margin':'0 auto'}}>
+        <div className='d-flex p-2 bd-highlight mt-3 m-auto'>
             
-            <div className="d-inline-flex p-2 bd-highlight" style={{'flex': '1', 'flexDirection': 'column', 'alignItems': 'left'}}>
+            <div className="d-inline-flex p-2 bd-highlight align-items-start flex-column search-results">
               <h2>{userData.language === 'en'?'Items found by seeking in item info/comments':'Предметы найденные по ключевым словам в инфмормации о предмете/комментариях'}</h2>
             {itemsArray?
             itemsArray.length !== 0?
             itemsArray.map((item, index)=>{
                 return (
-                <div className="card" key={index} 
-                    style={{"marginTop":"20px", 'width': '80%', 'word-break': 'break-word'}}>
+                <div className="card mt-2 w-80 text-break" key={index} >
                       <div className="card-body" data-id={item._id}>
                       
-                        <h5 className="card-title" style={{'display': 'inline-block', 'width': '80%'}}>{item.name?item.name:userData.language === 'en'?'no name':'без имени'}</h5><br/>
-                        <p className="card-text" style={{'display': 'inline-block'}}>
-                        <MDEditor.Markdown 
-                          source={item.description} 
-                        /></p><br/>
+                        <h5 className="card-title d-inline-block w-80">{item.name?item.name:userData.language === 'en'?'no name':'без имени'}</h5><br/>
+                        <p className="card-text d-inline-block">{item.tags}</p><br/>
                         <a className="btn btn-primary" onClick={itemPageRedirect}>{userData.language === 'en'?'Open item':'Просмотр предмета'}</a>
                         
                       </div>
                     </div>)
             })
-            : <div style={{
-                'marginTop': '70px',
-                'textAlign': 'center'}}><h1>{userData.language === 'en'?'No results':'Нет результатов'}</h1></div>
+            : <div className='w-100 text-center mt-5'><h1>{userData.language === 'en'?'No results':'Нет результатов'}</h1></div>
             : null
             }
             </div>
             
-            <div className="d-inline-flex p-2 bd-highlight" style={{'flex': '1', 'flexDirection': 'column', 'alignItems': 'left'}}>
+            <div className="d-inline-flex p-2 bd-highlight align-items-start flex-column search-results">
             <h2>{userData.language === 'en'?'Items found by seeking in collection info':'Предметы, найденные по содержанию ключевых слов в информации коллекции'}</h2>
             {collectionsArray?
             collectionsArray.length !== 0?
             collectionsArray.map((item, index)=>{
               if (!item) return null
                 return (
-                <div className="card" key={index} 
-                    style={{"marginTop":"20px", 'width': '80%', 'word-break': 'break-word'}}>
+                <div className="card mt-2 w-80 text-break" key={index} >
                       <div className="card-body" data-id={item._id}>
                       
-                        <h5 className="card-title" style={{'display': 'inline-block', 'width': '80%'}}>{item.name}</h5><br/>
-                        <p className="card-text" style={{'display': 'inline-block'}}>
+                        <h5 className="card-title d-inline-block w-80">{item.name}</h5><br/>
+                        <p className="card-text d-inline-block">
                         <MDEditor.Markdown 
                           source={item.description} 
                         /></p><br/>
@@ -99,9 +92,7 @@ function SearchResults() {
                       </div>
                     </div>)
             })
-            : <div style={{
-                'marginTop': '70px',
-                'textAlign': 'center'}}><h1>{userData.language === 'en'?'No results':'Нет результатов'}</h1></div>
+            : <div className='w-100 mt-5 text-center'><h1>{userData.language === 'en'?'No results':'Нет результатов'}</h1></div>
             : null
             }
             </div>

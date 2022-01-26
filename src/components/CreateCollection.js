@@ -145,7 +145,7 @@ function CreateCollection() {
     
 
     return (
-        <div className='container' style={{'marginTop': '100px'}}>  
+        <div className='container'>  
             <h3>{userData.language === 'en'?'Enter data for your future collection':'Введите информацию о коллекции'}</h3>
             <div className="mb-3">
               <span className="text" id="basic-addon1">{userData.language === 'en'?'Collection name':'Название коллекции'}</span>
@@ -170,7 +170,7 @@ function CreateCollection() {
 
             
               {userData.imageURL?
-              <img src={userData.imageURL} alt='' style={{'height':'100px'}}/>:
+              <img src={userData.imageURL} alt='unable to upload'/>:
               <div className="drag-n-drop-area">
                 {drag?
                 <div className ="drag-n-drop hovered"
@@ -187,12 +187,12 @@ function CreateCollection() {
                 }
               </div>}
             
-            <div className='wrapper' style={{'marginTop': '20px'}}>
+            <div className='wrapper mt-3'>
               <h3>{userData.language === 'en'?'Fields for each collection item':'Поля, которые будут применены для каждого предмета коллекции'}</h3>
               <p>{userData.language === 'en'?'(You can add up to 3 fields of each type)':'Вы можете добавить до 3-х полей каждого типа'}</p>
               {(()=>{
                 if (error) {
-                  return <p style={{'color':'red'}}>{error.message}</p>
+                  return <p className='text-danger'>{error.message}</p>
                 }
               })()}
               <div className="btn-group" role="group" aria-label="Basic outlined example">

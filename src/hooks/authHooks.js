@@ -1,4 +1,3 @@
-import {useDispatch, useSelector} from 'react-redux';
 import {setUserData, deleteUserData} from '../store/reducers';
 import React from 'react';
 

@@ -74,9 +74,9 @@ function CommentSection() {
         {comments.length !== 0?
         comments.map((comment, index)=>{
             return (
-            <div class="card mt-1 mb-3" style={{"width": "50vw"}}>
+            <div class="card mt-1 mb-3">
               <div class="card-body">
-                <h5 class="card-title" style={{"textDecoration": "underline"}}>{comment.userName}</h5>
+                <h5 class="card-title text-decoration-underline">{comment.userName}</h5>
                 <p class="card-text">{comment.text}</p>
               </div>
             </div>

@@ -348,7 +348,7 @@ function CollectionTable() {
 
     return (
       <>
-        <div className='container' style={{'marginTop': '100px'}}> 
+        <div className='container'> 
         {userData.userId === collectionData.creator ?
         <>
           <button type="button" className="btn btn-primary mb-3" onClick={toggleCollectionDataForms}>{userData.language==='en'?'Edit collection info':'Изменить информацию о коллекции'}</button>
@@ -498,10 +498,8 @@ function CollectionTable() {
               })}
             </tbody>
           </BTable>
-          {userData.userId === collectionData.creator ?
-          <button type="button" className="btn btn-primary mb-3" onClick={toggleForms}
-              style={displayForms?{'display': 'inline', 'backgroundColor': 'grey', 'border': 'none'}
-              :{'display': 'inline', 'backgroundColor': '#4CAF50', 'border': 'none'}}>
+          {userData.userId === collectionData.creator || userData.admin?
+          <button type="button" className="btn btn-success mb-3 d-inline" onClick={toggleForms}>
                 {userData.language==='en'?displayForms?'Close console':'Open console of item adding':displayForms?'Закрыть консоль':'Открыть консоль добавления предмета'}</button>
             : null
           }

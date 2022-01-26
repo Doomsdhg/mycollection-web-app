@@ -3,6 +3,7 @@ import { TagCloud } from 'react-tagcloud';
 import {setSearchQuery, setItemId, setCollectionId} from '../store/reducers';
 import {useDispatch, useSelector} from 'react-redux';
 import {useNavigate} from 'react-router-dom';
+import MDEditor from '@uiw/react-md-editor';
 
 function Main() {
   const noImage = 'https://st4.depositphotos.com/14953852/24787/v/600/depositphotos_247872612-stock-illustration-no-image-available-icon-vector.jpg';
@@ -88,11 +89,11 @@ function Main() {
   }
 
     return (
-        <main className="container" style={{marginTop: '80px'}}>
+        <main className="container">
           <div className="d-flex align-items-center p-3 my-3 text-white bg-purple rounded shadow-sm">
             <div className="lh-1">
-              <h1 className="display-1" style={{color: 'black'}}>{userData.language === 'en'?'Feed':'Лента событий'}</h1>
-              <small style={{color: 'black'}}>{userData.language === 'en'?'Latest updates':'Последние обновления'}</small>
+              <h1 className="display-1 text-dark">{userData.language === 'en'?'Feed':'Лента событий'}</h1>
+              <small className='text-dark'>{userData.language === 'en'?'Latest updates':'Последние обновления'}</small>
             </div>
           </div>
 
@@ -105,7 +106,7 @@ function Main() {
 
               <p className="pb-3 mb-0 small lh-sm border-bottom">
                 <strong className="d-block text-gray-dark">{item.name?item.name:'no name'}
-                <button style={{'float': 'right'}} type="button" className="btn btn-primary" data-id={item._id} onClick={(e)=>{goToItemPage(e)}}>
+                <button type="button" className="btn btn-primary float-end" data-id={item._id} onClick={(e)=>{goToItemPage(e)}}>
                 {userData.language === 'en'?'Open':'Открыть'}</button>
                 </strong>
                 {item.tags?item.tags:userData.language === 'en'?'No tags':'Без тэгов'}
@@ -126,16 +127,16 @@ function Main() {
                 biggestCollections.map((collection)=>{
                   return(
                     <div className="d-flex pb-3 mb-0 small lh-sm border-bottom w-100">
-                      <img src={collection.imageURL?collection.imageURL:noImage} 
-                      style={{'display':'inline-block','width': '10%',
-                      'height': '10%', 'maxHeight': '100px', 'maxWidth': '100px', 'marginTop':'20px', 'marginLeft':'20px' }} />
-                      <div style={{'display':'inline-block','marginTop':'20px', 'marginLeft':'20px'}}>
+                      <img className='d-inline-block mt-4 ms-4' src={collection.imageURL?collection.imageURL:noImage} />
+                      <div className='d-inline-block mt-3 ms-3'>
                         <span className="text-gray-dark" >{userData.language === 'en'?'Collection name: ':'Название коллекции: '}<b>{collection.name}</b></span><br/>
                         
-                        <span>{userData.language === 'en'?'Collection description: ':'Описание коллекции'}<i>{collection.description}</i></span><br/>
+                        <span>{userData.language === 'en'?'Collection description: ':'Описание коллекции'}
+                        <MDEditor.Markdown 
+                          source={collection.description} /></span><br/>
                         <span>{userData.language === 'en'?'Topic: ':'Категория: '}<b>{collection.topic}</b></span><br/>
                         <span>{userData.language === 'en'?'Amount of items: ':'Количество предметов: '}<b>{collection.items.length}</b></span><br/>
-                        <button className='btn btn-primary' style={{'display': 'inline-block', 'float':'left'}} data-id={collection._id} 
+                        <button className='btn btn-primary d-inline-block float-start' data-id={collection._id} 
                         onClick={e=>redirectToCollection(e)}>{userData.language === 'en'?'Open':'Открыть'}</button>
                       </div>
                     </div>
@@ -145,15 +146,14 @@ function Main() {
             </div>
 
           <div className="align-items-center p-3 my-3 text-white bg-purple rounded shadow-sm">
-            <div className="lh-1" id="tag-cloud-header" style={{'marginTop':'0px','textAlign':'center','display': 'block', 'borderBottom':'1px solid #bdc3c7'}}>
-              <h3 style={{color: 'black'}}>{userData.language === 'en'?'Tag cloud':'Облако тегов'}</h3>
+            <div className="lh-1 text-center" id="tag-cloud-header " >
+              <h3 className='text-dark'>{userData.language === 'en'?'Tag cloud':'Облако тегов'}</h3>
             </div>
             
           
 
-          <p style={{'display': 'block', 'textAlign' : 'center', 'marginTop':'70px'}}>
-            <p className='p-5' 
-            style={{'boxShadow':'0 .5rem 1rem #b8ddff','display':'inline-block','border': '1px solid #bdc3c7', 'borderRadius':'40%'}}>
+          <p className='d-block mt-5 text-center'>
+            <p className='shadow-lg p-3 mb-5 bg-body rounded-pill d-inline-block p-5'>
             <TagCloud
             minSize={12}
             maxSize={35}
