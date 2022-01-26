@@ -1,5 +1,7 @@
 import React, {useState, useEffect, useMemo} from 'react';
 import BTable from 'react-bootstrap/Table';
+import {useTable, useSortBy, useFilters, useGlobalFilter, useAsyncDebounce} from 'react-table';
+import MDEditor from '@uiw/react-md-editor';
 
 export const useTableRender = () => {
 
@@ -60,7 +62,129 @@ export const useTableRender = () => {
                   })}
                 </tbody>
             </BTable>
-        )
+        )   
     }
-    return {renderAdminTable}
+
+
+
+    const renderCollectionTable = (table, headers, selectHandler, redirect, userData) => {
+
+
+
+      function GlobalFilter({
+          preGlobalFilteredRows,
+          globalFilter,
+          setGlobalFilter,
+        }) {
+        const count = preGlobalFilteredRows.length
+        const [value, setValue] = React.useState(globalFilter)
+        const onChange = useAsyncDebounce(value => {
+          setGlobalFilter(value || undefined)
+        }, 200)
+      
+        return (
+          <span>
+            Search:{' '}
+            <input className='table-filter'
+              value={value || ""}
+              onChange={e => {
+                setValue(e.target.value);
+                onChange(e.target.value);
+              }}
+              placeholder={`${count} records...` }
+              style={{
+                fontSize: '1.1rem',
+                border: '0',
+              }}
+            />
+          </span>
+        )
+      }
+
+      const {
+        getTableProps,
+        getTableBodyProps,
+        headerGroups,
+        rows,
+        prepareRow,
+      } = table;
+
+      return (
+          <BTable striped bordered hover size="sm" {...getTableProps()}>
+            <thead>
+              {headerGroups.map(headerGroup => (
+                <tr {...headerGroup.getHeaderGroupProps()}>
+                  {headerGroup.headers.map(column => {
+                    return (
+                    <th {...column.getHeaderProps(column.getSortByToggleProps())}>
+                      {column.render('Header')}
+                      {column.isSorted ? (column.isSortedDesc ? " ▲" : " ▼") : ""}
+                    </th>)
+                  })}
+                </tr>
+              ))}
+              <tr>
+                <th
+                  colSpan={table.visibleColumns.length}
+                  style={{
+                    textAlign: 'left',
+                  }}
+                >
+                  <GlobalFilter
+                    preGlobalFilteredRows={table.preGlobalFilteredRows}
+                    globalFilter={table.state.globalFilter}
+                    setGlobalFilter={table.setGlobalFilter}
+                  />
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              {rows.map((row, i) => {
+                prepareRow(row)
+                return (
+                  <tr {...row.getRowProps()}>
+                    {row.cells.map((cell, index) => {
+                      console.log();
+                      if (index === 0) {
+                        return (
+                          <td {...cell.getCellProps()}>
+                          {cell.render('Cell')}
+                          <input type='checkbox' className='checkbox-cell' data-id={cell.row.original._id} onChange={selectHandler} />
+                        </td>
+                        )
+                      } 
+                      if (index === headers.length - 1) {
+                        return (
+                          <td {...cell.getCellProps()}>
+                          {cell.render('Cell')}
+                          <button type="button" className="btn btn-primary" data-id={row.values._id} onClick={(e)=>{redirect(e)}}>
+                          {userData.language==='en'?'Open':'Открыть'}</button>
+                        </td>
+                        )
+                      }
+                      if (cell.column.fieldType && cell.column.fieldType.includes('text')) {
+                        return (
+                          <td {...cell.getCellProps()}>
+                          <MDEditor.Markdown 
+                            source={cell.value} 
+                          />
+                        </td>
+                          
+                        )
+                      }
+                      return (
+                        <td {...cell.getCellProps()}>
+                          {cell.render('Cell')}
+                        </td>
+                      )
+                    })}
+                  </tr>
+                )
+              })}
+            </tbody>
+          </BTable>
+      )     
+    }
+
+    return {renderAdminTable, renderCollectionTable}
 }

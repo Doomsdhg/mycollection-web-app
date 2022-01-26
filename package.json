@@ -29,7 +29,6 @@
     "redux-persist": "^6.0.0",
     "redux-thunk": "^2.4.1",
     "sass": "^1.49.0",
-    "sass-loader": "^12.4.0",
     "theme-switcher": "^1.0.2",
     "web-vitals": "^2.1.2"
   },
