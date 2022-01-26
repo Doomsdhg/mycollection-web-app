@@ -26,7 +26,7 @@ export function GlobalFilter({
           setValue(e.target.value);
           onChange(e.target.value);
         }}
-        placeholder={`${count} records...`}
+        placeholder={`${count} records...` }
         style={{
           fontSize: '1.1rem',
           border: '0',

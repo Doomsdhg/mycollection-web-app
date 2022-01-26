@@ -1,6 +1,5 @@
 import React, {useState, useEffect, useMemo} from 'react';
 import {useTable} from 'react-table';
-import BTable from 'react-bootstrap/Table';
 import {useNavigate} from 'react-router-dom';
 import {useDispatch, useSelector} from 'react-redux';
 import {setProfileId} from '../store/reducers';
@@ -42,14 +41,6 @@ function AdminPanel() {
     const table = useTable(
         {columns, data});
       
-    const {
-        getTableProps,
-        getTableBodyProps,
-        headerGroups,
-        rows,
-        prepareRow,
-        } = table;
-
     useEffect(()=>{
         console.log(userData.language);
         fetchUsers();
@@ -59,7 +50,6 @@ function AdminPanel() {
         try {
           const request = await fetch('https://mycollection-server.herokuapp.com/api/getuserstable')
           const response = await request.json();
-          console.log(response)
           setUsers(response);
         } catch (error) {
           console.log(error);
@@ -71,19 +61,22 @@ function AdminPanel() {
         navigate('/mycollections');
     }
 
-    
-    const changeUser = async function(userId, action){
-        try {
-            const request = await fetch(`https://mycollection-server.herokuapp.com/api/${action}user`, 
-            {
+    const getPostRequestOptions = function (dataName, data){
+      return (
+        {
               method: 'POST',
               headers: {
                 'Content-Type': 'application/json',
               },
-              body: JSON.stringify({data: {userId}})
-            });
+              body: JSON.stringify({data: {[dataName]: data}})
+            }
+      )
+    }
+    
+    const changeUser = async function(userId, action){
+        try {
+            const request = await fetch(`https://mycollection-server.herokuapp.com/api/${action}user`, getPostRequestOptions('userId', userId));
             const response = await request.json();
-            console.log(response);
             fetchUsers();
           } catch (error) {
             console.error(error)
@@ -91,54 +84,9 @@ function AdminPanel() {
     }
 
 
-    return (<div className='container'>
-        <BTable striped bordered hover size="sm" {...getTableProps()}>
-            <thead>
-              {headerGroups.map(headerGroup => (
-                <tr {...headerGroup.getHeaderGroupProps()}>
-                  {headerGroup.headers.map(column => (
-                    <th {...column.getHeaderProps()}>
-                      {column.render('Header')}
-                    </th>
-                  ))}
-                </tr>
-              ))}
-            </thead>
-            <tbody>
-              {rows.map((row, i) => {
-                prepareRow(row)
-                return (
-                  <tr {...row.getRowProps()}>
-                    {row.cells.map((cell, index) => {
-                      console.log();
-                      
-                      if (index === headers.length - 1) {
-                        return (
-                            <td {...cell.getCellProps()}>
-                                {cell.render('Cell')}
-                                <div class="btn-group" role="group" aria-label="Basic mixed styles example">
-                                  <button type="button" class="btn btn-danger" onClick={e=>changeUser(row.original.id, 'delete')}>{userData.language==='en'?'delete':'удалить'}</button>
-                                  <button type="button" class="btn btn-warning" onClick={e=>{changeUser(row.values.id, 'block')}}>{userData.language==='en'?row.original.blocked?'unblock':'block':row.original.blocked?'разблокировать':'заблокировать'}</button>
-                                  <button type="button" class="btn btn-success" 
-                                  onClick={e=>changeUser(row.values.id, 'promote')}>{userData.language==='en'?row.original.admin?'demote to regular user':'promote to admin':row.original.admin?'сделать обычным пользователем':'сделать администратором'}</button>
-                                  <button type="button" class="btn btn-primary" onClick={e=>userPageRedirect(row.original.id)}>{userData.language==='en'?'open':'открыть'}</button>
-                                </div>
-                            </td>
-                        )
-                      }
-                      
-                      return (
-                        <td {...cell.getCellProps()}>
-                          {cell.render('Cell')}
-                        </td>
-                      )
-                    })}
-                  </tr>
-                )
-              })}
-            </tbody>
-          </BTable>
-          {renderAdminTable(table, headers, changeUser, userPageRedirect, userData)}
+    return (
+    <div className='container'>
+      {renderAdminTable(table, headers, changeUser, userPageRedirect, userData)}
     </div>);
 }
 

@@ -131,7 +131,7 @@ function ItemInfo() {
           console.log(fields);
           fields = fields.map((field, index)=>{
             console.log(field)
-            if (!field) {return null}
+            if (field === undefined) {return field}
             if (field === 'name') {
               console.log(field)
               console.log(headersArray[index]);
@@ -278,7 +278,7 @@ function ItemInfo() {
               <div className={displayForms?"form-group":'display-none'}>
               <h1 className="border-bottom pb-2 mb-0">{userData.language === 'en'?'Item info':'Информация о предмете'}</h1>
               {fieldsArray.map((field, index) => {
-
+                console.log(field)
                 const type = field.type.substring(0, field.type.length - 6);
                 if (type === 'text') {
                   

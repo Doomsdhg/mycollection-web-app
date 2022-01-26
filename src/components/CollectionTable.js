@@ -10,7 +10,7 @@ import {setItemId} from '../store/reducers';
 import {GlobalFilter} from './table';
 import TextInput from 'react-autocomplete-input';
 import 'react-autocomplete-input/dist/bundle.css';
-
+import {useTableRender} from '../hooks/tableHooks';
 
 function CollectionTable() {
     const [tags, setTags] = useState();
@@ -25,6 +25,7 @@ function CollectionTable() {
     const [displayForms, setDisplayForms] = useState(false);
     const [headers, setHeaders] = useState([]);
     const [items, setItems] = useState([]);
+    const {renderCollectionTable} = useTableRender();
     const columns = useMemo(
       () => [...headers],
       [headers]
@@ -36,7 +37,6 @@ function CollectionTable() {
     const userData = useSelector(store => store.userData);
 
     useEffect(()=>{
-      console.log(userData.collectionId)
       fetchCollectionData();
       fetchTags();
     }, [])
@@ -47,64 +47,63 @@ function CollectionTable() {
         creator: userData.userId,
       })
       setDisplayForms(current => !current)
-      console.log(itemFormValue);
-
     }
 
     const fetchTags = async function(){
       try {
         const request = await fetch('https://mycollection-server.herokuapp.com/api/gettags')
         const response = await request.json();
-        console.log(response)
         setTags(Object.keys(response));
       } catch (error) {
         console.log(error);
       }
     }
 
-    const fetchCollectionData = async function(){
-      console.log(itemFormValue)
-      try {
-        const request = await fetch('https://mycollection-server.herokuapp.com/api/getcollectiondata', 
-          {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({data: {
-              collectionId: userData.collectionId
-            }})
-          })
-          const response = await request.json();
-          console.log(response);
-          setCollectionData(response);
-          setMarkdownValue(response.description);
-          console.log(userData.userId === response.creator);
-          switch (response.topic) {
-            case 'Books':
-              response.topic = userData.language === 'en' ? 'Books' : 'Книги';
-            case 'Alcohol':
-              response.topic = userData.language === 'en' ? 'Alcohol' : 'Алкоголь';
-            case 'Other':
-              response.topic = userData.language === 'en' ? 'Other' : 'Другое';
-            default:
-              break
-          }
+    const getRequestOptions = function (dataName, data){
+      return (
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({data: {
+            [dataName]: data
+          }})
+        }
+      )
+    }
 
-          if (userData.userId === response.creator || userData.admin) {
-            setHeaders([{
-              Header: userData.language==='en'?'select':'Выбрать',
-              accessor: 'select'
-            }])
-          }
-          fetchCollectionTable()
+    const fetchCollectionData = async function(){
+      try {
+        const request = await fetch('https://mycollection-server.herokuapp.com/api/getcollectiondata', getRequestOptions('collectionId', userData.collectionId));
+        let response = await request.json();
+        localizeTopic(response);
+        setCollectionData(prev=>response);
+        setMarkdownValue(response.description);
+        fetchCollectionTable()
       } catch (error) {
         console.log(error);
       }
     }
 
+    const localizeTopic = function (response){
+      switch (response.topic) {
+        case 'Books':
+          response.topic = userData.language === 'en' ? 'Books' : 'Книги';
+          break
+        case 'Alcohol':
+          response.topic = userData.language === 'en' ? 'Alcohol' : 'Алкоголь';
+          break
+        case 'Other':
+          response.topic = userData.language === 'en' ? 'Other' : 'Другое';
+          break
+        default:
+          break
+      }
+    }
+
     const checkPermission = function(){
-      if (userData.userId === collectionData.creator) {
+      if (userData.userId === collectionData.creator || userData.admin) {
         setHeaders([{
           Header: userData.language==='en'?'select':'Выбрать',
           accessor: 'select'
@@ -121,63 +120,54 @@ function CollectionTable() {
       setMarkdownValue('')
     }
 
-    const fetchCollectionTable = async function(){
-        try {
-            const request = await fetch('https://mycollection-server.herokuapp.com/api/getcollectiontable', 
-              {
-                method: 'POST',
-                headers: {
-                  'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({data: {
-                  collectionId: userData.collectionId
-                }})
-              })
-              const response = await request.json();
-              console.log(response);
-              response.headers.map((header)=>{
-                if (header.fieldType.includes('checkbox')) {
-                  setItemFormValue({...itemFormValue, 
-                    [header.fieldType]: false,
-                  });
-                }
-              })
-              console.log(response.headers)
-              const headers = response.headers.map(header=>{
-                if (header.fieldType === 'id') {
-                  header.Header = userData.language === 'en' ? 'id' : 'Идентефикатор';
-                  return header
-                } else if (header.fieldType === 'name') {
-                  header.Header = userData.language === 'en' ? 'name' : 'Название';
-                  return header
-                } else if (header.fieldType === 'tags') {
-                  header.Header = userData.language === 'en' ? 'tags' : 'Тэги';
-                  return header
-                } else {
-                  return header
-                }
+    const localizeHeaders = function (headers) {
+      return headers = headers.map(header=>{
+        if (header.fieldType === 'id') {
+          header.Header = userData.language === 'en' ? 'id' : 'Идентефикатор';
+          return header
+        } else if (header.fieldType === 'name') {
+          header.Header = userData.language === 'en' ? 'name' : 'Название';
+          return header
+        } else if (header.fieldType === 'tags') {
+          header.Header = userData.language === 'en' ? 'tags' : 'Тэги';
+          return header
+        } else {
+          return header
+        }
+      })
+      
+    }
 
-              })
-              
-              setHeaders(prev => [
-              ...prev,
-              ...headers, 
-              {
-                Header: userData.language==='en'?'Item page':'Страница предмета',
-                accessor: 'itemRef'
-              }])
-              response.headers.map((header)=>{
-                console.log(header);
-                setItemFormValue((prev) => {return {...prev, 
-                  [header.fieldType]: '',
-                }})
-              })
-              
-              
-              setItems(response.items)
-          } catch (error) {
-            console.log(error);
-          }
+    const defineItemFields = function (headers) {
+      return headers.map((header)=>{
+        console.log(header);
+        setItemFormValue((prev) => {return {...prev, 
+          [header.fieldType]: '',
+        }})
+      })
+    }
+
+    const fetchCollectionTable = async function(){
+        checkPermission();
+        try {
+          const request = await fetch('https://mycollection-server.herokuapp.com/api/getcollectiontable', getRequestOptions('collectionId', userData.collectionId))
+          const response = await request.json();
+          const headers = localizeHeaders(response.headers);
+          setHeaders(prev => [
+          ...prev,
+          ...headers, 
+          {
+            Header: userData.language==='en'?'Item page':'Страница предмета',
+            accessor: 'itemRef'
+          }])
+          defineItemFields(response.headers);
+          
+          
+          
+          setItems(response.items)
+        } catch (error) {
+          console.log(error);
+        }
     }
     
     const table = useTable(
@@ -270,7 +260,6 @@ function CollectionTable() {
     }
 
     const selectHandler = function(e){
-      console.log(selectedItems);
       if (e.target.checked) {
         setSelectedItems((prev)=>{return prev.concat(e.target.dataset.id)})
       } else {
@@ -296,7 +285,6 @@ function CollectionTable() {
           });
           const response = await request.json();
           console.log(response.message);
-          await checkPermission()
           setTimeout(()=>{
             toast(userData.language==='en'?'item added successfully!':'предмет успешно добавлен в коллекцию!');
           },100)
@@ -333,7 +321,6 @@ function CollectionTable() {
         });
         const response = await request.json();
         console.log(response);
-        await checkPermission()
         setTimeout(()=>{
           toast(userData.language==='en'?'item(s) deleted successfully!':'Предметы(ы) удалены');
         },100)
@@ -382,6 +369,7 @@ function CollectionTable() {
               <p className="pb-3 mb-0 small lh-sm border-bottom">
                 <strong className="d-block text-gray-dark">{userData.language==='en'?'Collection topic':'Категория'}</strong>
                 {collectionData.topic}
+                {console.log(collectionData.topic)}
               </p>
             </div>
           </div>
@@ -412,7 +400,7 @@ function CollectionTable() {
               <select className="form-select" onChange={collectionDataChangeHandler} name='topic' 
               disabled={collectionDataDisabled?true:false} id="inputGroupSelect01">
                 <option >{userData.language==='en'?'Choose...':'Выберите'}</option>
-                <option selected={collectionData.topic==='Books'?true:false} value="Books">{userData.language==='en'?'Books':''}</option>
+                <option selected={collectionData.topic==='Books'?true:false} value="Books">{userData.language==='en'?'Books':'Книги'}</option>
                 <option selected={collectionData.topic==='Alcohol'?true:false} value="Alcohol">{userData.language==='en'?'Alcohol':'Алкоголь'}</option>
                 <option selected={collectionData.topic==='Other'?true:false} value="Other">{userData.language==='en'?'Other':'Другое'}</option>
               </select>
@@ -420,84 +408,11 @@ function CollectionTable() {
             <button type="button" className="btn btn-success mb-3" onClick={updateCollectionData}>{userData.language==='en'?'Save collection info changes':'Сохранить изменённые данные'}</button>
           </div>
           
-          { userData.userId === collectionData.creator && selectedItems.length !== 0?
+          { (userData.userId === collectionData.creator || userData.admin) && selectedItems.length !== 0?
           <button type="button" className="btn btn-danger mb-3 mt-3" onClick={deleteItems}>{userData.language==='en'?'Delete selected items':'Удалить выбранные предметы'}</button>
           : null
           }
-          <BTable striped bordered hover size="sm" {...getTableProps()}>
-            <thead>
-              {headerGroups.map(headerGroup => (
-                <tr {...headerGroup.getHeaderGroupProps()}>
-                  {headerGroup.headers.map(column => {
-                    console.log(column);
-                    return (
-                    <th {...column.getHeaderProps(column.getSortByToggleProps())}>
-                      {column.render('Header')}
-                      {column.isSorted ? (column.isSortedDesc ? " ▲" : " ▼") : ""}
-                    </th>)
-                  })}
-                </tr>
-              ))}
-              <tr>
-                <th
-                  colSpan={table.visibleColumns.length}
-                  style={{
-                    textAlign: 'left',
-                  }}
-                >
-                  <GlobalFilter
-                    preGlobalFilteredRows={table.preGlobalFilteredRows}
-                    globalFilter={table.state.globalFilter}
-                    setGlobalFilter={table.setGlobalFilter}
-                  />
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              {rows.map((row, i) => {
-                prepareRow(row)
-                return (
-                  <tr {...row.getRowProps()}>
-                    {row.cells.map((cell, index) => {
-                      console.log();
-                      if (index === 0) {
-                        return (
-                          <td {...cell.getCellProps()}>
-                          {cell.render('Cell')}
-                          <input type='checkbox' className='checkbox-cell' data-id={cell.row.original._id} onChange={selectHandler} />
-                        </td>
-                        )
-                      } 
-                      if (index === headers.length - 1) {
-                        return (
-                          <td {...cell.getCellProps()}>
-                          {cell.render('Cell')}
-                          <button type="button" className="btn btn-primary" data-id={row.values._id} onClick={(e)=>{goToItemPage(e)}}>
-                          {userData.language==='en'?'Open':'Открыть'}</button>
-                        </td>
-                        )
-                      }
-                      if (cell.column.fieldType && cell.column.fieldType.includes('text')) {
-                        return (
-                          <td {...cell.getCellProps()}>
-                          <MDEditor.Markdown 
-                            source={cell.value} 
-                          />
-                        </td>
-                          
-                        )
-                      }
-                      return (
-                        <td {...cell.getCellProps()}>
-                          {cell.render('Cell')}
-                        </td>
-                      )
-                    })}
-                  </tr>
-                )
-              })}
-            </tbody>
-          </BTable>
+          {renderCollectionTable(table, headers, selectHandler, goToItemPage, userData)}
           {userData.userId === collectionData.creator || userData.admin?
           <button type="button" className="btn btn-success mb-3 d-inline" onClick={toggleForms}>
                 {userData.language==='en'?displayForms?'Close console':'Open console of item adding':displayForms?'Закрыть консоль':'Открыть консоль добавления предмета'}</button>
@@ -550,6 +465,7 @@ function CollectionTable() {
             })}
             <button type="button" className="btn btn-success mb-3" onClick={uploadItem}>{userData.language === 'en'?'Add new item':'Добавить новый предмет'}</button>
           </div>
+          
         </div>
       <ToastContainer />
       </>
