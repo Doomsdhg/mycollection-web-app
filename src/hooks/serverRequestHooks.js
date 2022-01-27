@@ -31,18 +31,80 @@ export const useRequestHooks = () => {
       })
     }
 
-    const sendPostRequest = async (path, dataName, data, userData) => {
+    const checkPermission = function(headers, userData, collectionData){
+      if (userData.userId === collectionData.creator || userData.admin) {
+        return headers = [{
+          Header: userData.language==='en'?'select':'Выбрать',
+          accessor: 'select'
+        },
+        ...headers,
+        {
+          Header: userData.language==='en'?'Item page':'Страница предмета',
+          accessor: 'itemRef'
+        }
+      ]
+      } else {
+        return headers = [
+          ...headers,
+          {
+            Header: userData.language==='en'?'Item page':'Страница предмета',
+            accessor: 'itemRef'
+          }
+        ]
+      }
+    }
+
+    const localizeTopic = function (topic, language){
+      switch (topic) {
+        case 'Books':
+          return topic = language === 'en' ? 'Books' : 'Книги';
+        case 'Alcohol':
+          return topic = language === 'en' ? 'Alcohol' : 'Алкоголь';
+        case 'Other':
+          return topic = language === 'en' ? 'Other' : 'Другое';
+        default:
+          break
+      }
+    }
+
+    const defineItemFields = function (headers) {
+      let headersObject = {};
+      headers.map((header)=>{
+        console.log(header);
+        headersObject = {...headersObject, 
+          [header.fieldType]: '',
+        }})
+      
+      return headersObject;
+    }
+
+    const sendPostRequest = async (path, dataName, data, userData, collectionData) => {
         try {
-            const request = await fetch(`https://mycollection-server.herokuapp.com/api/${path}`, getRequestOptions(dataName, data))
+            const request = await fetch(`http://localhost:8080/api/${path}`, getRequestOptions(dataName, data))
             const response = await request.json();
-            const responseHeaders = localizeHeaders(response.headers, userData.language);
-            const itemFields = response.headers;
-            const items = response.items;
-            console.log(response);
-            return {responseHeaders, itemFields, items}
+            
+            switch (path) {
+              case 'getcollectiontable': 
+                console.log(response);
+                response.headers = checkPermission(response.headers, userData, collectionData)
+                const responseHeaders = localizeHeaders(response.headers, userData.language);
+                const itemFields = defineItemFields(response.headers);
+                console.log(itemFields);
+                const items = response.items;
+                return {responseHeaders, itemFields, items}
+              case 'getcollectiondata':
+                response.topic = localizeTopic(response.topic);
+                return response
+              case 'uploaditem':
+                console.log(response);
+                return response;
+              default:
+                break;
+            }
           } catch (error) {
             console.log(error);
           }
     }
+
     return {sendPostRequest}
 }
