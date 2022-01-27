@@ -11,21 +11,25 @@ import {GlobalFilter} from './table';
 import TextInput from 'react-autocomplete-input';
 import 'react-autocomplete-input/dist/bundle.css';
 import {useTableRender} from '../hooks/tableHooks';
+import {useRequestHooks} from '../hooks/serverRequestHooks';
 
 function CollectionTable() {
+    const [error, setError] = useState('');
     const [tags, setTags] = useState();
     const [selectedItems, setSelectedItems] = useState([]);
     const [markdownValue, setMarkdownValue] = useState();
     const [collectionFormValue, setCollectionFormValue] = useState({});
     const [collectionDataDisabled, setCollectionFormsDisabled] = useState(true);
     const [collectionData, setCollectionData] = useState('');
-    const navigate = useNavigate();
-    const dispatch = useDispatch();
     const [itemFormValue, setItemFormValue] = useState({});
     const [displayForms, setDisplayForms] = useState(false);
     const [headers, setHeaders] = useState([]);
     const [items, setItems] = useState([]);
     const {renderCollectionTable} = useTableRender();
+    const userData = useSelector(store => store.userData);
+    const navigate = useNavigate();
+    const dispatch = useDispatch();
+    const {sendPostRequest} = useRequestHooks();
     const columns = useMemo(
       () => [...headers],
       [headers]
@@ -34,19 +38,28 @@ function CollectionTable() {
       () => [...items],
       [items]
     )
-    const userData = useSelector(store => store.userData);
 
     useEffect(()=>{
+      setItemFormValue({...itemFormValue, 
+        collectionRef: userData.collectionId,
+        creator: collectionData.creator,
+      })
       fetchCollectionData();
       fetchTags();
     }, [])
+
+    useEffect(()=>{
+      if (error) {
+        console.log(error)
+        toast('' + error);
+        setError('')
+      }
+    }, [error])
     
     const toggleForms = function(){
-      setItemFormValue({...itemFormValue, 
-        collectionRef: userData.collectionId,
-        creator: userData.userId,
-      })
-      setDisplayForms(current => !current)
+      const formWrapper = document.getElementById('formWrapper')
+      formWrapper.classList.toggle('display-none');
+      setDisplayForms(prev=>!prev);
     }
 
     const fetchTags = async function(){
@@ -135,7 +148,6 @@ function CollectionTable() {
           return header
         }
       })
-      
     }
 
     const defineItemFields = function (headers) {
@@ -150,21 +162,20 @@ function CollectionTable() {
     const fetchCollectionTable = async function(){
         checkPermission();
         try {
-          const request = await fetch('https://mycollection-server.herokuapp.com/api/getcollectiontable', getRequestOptions('collectionId', userData.collectionId))
-          const response = await request.json();
-          const headers = localizeHeaders(response.headers);
+          const {
+            responseHeaders, 
+            itemFields, 
+            items} = await sendPostRequest('getcollectiontable', 'collectionId', userData.collectionId, userData);
           setHeaders(prev => [
           ...prev,
-          ...headers, 
+          ...responseHeaders, 
           {
             Header: userData.language==='en'?'Item page':'Страница предмета',
             accessor: 'itemRef'
           }])
-          defineItemFields(response.headers);
-          
-          
-          
-          setItems(response.items)
+          console.log(itemFields);
+          defineItemFields(itemFields);
+          setItems(items)
         } catch (error) {
           console.log(error);
         }
@@ -275,6 +286,13 @@ function CollectionTable() {
         console.log(itemFormValue);
         
         try {
+          const tags = itemFormValue.tags.split(' ');
+          tags.map(tag=>{
+            if (tag[0] !== '#') {
+              throw new Error (userData.language === 'en'?'Each tag should start with "#"':'Каждый тэг должен начинаться с "#"')
+            }
+          })
+          
           const request = await fetch('https://mycollection-server.herokuapp.com/api/uploaditem', 
           {
             method: 'POST',
@@ -289,8 +307,9 @@ function CollectionTable() {
             toast(userData.language==='en'?'item added successfully!':'предмет успешно добавлен в коллекцию!');
           },100)
           fetchCollectionTable()
-        } catch (error) {
-          console.error(error)
+        } catch (e) {
+          console.log(e);
+          setError(e)
         }
         
     }
@@ -335,7 +354,7 @@ function CollectionTable() {
 
     return (
       <>
-        <div className='container'> 
+        <div className='container main-container'> 
         {userData.userId === collectionData.creator ?
         <>
           <button type="button" className="btn btn-primary mb-3" onClick={toggleCollectionDataForms}>{userData.language==='en'?'Edit collection info':'Изменить информацию о коллекции'}</button>
@@ -412,13 +431,13 @@ function CollectionTable() {
           <button type="button" className="btn btn-danger mb-3 mt-3" onClick={deleteItems}>{userData.language==='en'?'Delete selected items':'Удалить выбранные предметы'}</button>
           : null
           }
-          {renderCollectionTable(table, headers, selectHandler, goToItemPage, userData)}
+          {renderCollectionTable(table, headers, selectHandler, goToItemPage, userData, collectionData)}
           {userData.userId === collectionData.creator || userData.admin?
           <button type="button" className="btn btn-success mb-3 d-inline" onClick={toggleForms}>
                 {userData.language==='en'?displayForms?'Close console':'Open console of item adding':displayForms?'Закрыть консоль':'Открыть консоль добавления предмета'}</button>
             : null
           }
-          <div className={displayForms?'wrapper':'display-none'}>
+          <div id='formWrapper' className='wrapper display-none'>
             {headers.map((header, index)=>{
               
               if (index === 0 || index === 1 || header.accessor === 'itemRef') return null

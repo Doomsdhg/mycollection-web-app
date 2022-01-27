@@ -10,7 +10,7 @@ body {
 
 }
 
-.container {
+.main-container {
   margin-top: 100px;
 }
 
@@ -96,6 +96,11 @@ code {
   justify-content: center;
   background-color: rgb(201, 236, 252);
 }
+
+.header-button-group {
+  margin-bottom: 0;
+}
+
 @media screen and (max-width: 992px) {
 
 .display-none {
@@ -107,5 +112,9 @@ code {
   margin-left: 0 !important;
 }
 
+
+.header-button-group {
+  margin-bottom: 0.5rem;
 }
 
+}

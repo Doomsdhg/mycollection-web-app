@@ -48,7 +48,7 @@ export default function MyCollections() {
     
   }
     return (
-        <div className='container'>  
+        <div className='container main-container'>  
               <div className="my-3 p-3 bg-body rounded shadow-sm">
                 <h1 className='d-inline-block'>{owner && userData.profileId !== userData.userId ? userData.language === 'en' ? owner.name + "'s collections" : 'Коллекции ' + owner.name: userData.language === 'en' ? 'Your collections' : 'Ваши коллекции'} </h1>
                 <button type="button" className="btn btn-success d-inline-block float-end" onClick={routeChange}>

@@ -3,6 +3,8 @@ import {useSelector} from 'react-redux';
 import MDEditor from '@uiw/react-md-editor';
 import { ToastContainer, toast } from 'react-toastify';
 import {useNavigate} from 'react-router-dom';
+import {useDispatch} from 'react-redux';
+import {setCollectionId} from '../store/reducers';
 
 function ItemInfo() {
     const redHeart = 'https://img.icons8.com/external-kiranshastry-lineal-color-kiranshastry/50/000000/external-heart-miscellaneous-kiranshastry-lineal-color-kiranshastry.png';
@@ -17,6 +19,7 @@ function ItemInfo() {
     const [headersArray, setHeadersArray] = useState([]);
     const userData = useSelector(store => store.userData);
     const [fieldsArray, setFieldsArray] = useState([]);
+    const dispatch = useDispatch();
     const navigate = useNavigate();
 
     useEffect(()=>{
@@ -104,6 +107,7 @@ function ItemInfo() {
           }
           console.log(response);
           setItemData(response);
+          dispatch(setCollectionId(response.collectionRef));
           let indexesToDelete = [];
           let fields = Object.values(response);
           let keys = Object.keys(response);
@@ -149,6 +153,7 @@ function ItemInfo() {
             } else {
               console.log(keys);
               console.log(fields);
+              console.log(index);
               console.log(headersArray)
               console.log(headersArray[index])
               return {
@@ -268,7 +273,7 @@ function ItemInfo() {
     }
 
     return (
-        <div className='container'>
+        <div className='container main-container'>
            {itemData && userData.userId === itemData.creator || userData.admin ?
             <div className={displayButtons ? null  : 'display-none'}>
               <button type="button" className="btn btn-primary mb-3" onClick={toggleItemForms}>{userData.language === 'en'?'Edit item info':'Редактировать информацию о предмете'}</button>
@@ -322,14 +327,14 @@ function ItemInfo() {
             }
             <div className={displayForms?"display-none":"my-3 p-3 bg-body rounded shadow-sm"}>
             <h1 className="border-bottom pb-2 mb-0">{userData.language === 'en'?'Item info':'Информация о предмете'}
-              <button type="button" className="btn btn-primary mb-3 mt-1 ms-3" onClick={rate}>
+              <button type="button" className="btn btn-primary mb-3 mt-1 ms-3 float-end" onClick={rate}>
               <img 
               id="heart"
               src={liked ? redHeart : whiteHeart} />{userData.language === 'en'?'Like':'Нравится'} | {likesAmount}</button>
             </h1>
             {fieldsArray.map((field, index)=>{
                 return field.name.includes('text')?
-                    <div className="d-flex text-muted pt-3">
+                    <div className="d-flex text-muted pt-3" key={index} >
                         <p className="pb-3 mb-0 small lh-sm border-bottom border-dark border-1">
                         <strong className="d-block text-gray-dark">{headersArray[index]?headersArray[index].Header:null}</strong>
                         <MDEditor.Markdown 

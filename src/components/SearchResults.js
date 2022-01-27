@@ -47,7 +47,7 @@ function SearchResults() {
       }
 
     return (
-      <div className='container'>
+      <div className='container main-container'>
       <h1>Search results</h1>
         <div className='d-flex p-2 bd-highlight mt-3 m-auto'>
             

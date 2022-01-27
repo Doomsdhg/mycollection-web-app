@@ -145,7 +145,7 @@ function CreateCollection() {
     
 
     return (
-        <div className='container'>  
+        <div className='container main-container'>  
             <h3>{userData.language === 'en'?'Enter data for your future collection':'Введите информацию о коллекции'}</h3>
             <div className="mb-3">
               <span className="text" id="basic-addon1">{userData.language === 'en'?'Collection name':'Название коллекции'}</span>
@@ -211,7 +211,7 @@ function CreateCollection() {
 
             <div className="">
               <span className="-text">{userData.language === 'en'?'Item name':'Название предмета'}</span>
-              <textarea className="form-control"  disabled={true} aria-label="With textarea" placeholder={userData.language === 'en'?'Item name':'Название предмета'}></textarea>
+              <textarea className="form-control"  disabled={true} aria-label="With textarea" placeholder={userData.language === 'en'?'Item 1':'Предмет 1'}></textarea>
             </div>
 
             <div className="mt-3">
