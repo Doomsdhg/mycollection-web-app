@@ -101,8 +101,7 @@ function ItemInfo() {
                 }})
           });
           const response = await request.json();
-          if (response.creator === userData.userId) {
-            console.log(response.creator === userData.userId)
+          if (response.creator === userData.userId || userData.admin) {
             setDisplayButtons(true);
           }
           console.log(response);
@@ -123,7 +122,6 @@ function ItemInfo() {
             delete keys[index];
             delete fields[index];
           })
-
           keys = keys.filter(function( element ) {
             return element !== undefined;
           });
@@ -173,6 +171,7 @@ function ItemInfo() {
     }
 
     const getHeaders = async function () {
+      console.log(userData);
         try {
             const request = await fetch('https://mycollection-server.herokuapp.com/api/getcollectiontable', 
             {
@@ -188,7 +187,7 @@ function ItemInfo() {
             const response = await request.json();
             console.log(response)
             response.headers.shift();
-            setHeadersArray([...response.headers]);
+            setHeadersArray(response.headers);
             
           } catch (error) {
             console.error(error)
@@ -274,9 +273,9 @@ function ItemInfo() {
 
     return (
         <div className='container main-container'>
-           {itemData && userData.userId === itemData.creator || userData.admin ?
-            <div className={displayButtons ? null  : 'display-none'}>
-              <button type="button" className="btn btn-primary mb-3" onClick={toggleItemForms}>{userData.language === 'en'?'Edit item info':'Редактировать информацию о предмете'}</button>
+           {(itemData && userData.userId === itemData.creator) || userData.admin ?
+            <div>
+              <button type="button" className="btn btn-primary mb-3" onClick={toggleItemForms}>{!displayForms?userData.language === 'en'?'Edit item info':'Редактировать информацию о предмете':userData.language === 'en'?'Close editing console':'Закрыть консоль редактирования'}</button>
               <button type="button" className="btn btn-danger ms-3 mb-3" 
               data-id={userData.itemId} onClick={deleteItem}>{userData.language === 'en'?'Delete item':'Удалить предмет'}</button>
               <div>

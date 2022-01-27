@@ -85,7 +85,7 @@ function AdminPanel() {
 
 
     return (
-    <div className='conatiner main-container'>
+    <div className='container main-container'>
       {renderAdminTable(table, headers, changeUser, userPageRedirect, userData)}
     </div>);
 }
