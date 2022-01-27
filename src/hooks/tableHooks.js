@@ -67,7 +67,7 @@ export const useTableRender = () => {
 
 
 
-    const renderCollectionTable = (table, headers, selectHandler, redirect, userData) => {
+    const renderCollectionTable = (table, headers, selectHandler, redirect, userData, collectionData) => {
 
 
 
@@ -145,7 +145,7 @@ export const useTableRender = () => {
                   <tr {...row.getRowProps()}>
                     {row.cells.map((cell, index) => {
                       console.log();
-                      if (index === 0) {
+                      if (index === 0 && (userData.userId === collectionData.creator || userData.admin)) {
                         return (
                           <td {...cell.getCellProps()}>
                           {cell.render('Cell')}

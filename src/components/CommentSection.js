@@ -59,7 +59,7 @@ function CommentSection() {
     }
 
     return (
-    <div className='container'>
+    <div className='container main-container'>
         <form>
             <div class="mb-3">
                 <label for="exampleFormControlTextarea1" class="form-label"><h5>Leave a comment</h5></label>
@@ -82,7 +82,7 @@ function CommentSection() {
             </div>
             )
         })
-        :<h4>{userData.language === 'en'?'No comments yet:':'Комментариев пока нет'}</h4>}
+        :<h4 className='mb-5'>{userData.language === 'en'?'No comments yet:':'Комментариев пока нет'}</h4>}
         </div>
     </div>
     

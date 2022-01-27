@@ -97,11 +97,12 @@ function Header(props) {
                     </li>
                     :null
                   }
-                  <li className="nav-item" >
-                    <button type="button" className="btn btn-success ms-3" onClick={()=>{changeLanguage()}}>{userData.language === 'en'?'lang: EN | change' : 'язык: РУ | сменить'}</button>
-                  </li>
+
               </ul>
-              <button type='button' className='btn btn-success me-3' onClick={switchTheme}>{userData.language === 'en'?'switch theme':'поменять тему'}</button>
+              <div className='d-flex header-button-group'>
+                <button type="button" className="btn btn-success me-3" onClick={()=>{changeLanguage()}}>{userData.language === 'en'?'lang: EN | change' : 'язык: РУ | сменить'}</button>
+                <button type='button' className='btn btn-success me-3' onClick={switchTheme}>{userData.language === 'en'?'switch theme':'поменять тему'}</button>
+              </div>
               <form className="d-flex">
                 
                 <input className="form-control me-2" type="search" placeholder={userData.language === 'en'?'Search':'Поиск'} aria-label="Search" 

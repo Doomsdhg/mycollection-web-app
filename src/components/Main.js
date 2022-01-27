@@ -89,7 +89,7 @@ function Main() {
   }
 
     return (
-        <main className="container">
+        <main className="container main-container">
           <div className="d-flex align-items-center p-3 my-3 text-white bg-purple rounded shadow-sm">
             <div className="lh-1">
               <h1 className="display-1 text-dark">{userData.language === 'en'?'Feed':'Лента событий'}</h1>

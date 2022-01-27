@@ -23,10 +23,10 @@ function SignUpForm() {
     }
   
     const clickHandler = async () => {
-      if (formValue.password !== formValue.password2) {
-        throw new Error(userData.language === 'en'? 'Passwords should be identical' : 'Пароли не совпадают');
-      }
       try {
+        if (formValue.password !== formValue.password2) {
+          throw new Error(userData.language === 'en'? 'Passwords should be identical' : 'Пароли не совпадают');
+        }
         const response = await fetch('https://mycollection-server.herokuapp.com/api/register', 
         {
           method: 'POST',
@@ -71,7 +71,7 @@ function SignUpForm() {
 
     return (
         <section className="mt-5 vh-100 gradient-custom">
-            <div className="container py-0 h-100">
+            <div className="container py-0 h-100 main-container">
               <div className="row d-flex justify-content-center align-items-center h-100">
                 <div className="col-12 col-md-8 col-lg-6 col-xl-5">
                   <div className="card bg-dark text-white rounded">
