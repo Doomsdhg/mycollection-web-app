@@ -4,7 +4,7 @@ import {useNavigate} from 'react-router-dom';
 import { ToastContainer, toast } from 'react-toastify';
 import MDEditor from '@uiw/react-md-editor';
 import {setImageURL} from '../store/reducers';
-
+import {useRequestHooks} from '../hooks/serverRequestHooks';
 
 function CreateCollection() {
     const dispatch = useDispatch();
@@ -15,6 +15,7 @@ function CreateCollection() {
     const [error, setError] = useState();
     const [itemFields, setItemFields] = useState([]);
     const [drag, setDrag] = useState(false);
+    const {sendPostRequest} = useRequestHooks();
     const dragStartHandler = function (e) {
         e.preventDefault();
         setDrag(true);
@@ -37,8 +38,6 @@ function CreateCollection() {
         
         setDrag(false);
     }
-
-    
 
     useEffect(()=>{
       setFormValue({...formValue, description: markdownValue});
@@ -63,70 +62,12 @@ function CreateCollection() {
         if (fieldTypeAmount.length >= 3) {
           throw new Error(userData.language === 'en'?'You can not add more than 3 fields of each type':'Вы не можете добавить больше 3-х полей каждого типа')
         }
-        
         setItemFields(itemFields.concat([fieldType]));
         console.log(itemFields);
         setError('');
       } catch (e) {
         setError(e);
         console.log(e)
-      }
-    }
-
-    const submitHandler = function (e) {
-      
-      
-      uploadCollection()
-      
-    }
-
-    const uploadImage = async function(image){
-        try {
-          const request = await fetch('https://mycollection-server.herokuapp.com/api/uploadimage', 
-          {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({data: image})
-          });
-          const response = await request.json();
-          console.log(response);
-          console.log(userData.email);
-          const imageURL = response.url;
-          await dispatch(setImageURL(imageURL))
-          console.log(imageURL);
-          
-          toast(userData.language === 'en'?'Image successfully uploaded to server!':'Картинка успешно загружена на сервер');
-          
-          
-          
-        } catch (error) {
-          console.error(error)
-        }
-    }
-
-    const uploadCollection = async function(){
-      await userData.imageURL;
-      try {
-        const request = await fetch('https://mycollection-server.herokuapp.com/api/uploadcollection', 
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({data: {...formValue, imageURL: userData.imageURL}})
-        });
-        const response = await request.json();
-        console.log(response.message);
-        dispatch(setImageURL(''))
-        navigate('/mycollections');
-        setTimeout(()=>{
-          toast(userData.language === 'en'?'Collection created successfully!':'Коллекция создана!');
-        },100)
-
-      } catch (error) {
-        console.error(error)
       }
     }
 
@@ -142,7 +83,34 @@ function CreateCollection() {
       }
     }
 
-    
+    const submitHandler = function (e) {
+      uploadCollection()
+    }
+
+    const uploadImage = async function(image){
+        try {
+          const response = await sendPostRequest('uploadimage', 'img', image)
+          const imageURL = response.url;
+          dispatch(setImageURL(imageURL))      
+          toast(userData.language === 'en'?'Image successfully uploaded to server!':'Картинка успешно загружена на сервер');
+        } catch (error) {
+          console.error(error)
+        }
+    }
+
+    const uploadCollection = async function(){
+      try {
+        const updateData = {...formValue, imageURL: userData.imageURL}
+        await sendPostRequest('uploadcollection', 'updateData', updateData)
+        dispatch(setImageURL(''))
+        navigate('/mycollections');
+        setTimeout(()=>{
+          toast(userData.language === 'en'?'Collection created successfully!':'Коллекция создана!');
+        },100)
+      } catch (error) {
+        console.error(error)
+      }
+    }
 
     return (
         <div className='container main-container'>  

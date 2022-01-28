@@ -1,20 +1,18 @@
 import React, {useEffect, useState, useMemo} from 'react';
 import {useTable, useSortBy, useFilters, useGlobalFilter, useAsyncDebounce} from 'react-table';
 import {useSelector} from 'react-redux';
-import BTable from 'react-bootstrap/Table';
 import { ToastContainer, toast } from 'react-toastify';
 import {useNavigate} from 'react-router-dom';
 import MDEditor from '@uiw/react-md-editor';
 import { useDispatch } from 'react-redux';
 import {setItemId} from '../store/reducers';
-import {GlobalFilter} from './table';
 import TextInput from 'react-autocomplete-input';
 import 'react-autocomplete-input/dist/bundle.css';
 import {useTableRender} from '../hooks/tableHooks';
 import {useRequestHooks} from '../hooks/serverRequestHooks';
-import { Typeahead } from 'react-bootstrap-typeahead';
 
 function CollectionTable() {
+    const [selected, setSelected] = useState('');
     const [error, setError] = useState('');
     const [tags, setTags] = useState();
     const [selectedItems, setSelectedItems] = useState([]);
@@ -30,7 +28,7 @@ function CollectionTable() {
     const userData = useSelector(store => store.userData);
     const navigate = useNavigate();
     const dispatch = useDispatch();
-    const {sendPostRequest} = useRequestHooks();
+    const {sendPostRequest, sendGetRequest} = useRequestHooks();
     const columns = useMemo(
       () => [...headers],
       [headers]
@@ -39,173 +37,67 @@ function CollectionTable() {
       () => [...items],
       [items]
     )
+    const table = useTable(
+      {columns, data},
+      useFilters,
+      useGlobalFilter,
+      useSortBy,);
 
     useEffect(()=>{
       fetchTags();
+      
       fetchCollectionData();
-      setItemFormValue({...itemFormValue, 
+      setItemFormValue(prev=>{return{...prev, 
         collectionRef: userData.collectionId,
         creator: collectionData.creator,
-      })
-      console.log(tags);
-      
+      }})
     }, [])
 
     useEffect(()=>{
       if (error) {
-        console.log(error)
         toast('' + error);
         setError('')
       }
     }, [error])
     
+    useEffect(()=>{
+      setCollectionFormValue({...collectionFormValue, description: markdownValue});
+    },[markdownValue])
+
     const toggleForms = function(){
       const formWrapper = document.getElementById('formWrapper')
       formWrapper.classList.toggle('display-none');
       setDisplayForms(prev=>!prev);
     }
 
-    const fetchTags = async function(){
-      try {
-        const request = await fetch('https://mycollection-server.herokuapp.com/api/gettags')
-        const response = await request.json();
-        const tagsArray = Object.keys(response)
-        console.log(tagsArray);
-        setTags([...tagsArray]);
-        console.log(tags)
-      } catch (error) {
-        console.log(error);
-      }
-    }
-
-    const fetchCollectionData = async function(){
-      try {
-        const response = await sendPostRequest('getcollectiondata', 'collectionId', userData.collectionId, userData);
-        setCollectionData(response);
-        console.log(response);
-        setMarkdownValue(response.description);
-        fetchCollectionTable()
-      } catch (error) {
-        console.log(error);
+    const formChangeHandler = function(e){
+      if (!e.target) {
+        setItemFormValue(prev=>{return{...prev, tags: e}})
+        return null
+      } else if (e.target.name.includes('checkbox')) {
+        setItemFormValue(prev=>{return{...prev, [e.target.name]: String(e.target.checked)}})
+        return null
+      } else {
+        setItemFormValue(prev=>{return{...prev, [e.target.name]: String(e.target.value)}});
+        return null
       }
     }
 
     const collectionDataChangeHandler = async function(e){
       setCollectionFormValue({...collectionFormValue, [e.target.name]: e.target.value});
-      console.log(collectionFormValue)
-    }
-
-    const clearMarkdown = function () {
-      setMarkdownValue('')
-    }
-
-    const defineItemFields = function (headers) {
-      return headers.map((header)=>{
-        console.log(header);
-        setItemFormValue((prev) => {return {...prev, 
-          [header.fieldType]: '',
-        }})
-      })
-    }
-
-
-    const fetchCollectionTable = async function(){
-        try {
-          const {
-            responseHeaders, 
-            itemFields, 
-            items} = await sendPostRequest('getcollectiontable', 'collectionId', userData.collectionId, userData, collectionData);
-          console.log(responseHeaders, itemFields, items)
-          setHeaders(responseHeaders);
-          console.log(itemFields);
-          setItemFormValue(prev=>{return {...prev, ...itemFields}});
-          setItems(items);
-        } catch (error) {
-          console.log(error);
-        }
-    }
-    
-    const table = useTable(
-      {columns, data},
-      useFilters,
-      useGlobalFilter,
-      useSortBy,);
-      
-    const formChangeHandler = function(e){
-      if (!e.target) {
-        setItemFormValue({...itemFormValue, tags: e[0]})
-        return null
-      }
-      if (e.target.name.includes('checkbox')) {
-        setItemFormValue({...itemFormValue, [e.target.name]: String(e.target.checked)})
-      } else {
-        setItemFormValue({...itemFormValue, [e.target.name]: String(e.target.value)});
-      }
     }
 
     const markdownChangeHandler = function(e, formName){
       if (itemFormValue.formName) {
         const newValue = itemFormValue.formName + e;
-        setItemFormValue ({...itemFormValue, [formName]: newValue})
+        setItemFormValue (prev=>{return{...prev, [formName]: newValue}})
       } else {
-        setItemFormValue ({...itemFormValue, [formName]: e})
+        setItemFormValue (prev=>{return{...prev, [formName]: e}})
       }
-      
     }
 
     const toggleCollectionDataForms = async function (){
       setCollectionFormsDisabled(prev => !prev)
-    }
-
-    useEffect(()=>{
-      setCollectionFormValue({...collectionFormValue, description: markdownValue});
-      console.log(markdownValue);
-      console.log(collectionFormValue);
-    },[markdownValue])
-
-    const updateCollectionData = async function (){
-
-      try {
-        const request = await fetch('https://mycollection-server.herokuapp.com/api/updatecollection', 
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({data: {...collectionFormValue, collectionId: userData.collectionId}})
-        });
-        const response = await request.json();
-        console.log(response.message);
-        fetchCollectionData();
-        setTimeout(()=>{
-          toast(userData.language==='en'?'changes saved successfully!':'изменения сохранены');
-        },100)
-
-      } catch (error) {
-        console.error(error)
-      }
-    }
-
-    const deleteCollection = async function(){
-      try {
-        const request = await fetch('https://mycollection-server.herokuapp.com/api/deletecollection', 
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({data: {collectionId: userData.collectionId}})
-        });
-        const response = await request.json();
-        console.log(response.message);
-        setTimeout(()=>{
-          toast(userData.language==='en'?'Collection deleted successfully!':'Коллекция удалена');
-        },100)
-        navigate('/mycollections')
-      } catch (error) {
-        console.error(error)
-      }
-      
     }
 
     const selectHandler = function(e){
@@ -222,27 +114,14 @@ function CollectionTable() {
 
     const checkTagsValidity = function () {
       if (itemFormValue.tags) {
-        const tags = itemFormValue.tags.split(' ');
+        const tags = itemFormValue.tags.split(' ').filter(tag => tag !== '' && tag !== ' ');
         tags.map(tag=>{
           if (tag[0] !== '#') {
-            console.log('Each tag should start with "#"')
             throw new Error (userData.language === 'en'?'Each tag should start with "#"':'Каждый тэг должен начинаться с "#"')
           }
         })
+        setItemFormValue(prev=>{return{...prev, tags: tags.join()}})
       }
-    }
-
-    const uploadItem = async function(){
-        try {
-          checkTagsValidity()
-          await sendPostRequest('uploaditem', 'items', itemFormValue, userData, collectionData)
-          toast(userData.language==='en'?'item added successfully!':'предмет успешно добавлен в коллекцию!');
-          fetchCollectionTable()
-        } catch (e) {
-          console.log(e);
-          setError(e)
-        }
-        
     }
 
     const goToItemPage = function (e) {
@@ -250,37 +129,92 @@ function CollectionTable() {
       navigate('/itempage');
     }
 
-
     const uncheckSelectedItems = function(){
       const cells = document.querySelectorAll('.checkbox-cell');
       cells.forEach((checkbox)=>{
         checkbox.checked = false;
       })
-      console.log(cells);
+    }
+
+    const fetchTags = async function(){
+      try {
+        const response = await sendGetRequest('gettags')
+        setTags([...response.map(tag => tag.substring(1))]);
+      } catch (e) {
+        setError(e)
+      }
+    }
+
+    const fetchCollectionData = async function(){
+      try {
+        const response = await sendPostRequest('getcollectiondata', 'collectionId', userData.collectionId, userData);
+        setCollectionData(response);
+        setMarkdownValue(response.description);
+        fetchCollectionTable()
+      } catch (e) {
+        setError(e)
+      }
+    }
+
+    const fetchCollectionTable = async function(){
+        try {
+          const {
+            responseHeaders, 
+            itemFields, 
+            items} = await sendPostRequest('getcollectiontable', 'collectionId', userData.collectionId, userData, collectionData);
+          setHeaders(responseHeaders);
+          setItemFormValue(prev=>{return {...prev, ...itemFields}});
+          setItems(items);
+        } catch (e) {
+          setError(e);
+        }
+    }
+
+    const updateCollectionData = async function (){
+      try {
+        const update = {...collectionFormValue, collectionId: userData.collectionId};
+        await sendPostRequest('updatecollection', 'update', update, userData)
+        fetchCollectionData()
+        toast(userData.language==='en'?'changes saved successfully!':'изменения сохранены');
+      } catch (e) {
+        setError(e)
+      }
+    }
+
+    const deleteCollection = async function(){
+      try {
+        await sendPostRequest('deletecollection', 'collectionId', userData.collectionId, userData)
+        setTimeout(()=>{
+          toast(userData.language==='en'?'Collection deleted successfully!':'Коллекция удалена');
+        },100)
+        navigate('/mycollections')
+      } catch (e) {
+        setError(e);
+      }
+    }
+
+    const uploadItem = async function(){
+        try {
+          checkTagsValidity()
+          console.log(itemFormValue)
+          await sendPostRequest('uploaditem', 'items', itemFormValue, userData, collectionData)
+          toast(userData.language==='en'?'item added successfully!':'предмет успешно добавлен в коллекцию!');
+          fetchCollectionTable()
+        } catch (e) {
+          setError(e)
+        }
     }
 
     const deleteItems = async function(){
       try {
-        const request = await fetch('https://mycollection-server.herokuapp.com/api/deleteitems', 
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({data: [...selectedItems]})
-        });
-        const response = await request.json();
-        console.log(response);
-        setTimeout(()=>{
-          toast(userData.language==='en'?'item(s) deleted successfully!':'Предметы(ы) удалены');
-        },100)
+        await sendPostRequest('deleteitems', 'itemsToDelete', selectedItems, userData)
+        toast(userData.language==='en'?'item(s) deleted successfully!':'Предметы(ы) удалены');
         uncheckSelectedItems()
         setSelectedItems([]);
         fetchCollectionTable()
-      } catch (error) {
-        console.error(error)
+      } catch (e) {
+        setError(e)
       }
-      
     }
 
     return (
@@ -375,15 +309,19 @@ function CollectionTable() {
               const type = header.fieldType.substring(0, header.fieldType.length - 6);
               if(header.accessor === 'tags') {
                 return (
-                  <div className="mb-3 form" >
+                  <div className="mb-3 form">
                     <span className="d-block" id="basic-addon1">{header.Header}</span>
-                    <Typeahead
+                    {/* <Typeahead
+                      multiple
                       onChange={(e) => {
+                        setSelected(e)
                         formChangeHandler(e)
                       }}
+                      selected={selected}
                       id='tags'
                       options={tags}
-                    />
+                    /> */}
+                    <TextInput className='form-control' onChange={formChangeHandler} onSelect={formChangeHandler} trigger={["#"]} options={{"#": tags}} />
                   </div>
                 )
               }

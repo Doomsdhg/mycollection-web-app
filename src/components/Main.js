@@ -105,7 +105,7 @@ function Main() {
               
 
               <p className="pb-3 mb-0 small lh-sm border-bottom">
-                <strong className="d-block text-gray-dark">{item.name?item.name:'no name'}
+                <strong className="d-block text-gray-dark">{item.name?item.name:userData.language==='en'?'no name':'без имени'}
                 <button type="button" className="btn btn-primary float-end" data-id={item._id} onClick={(e)=>{goToItemPage(e)}}>
                 {userData.language === 'en'?'Open':'Открыть'}</button>
                 </strong>

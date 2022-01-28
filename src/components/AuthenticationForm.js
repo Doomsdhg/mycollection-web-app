@@ -1,9 +1,12 @@
 import React, {useState} from 'react';
-import { Navigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import {useDispatch, useSelector} from 'react-redux';
 import {useAuthHooks} from '../hooks/authHooks.js';
+import {useRequestHooks} from '../hooks/serverRequestHooks';
 
 function AuthenticationForm() {
+  const navigate = useNavigate();
+  const {sendPostRequest} = useRequestHooks();
   const dispatch = useDispatch();
   const userData = useSelector(state => state.userData);
   const [formValue, setFormValue] = useState({
@@ -18,27 +21,14 @@ function AuthenticationForm() {
     console.log(formValue);
   }
 
-  const getRequestOptions = () => {
-    return (
-      {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: formValue?JSON.stringify(formValue):null
-      }
-    )
-  }
-  
-
   const loginClickHandler = async () => {
     try {
-      const response = await fetch('https://mycollection-server.herokuapp.com/api/authentication', getRequestOptions());
-      const data = await response.json();
-      if (!response.ok){
-        throw new Error(data.message);
+      const response = await sendPostRequest('authentication', false, formValue, userData)
+      if (!response.token){
+        throw new Error(response.message);
       }
-      login(data, dispatch);
+      login(response, dispatch);
+      navigate('/');
       } catch (e) {
       setError(`${e}`);
     }
@@ -68,10 +58,6 @@ function AuthenticationForm() {
                         <button className="btn btn-outline-light btn-lg px-5" onClick={loginClickHandler} type="submit">{userData.language === 'en'?'Login':'Войти'}</button>
 
                       </div>
-
-                      {userData.isAuthenticated? 
-                        <Navigate to="/"/>:null
-                      }
 
                       {error?
                       <div className='text-danger'>

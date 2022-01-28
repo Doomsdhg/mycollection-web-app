@@ -5,6 +5,7 @@ import { ToastContainer, toast } from 'react-toastify';
 import {useNavigate} from 'react-router-dom';
 import {useDispatch} from 'react-redux';
 import {setCollectionId} from '../store/reducers';
+import {useRequestHooks} from '../hooks/serverRequestHooks';
 
 function ItemInfo() {
     const redHeart = 'https://img.icons8.com/external-kiranshastry-lineal-color-kiranshastry/50/000000/external-heart-miscellaneous-kiranshastry-lineal-color-kiranshastry.png';
@@ -19,6 +20,7 @@ function ItemInfo() {
     const [headersArray, setHeadersArray] = useState([]);
     const userData = useSelector(store => store.userData);
     const [fieldsArray, setFieldsArray] = useState([]);
+    const {sendPostRequest} = useRequestHooks();
     const dispatch = useDispatch();
     const navigate = useNavigate();
 
@@ -28,34 +30,47 @@ function ItemInfo() {
     },[])
 
     useEffect(()=>{
-      
+      if (headersArray.length > 0) {
+        getItem()
+      }
     },[headersArray])
 
-    useEffect(()=>{
-      getItem();
-    },[headersArray])
+    const toggleItemForms = function(){
+      setDisplayForms(prev=>!prev)
+    }
 
+    const rate = function (){
+      setLiked((prev)=>{return !prev});
+      uploadReaction();
+    }
+
+    const formChangeHandler = function(e, fieldValue){
+      if (e.target.name.includes('checkbox')) {
+        console.log(e.target.checked)
+        setItemFormValue({...itemFormValue, [e.target.name]: String(e.target.checked)});
+      } else {
+        setItemFormValue({...itemFormValue, [e.target.name]: String(e.target.value)});
+      }
+    }
+
+    const markdownChangeHandler = function(e, formName){
+      if (itemFormValue.formName) {
+        const newValue = itemFormValue.formName + e;
+        setItemFormValue ({...itemFormValue, [formName]: newValue})
+      } else {
+        setItemFormValue ({...itemFormValue, [formName]: e})
+      }
+    }
 
     const getLikes = async function (){
       try {
-        const request = await fetch('https://mycollection-server.herokuapp.com/api/getlikes', 
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-              data: {
-                  itemId: userData.itemId,
-                  userId: userData.userId
-              }})
-        });
-        const response = await request.json();
+        const requiredData = {
+          itemId: userData.itemId,
+          userId: userData.userId
+        };
+        const response = await sendPostRequest('getlikes', 'requiredData', requiredData)
         setLiked(response.liked);
         setLikesAmount(response.likesAmount);
-        console.log(response);
-        
-          
       } catch (error) {
         console.error(error)
       }
@@ -63,156 +78,46 @@ function ItemInfo() {
 
     const uploadReaction = async function (){
       try {
-        const request = await fetch('https://mycollection-server.herokuapp.com/api/uploadreaction', 
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-              data: {
-                  itemId: userData.itemId,
-                  userId: userData.userId,
-                  reaction: liked
-              }})
-        });
-        const response = await request.json();
-        
-        console.log(response);
+        const reaction = {
+          itemId: userData.itemId,
+          userId: userData.userId,
+          reaction: liked
+        }
+        await sendPostRequest('uploadreaction', 'reaction', reaction);
         getLikes()
-          
       } catch (error) {
         console.error(error)
       }
     }
 
     const getItem = async function(){
-        
         try {
-          const request = await fetch('https://mycollection-server.herokuapp.com/api/getitem', 
-          {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                data: {
-                    itemId: userData.itemId
-                }})
-          });
-          const response = await request.json();
+          const {fields, response} = await sendPostRequest('getitem', 'itemId', userData.itemId, userData, headersArray)
           if (response.creator === userData.userId || userData.admin) {
             setDisplayButtons(true);
           }
-          console.log(response);
           setItemData(response);
           dispatch(setCollectionId(response.collectionRef));
-          let indexesToDelete = [];
-          let fields = Object.values(response);
-          let keys = Object.keys(response);
-          
-          indexesToDelete.push(keys.indexOf('likes'));
-          indexesToDelete.push(keys.indexOf('comments'));
-          indexesToDelete.push(keys.indexOf('creator'));
-          indexesToDelete.push(keys.indexOf('collectionRef'));
-          indexesToDelete.push(keys.indexOf('__v'));
-          indexesToDelete.push(keys.indexOf('_id'));
-          console.log(indexesToDelete);
-          indexesToDelete.map(index=>{
-            delete keys[index];
-            delete fields[index];
-          })
-          keys = keys.filter(function( element ) {
-            return element !== undefined;
-          });
-
-          fields = fields.filter(function( element ) {
-            return element !== undefined;
-          });
-          
-          console.log(fields);
-          fields = fields.map((field, index)=>{
-            console.log(field)
-            if (field === undefined) {return field}
-            if (field === 'name') {
-              console.log(field)
-              console.log(headersArray[index]);
-              return {
-                name: headersArray[index].Header,
-                value: field,
-                type: 'name'
-              }
-            } else if (field === 'tags') {
-              return {
-                name: headersArray[index].Header,
-                value: field,
-                type: 'tags'
-              }
-            } else {
-              console.log(keys);
-              console.log(fields);
-              console.log(index);
-              console.log(headersArray)
-              console.log(headersArray[index])
-              return {
-                name: headersArray[index].Header,
-                value: field,
-                type: headersArray[index].fieldType
-              }
-            }
-          })
-          console.log(fields)
           setFieldsArray(fields);
-            
         } catch (error) {
           console.error(error)
         }
-
     }
 
     const getHeaders = async function () {
-      console.log(userData);
         try {
-            const request = await fetch('https://mycollection-server.herokuapp.com/api/getcollectiontable', 
-            {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/json',
-              },
-              body: JSON.stringify({
-                  data: {
-                      collectionId: userData.collectionId
-                  }})
-            });
-            const response = await request.json();
-            console.log(response)
-            response.headers.shift();
-            setHeadersArray(response.headers);
-            
-          } catch (error) {
-            console.error(error)
-          }
+          let {headers} = await sendPostRequest('getcollectiontable', 'collectionId', userData.collectionId, userData, headersArray)
+          headers.shift();
+          setHeadersArray(prev=>{return[...headers]});
+        } catch (error) {
+          console.error(error)
+        }
     }
-
-
-    const toggleItemForms = function(){
-      setDisplayForms(prev=>!prev)
-    }
-
-    
 
     const deleteItem = async function(e){
       try {
-        const request = await fetch('https://mycollection-server.herokuapp.com/api/deleteitems', 
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({data: [e.target.dataset.id]})
-        });
-        const response = await request.json();
-        console.log(response);
+        const itemsToDelete = [e.target.dataset.id];
+        await sendPostRequest('deleteitems', 'itemsToDelete', itemsToDelete)
         setTimeout(()=>{
           toast(userData.language === 'en'?'item deleted successfully!':'Предмет удалён');
         },100)
@@ -222,41 +127,13 @@ function ItemInfo() {
       }
     }
 
-    const formChangeHandler = function(e, fieldValue){
-      if (e.target.name.includes('checkbox')) {
-        console.log(e.target.checked)
-        setItemFormValue({...itemFormValue, [e.target.name]: String(e.target.checked)});
-      } else {
-        setItemFormValue({...itemFormValue, [e.target.name]: String(e.target.value)});
-        
-      }
-    }
-
-    const markdownChangeHandler = function(e, formName){
-      console.log(itemFormValue)
-      if (itemFormValue.formName) {
-        const newValue = itemFormValue.formName + e;
-        setItemFormValue ({...itemFormValue, [formName]: newValue})
-      } else {
-        setItemFormValue ({...itemFormValue, [formName]: e})
-      }
-    }
-
     const updateItem = async function(){
       try {
-        const request = await fetch('https://mycollection-server.herokuapp.com/api/updateitem', 
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({data: {
-            update: itemFormValue,
-            itemId: userData.itemId
-          }})
-        });
-        const response = await request.json();
-        console.log(response);
+        const updateData = {
+              update: itemFormValue,
+              itemId: userData.itemId
+            };
+        await sendPostRequest('updateitem', 'updateData', updateData)
         setTimeout(()=>{
           toast(userData.language === 'en'?'Item info updated successfully!':'Информация обновлена');
         },100)
@@ -264,11 +141,6 @@ function ItemInfo() {
       } catch (error) {
         console.error(error)
       }
-    }
-    
-    const rate = function (){
-      setLiked((prev)=>{return !prev});
-      uploadReaction();
     }
 
     return (

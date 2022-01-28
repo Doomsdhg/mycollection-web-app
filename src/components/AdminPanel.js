@@ -4,8 +4,10 @@ import {useNavigate} from 'react-router-dom';
 import {useDispatch, useSelector} from 'react-redux';
 import {setProfileId} from '../store/reducers';
 import {useTableRender} from '../hooks/tableHooks';
+import {useRequestHooks} from '../hooks/serverRequestHooks';
 
 function AdminPanel() {
+    const {sendPostRequest, sendGetRequest} = useRequestHooks();
     const {renderAdminTable} = useTableRender();
     const userData = useSelector(state=>state.userData);
     const dispatch = useDispatch();
@@ -46,47 +48,32 @@ function AdminPanel() {
         fetchUsers();
     },[])
 
+    const userPageRedirect = function(userId){
+      dispatch(setProfileId(userId));
+      navigate('/mycollections');
+    }
+
     const fetchUsers = async function(){
         try {
-          const request = await fetch('https://mycollection-server.herokuapp.com/api/getuserstable')
-          const response = await request.json();
+          const response = await sendGetRequest('getuserstable')
           setUsers(response);
         } catch (error) {
           console.log(error);
         }
       }
-
-    const userPageRedirect = function(userId){
-        dispatch(setProfileId(userId));
-        navigate('/mycollections');
-    }
-
-    const getPostRequestOptions = function (dataName, data){
-      return (
-        {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/json',
-              },
-              body: JSON.stringify({data: {[dataName]: data}})
-            }
-      )
-    }
     
-    const changeUser = async function(userId, action){
+    const interactWithUser = async function(userId, action){
         try {
-            const request = await fetch(`https://mycollection-server.herokuapp.com/api/${action}user`, getPostRequestOptions('userId', userId));
-            const response = await request.json();
+            await sendPostRequest(`${action}user`, 'userId', userId);
             fetchUsers();
-          } catch (error) {
-            console.error(error)
+          } catch (e) {
+            console.error(e)
           }
     }
 
-
     return (
     <div className='container main-container'>
-      {renderAdminTable(table, headers, changeUser, userPageRedirect, userData)}
+      {renderAdminTable(table, headers, interactWithUser, userPageRedirect, userData)}
     </div>);
 }
 
