@@ -45,7 +45,7 @@ export const useTableRender = () => {
                                       <button type="button" class="btn btn-warning" onClick={e=>{userAction(row.values.id, 'block')}}>{userData.language==='en'?row.original.blocked?'unblock':'block':row.original.blocked?'разблокировать':'заблокировать'}</button>
                                       <button type="button" class="btn btn-success" 
                                       onClick={e=>userAction(row.values.id, 'promote')}>{userData.language==='en'?row.original.admin?'demote to regular user':'promote to admin':row.original.admin?'сделать обычным пользователем':'сделать администратором'}</button>
-                                      <button type="button" class="btn btn-primary" onClick={e=>console.log(row.original.id)}>{userData.language==='en'?'open':'открыть'}</button>
+                                      <button type="button" class="btn btn-primary" onClick={e=>redirect(row.original.id)}>{userData.language==='en'?'open':'открыть'}</button>
                                     </div>
                                 </td>
                             )
@@ -80,7 +80,7 @@ export const useTableRender = () => {
         const [value, setValue] = React.useState(globalFilter)
         const onChange = useAsyncDebounce(value => {
           setGlobalFilter(value || undefined)
-        }, 200)
+        }, 1000)
       
         return (
           <span>

@@ -1,7 +1,9 @@
 import React, {useState, useEffect} from 'react';
 import {useSelector} from 'react-redux';
+import {useRequestHooks} from '../hooks/serverRequestHooks';
 
 function CommentSection() {
+    const {sendPostRequest} = useRequestHooks();
     const userData = useSelector(state => state.userData);
     const [commentFormValue, setCommentFormValue] = useState();
     const [comments, setComments] = useState([]);
@@ -18,18 +20,8 @@ function CommentSection() {
 
     const getComments = async function (){
         try {
-          const request = await fetch('https://mycollection-server.herokuapp.com/api/getcomments', 
-            {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/json',
-              },
-              body: JSON.stringify({data: {
-                itemId: userData.itemId
-              }})
-            })
-            const response = await request.json();
-            setComments(response);
+          const response = await sendPostRequest('getcomments', 'itemId', userData.itemId);
+          setComments(response);
         } catch (error) {
           console.log(error);
         }
@@ -37,21 +29,12 @@ function CommentSection() {
 
     const sendComment = async function(){
         try {
-            console.log(userData)
-          const request = await fetch('https://mycollection-server.herokuapp.com/api/createcomment', 
-            {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/json',
-              },
-              body: JSON.stringify({data: {
-                text: commentFormValue,
-                userId: userData.userId,
-                itemId: userData.itemId
-              }})
-            })
-            const response = await request.json();
-            console.log(response);
+            const commentData = {
+              text: commentFormValue,
+              userId: userData.userId,
+              itemId: userData.itemId
+            };
+            await sendPostRequest('createcomment', 'comment', commentData, userData)
             setTimeout(()=>{getComments()}, 1000);
         } catch (error) {
           console.log(error);

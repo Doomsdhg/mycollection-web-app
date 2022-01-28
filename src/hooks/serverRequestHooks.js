@@ -7,9 +7,12 @@ export const useRequestHooks = () => {
             headers: {
               'Content-Type': 'application/json',
             },
-            body: JSON.stringify({data: {
+            body: JSON.stringify(!dataName?
+            {...data}:
+            {data: {
               [dataName]: data
-            }})
+            }}
+            )
           }
         )
       }
@@ -78,33 +81,116 @@ export const useRequestHooks = () => {
       return headersObject;
     }
 
-    const sendPostRequest = async (path, dataName, data, userData, collectionData) => {
+    const deleteUnnecessaryFields = (response, headersArray) => {
+      let indexesToDelete = [];
+      let fields = Object.values(response);
+      let keys = Object.keys(response);
+      indexesToDelete.push(keys.indexOf('likes'));
+      indexesToDelete.push(keys.indexOf('comments'));
+      indexesToDelete.push(keys.indexOf('creator'));
+      indexesToDelete.push(keys.indexOf('collectionRef'));
+      indexesToDelete.push(keys.indexOf('__v'));
+      indexesToDelete.push(keys.indexOf('_id'));
+      console.log(indexesToDelete);
+      indexesToDelete.map(index=>{
+        delete keys[index];
+        delete fields[index];
+      })
+      keys = keys.filter(function( element ) {
+        return element !== undefined;
+      });
+      fields = fields.filter(function( element ) {
+        return element !== undefined;
+      });
+      
+      console.log(fields);
+      fields = fields.map((field, index)=>{
+        console.log(field)
+        if (field === undefined) {return field}
+        if (field === 'name') {
+          console.log(field)
+          console.log(headersArray[index]);
+          return {
+            name: headersArray[index].Header,
+            value: field,
+            type: 'name'
+          }
+        } else if (field === 'tags') {
+          return {
+            name: headersArray[index].Header,
+            value: field,
+            type: 'tags'
+          }
+        } else {
+          console.log(keys);
+          console.log(fields);
+          console.log(field);
+          console.log(headersArray)
+          console.log(headersArray[index])
+          return {
+            name: headersArray[index].Header,
+            value: field,
+            type: headersArray[index].fieldType
+          }
+        }
+      })
+
+      return fields
+    }
+
+    const sendPostRequest = async (path, dataName, data, userData, extraArgument) => {
         try {
-            const request = await fetch(`http://localhost:8080/api/${path}`, getRequestOptions(dataName, data))
+            const request = await fetch(`https://mycollection-server.herokuapp.com/api/${path}`, getRequestOptions(dataName, data))
             const response = await request.json();
-            
             switch (path) {
+              case 'getitem':
+                const fields = deleteUnnecessaryFields(response, extraArgument);
+                return {fields, response}
               case 'getcollectiontable': 
                 console.log(response);
-                response.headers = checkPermission(response.headers, userData, collectionData)
-                const responseHeaders = localizeHeaders(response.headers, userData.language);
-                const itemFields = defineItemFields(response.headers);
+                const headers = response.headers;
+                const checkedHeaders = checkPermission(response.headers, userData, extraArgument)
+                const responseHeaders = localizeHeaders(checkedHeaders, userData.language);
+                const itemFields = defineItemFields(checkedHeaders);
                 console.log(itemFields);
                 const items = response.items;
-                return {responseHeaders, itemFields, items}
+                return {responseHeaders, itemFields, items, headers}
               case 'getcollectiondata':
                 response.topic = localizeTopic(response.topic);
                 return response
-              case 'uploaditem':
-                console.log(response);
-                return response;
+              case 'authentication':
+                if (!response.token){
+                  throw new Error(response.message);
+                }
+                return response
               default:
-                break;
+                return response
             }
           } catch (error) {
             console.log(error);
+            return error
           }
     }
 
-    return {sendPostRequest}
+    const sendGetRequest = async (path) => {
+      try {
+        const request = await fetch(`http://localhost:8080/api/${path}`)
+        const response = await request.json();
+        switch (path) {
+          case 'gettags':
+            const tagsArray = Object.keys(response).filter(tag=>tag!=='');
+            return tagsArray
+          case 'getuserstable':
+            return response
+          default:
+            break
+        }
+      } catch (error) {
+        console.log(error);
+        return error
+      }
+    }
+
+    return {sendPostRequest, sendGetRequest}
+
 }
