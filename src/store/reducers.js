@@ -59,6 +59,12 @@ function userStateReducer(state = 0, action){
                 language: action.payload.language
             }
         }
+        case 'THEME_CHANGE' :{
+            return {
+                ...state,
+                theme: action.payload.theme
+            }
+        }
         default:
             return state
     }
@@ -90,6 +96,10 @@ export const setSearchQuery = (searchQuery) => ({type: 'SEARCH', payload: {
 
 export const setImageURL = (imageURL) => ({type: 'IMAGE_UPLOAD', payload: {
     imageURL: imageURL
+}})
+
+export const setTheme = (theme) => ({type: 'THEME_CHANGE', payload: {
+    theme: theme
 }})
 
 export const setUserData = (userData) => ({type: 'LOGIN', payload: {

@@ -6,6 +6,10 @@ import {store} from './store/store.js';
 import {PersistGate} from 'redux-persist/integration/react';
 import {persistor} from './store/store.js';
 import {useSelector} from 'react-redux';
+import {lightTheme, darkTheme, GlobalStyles} from './themes.js';
+import styled, {ThemeProvider} from 'styled-components';
+
+const StyledApp = styled.div``;
 
 function App() {
   const userData = useSelector(state => state.userData);
@@ -15,7 +19,12 @@ function App() {
       <BrowserRouter>
         <Provider store={store}>
           <PersistGate loading={null} persistor={persistor}>
-            {routes}
+            <ThemeProvider theme={userData.theme === 'light'?lightTheme:darkTheme}>
+              {/* <GlobalStyles /> */}
+                {/* <StyledApp> */}
+                  {routes}
+                {/* </StyledApp> */}
+            </ThemeProvider>
           </PersistGate>
         </Provider>
       </BrowserRouter>  

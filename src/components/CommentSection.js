@@ -1,6 +1,7 @@
 import React, {useState, useEffect} from 'react';
 import {useSelector} from 'react-redux';
 import {useRequestHooks} from '../hooks/serverRequestHooks';
+import { ToastContainer, toast } from 'react-toastify';
 
 function CommentSection() {
     const {sendPostRequest} = useRequestHooks();
@@ -20,10 +21,13 @@ function CommentSection() {
 
     const getComments = async function (){
         try {
-          const response = await sendPostRequest('getcomments', 'itemId', userData.itemId);
+          const {response, error} = await sendPostRequest('getcomments', 'itemId', userData.itemId);
+          if (error) {
+            throw new Error(error)
+          }
           setComments(response);
-        } catch (error) {
-          console.log(error);
+        } catch (e) {
+          toast('' + e)
         }
     }
 
@@ -34,10 +38,13 @@ function CommentSection() {
               userId: userData.userId,
               itemId: userData.itemId
             };
-            await sendPostRequest('createcomment', 'comment', commentData, userData)
+            const {error} = await sendPostRequest('createcomment', 'comment', commentData, userData)
+            if (error) {
+              throw new Error(error)
+            }
             setTimeout(()=>{getComments()}, 1000);
-        } catch (error) {
-          console.log(error);
+        } catch (e) {
+          toast('' + e)
         }
     }
 

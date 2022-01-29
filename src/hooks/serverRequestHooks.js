@@ -140,8 +140,15 @@ export const useRequestHooks = () => {
 
     const sendPostRequest = async (path, dataName, data, userData, extraArgument) => {
         try {
-            const request = await fetch(`https://mycollection-server.herokuapp.com/api/${path}`, getRequestOptions(dataName, data))
+            const request = await fetch(`https://mycollection-app.herokuapp.com/api/${path}`, getRequestOptions(dataName, data))
             const response = await request.json();
+            console.log(response)
+            console.log(response.message && response.message.includes('Error')?true:false)
+            if (response.message && response.message.includes('Error')){
+              console.log('error')
+              throw new Error(response.message)
+            } 
+            console.log('keep going')
             switch (path) {
               case 'getitem':
                 const fields = deleteUnnecessaryFields(response, extraArgument);
@@ -157,35 +164,40 @@ export const useRequestHooks = () => {
                 return {responseHeaders, itemFields, items, headers}
               case 'getcollectiondata':
                 response.topic = localizeTopic(response.topic);
-                return response
+                return {response}
               case 'authentication':
                 if (!response.token){
                   throw new Error(response.message);
                 }
-                return response
+                return {response}
               default:
-                return response
+                console.log(response)
+                return {response}
             }
           } catch (error) {
             console.log(error);
-            return error
+            return {error}
           }
     }
 
     const sendGetRequest = async (path) => {
       try {
-        const request = await fetch(`https://mycollection-server.herokuapp.com/api/${path}`)
+        const request = await fetch(`https://mycollection-app.herokuapp.com/api/${path}`)
         const response = await request.json();
+        if (response.message && response.message.includes('Error')){
+          console.log(response.message)
+          throw new Error(response.message)
+        }
         switch (path) {
           case 'gettags':
             const tagsArray = Object.keys(response).filter(tag=>tag!=='');
             return {tagsArray, response}
           default:
-            return response
+            return {response}
         }
       } catch (error) {
         console.log(error);
-        return error
+        return {error}
       }
     }
 

@@ -3,6 +3,7 @@ import {useAuthHooks} from '../hooks/authHooks.js';
 import {useDispatch, useSelector} from 'react-redux';
 import { useNavigate } from "react-router-dom";
 import {useRequestHooks} from '../hooks/serverRequestHooks';
+import { ToastContainer, toast } from 'react-toastify';
 
 function SignUpForm() {
     const [formValue, setFormValue] = useState({
@@ -35,24 +36,25 @@ function SignUpForm() {
         if (formValue.password !== formValue.password2) {
           throw new Error(userData.language === 'en'? 'Passwords should be identical' : 'Пароли не совпадают');
         }
-        const response = await sendPostRequest('register', false, formValue);
-        if (response.message !== 'Account is created successfully'){
-          throw new Error(response.message);
+        const {error} = await sendPostRequest('register', false, formValue);
+        if (error){
+          throw new Error(error);
         }
         loginClickHandler()
       } catch (e) {
-        setError(`${e}`);
-        console.log(e)
+        toast('' + e)
       }
     }
 
     const loginClickHandler = async () => {
       try {
-        const response = await sendPostRequest('authentication', false, formValue);
+        const {response, error} = await sendPostRequest('authentication', false, formValue);
+        if (error) {
+          throw new Error(error)
+        }
         login(response, dispatch);
         } catch (e) {
-        setError(`${e}`);
-        console.log(e)
+        toast('' + e)
       }
     }
 

@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from 'react';
 import {useNavigate} from 'react-router-dom';
 import {useSelector} from 'react-redux';
-import { ToastContainer } from 'react-toastify';
+import { ToastContainer, toast } from 'react-toastify';
 import { useDispatch } from 'react-redux';
 import {setCollectionId, setProfileId} from '../store/reducers';
 import MDEditor from '@uiw/react-md-editor';
@@ -20,11 +20,14 @@ export default function MyCollections() {
   }
   const fetchCollections = async function(){
     try {
-      const response = await sendPostRequest('fetchcollections', 'userId', userData.profileId);
+      const {response, error} = await sendPostRequest('fetchcollections', 'userId', userData.profileId);
+      if (error) {
+        throw new Error(error)
+      }
       setCollections(response.collections);
       setOwner(response.owner);
-    } catch (error) {
-      console.log(error);
+    } catch (e) {
+      toast('' + e);
     }
   }
   useEffect(() => {
@@ -39,10 +42,11 @@ export default function MyCollections() {
     return (
         <div className='container main-container'>  
               <div className="my-3 p-3 bg-body rounded shadow-sm">
-                <h1 className='d-inline-block'>{owner && userData.profileId !== userData.userId ? userData.language === 'en' ? owner.name + "'s collections" : 'Коллекции ' + owner.name: userData.language === 'en' ? 'Your collections' : 'Ваши коллекции'} </h1>
-                <button type="button" className="btn btn-success d-inline-block float-end" onClick={routeChange}>
-                  + {userData.language === 'en'?'Create new collection':'Создать новую коллекцию'}</button>
-
+                <div className='d-flex justify-content-between'>
+                  <h1 className='d-inline-block'>{owner && userData.profileId !== userData.userId ? userData.language === 'en' ? owner.name + "'s collections" : 'Коллекции ' + owner.name: userData.language === 'en' ? 'Your collections' : 'Ваши коллекции'} </h1>
+                  <button type="button" className="btn btn-success d-inline-block float-end" onClick={routeChange}>
+                    + {userData.language === 'en'?'Create new collection':'Создать новую коллекцию'}</button>
+                </div>
                 {collections.map((collection, index) => {
                   return (
                     <div className="card flex-row w-90 mt-2 text-break" key={index} >
