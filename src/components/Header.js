@@ -4,12 +4,15 @@ import {useAuthHooks} from '../hooks/authHooks.js';
 import {useNavigate} from 'react-router-dom';
 import {setSearchQuery, setProfileId, setLanguage} from '../store/reducers';
 import themeSwitcher from 'theme-switcher';
+import {useRequestHooks} from '../hooks/serverRequestHooks';
+import { toast } from 'react-toastify';
 
 function Header(props) {
   const userData = useSelector(state => state.userData);
   const dispatch = useDispatch();
   const {logout} = useAuthHooks();
   const navigate = useNavigate();
+  const {sendPostRequest} = useRequestHooks();
   const [searchFormValue, setSearchFormValue] = useState('');
   const clickHandler = function(){
     logout(dispatch);
@@ -21,10 +24,16 @@ function Header(props) {
       light: '../../node_modules/bootstrap/dist/css/bootstrap.css',
     }
   });
+
+  useEffect(()=>{
+    checkUserData()
+  },[])
+
   const navClickHandler = function(){
     const navbar = document.querySelector('#navbar');
     navbar.classList.toggle('display-none');
   };
+
   const adminPanelRedirect = function(){
     navigate('/adminpage')
   }
@@ -51,6 +60,17 @@ function Header(props) {
       });
     }
     console.log(getTheme());
+  }
+
+  const checkUserData = async function () {
+    const response = await sendPostRequest('checkuserdata', 'userData', userData);
+    if (!response) {
+      logout(dispatch);
+      navigate('/');
+      setTimeout(()=>{
+        toast(userData.language==='en'?'Administrator changed some permissions for your account, we had to log you out':'Администратор поменял права доступа для вашего аккаунта, нам пришлось разлогинить вас')
+      },100)
+    }
   }
 
     return (

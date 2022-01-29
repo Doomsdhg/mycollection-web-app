@@ -4,6 +4,8 @@ import {setSearchQuery, setItemId, setCollectionId} from '../store/reducers';
 import {useDispatch, useSelector} from 'react-redux';
 import {useNavigate} from 'react-router-dom';
 import MDEditor from '@uiw/react-md-editor';
+import {useRequestHooks} from '../hooks/serverRequestHooks';
+import { ToastContainer } from 'react-toastify';
 
 function Main() {
   const noImage = 'https://st4.depositphotos.com/14953852/24787/v/600/depositphotos_247872612-stock-illustration-no-image-available-icon-vector.jpg';
@@ -12,7 +14,8 @@ function Main() {
   const [currentlyAddedItems, setCurrentlyAddedItems] = useState([]);
   const [tags, setTags] = useState([]);
   const [biggestCollections, setBiggestCollections] = useState([]);
-  const userData = useSelector(state=>state.userData)
+  const userData = useSelector(state=>state.userData);
+  const {sendGetRequest} = useRequestHooks();
   const defaultTags = [
     { value: 'JavaScript', count: 38 },
     { value: 'React', count: 30 },
@@ -31,8 +34,7 @@ function Main() {
 
   const fetchLastItems = async function(){
     try {
-      const request = await fetch('https://mycollection-server.herokuapp.com/api/getlastitems')
-      const response = await request.json();
+      const response = await sendGetRequest('getlastitems');
       console.log(response)
       setCurrentlyAddedItems(response);
     } catch (error) {
@@ -42,8 +44,7 @@ function Main() {
 
   const fetchBiggestCollections = async function(){
     try {
-      const request = await fetch('https://mycollection-server.herokuapp.com/api/getbiggestcollections')
-      const response = await request.json();
+      const response = await sendGetRequest('getbiggestcollections');
       console.log(response)
       setBiggestCollections(response);
     } catch (error) {
@@ -53,9 +54,7 @@ function Main() {
 
   const fetchTags = async function(){
     try {
-      const request = await fetch('https://mycollection-server.herokuapp.com/api/gettags')
-      const response = await request.json();
-      console.log(response)
+      const {response} = await sendGetRequest('gettags');
       const keys = Object.keys(response);
       let tagsArray = Object.values(response);
       tagsArray = tagsArray.map((tag, index)=>{
@@ -66,7 +65,6 @@ function Main() {
           }
         )
       })
-      console.log(tagsArray)
       setTags(tagsArray);
     } catch (error) {
       console.log(error);
@@ -163,6 +161,7 @@ function Main() {
             </p>
           </p>
           </div>
+          <ToastContainer />
         </main>
     )
 }

@@ -174,16 +174,14 @@ export const useRequestHooks = () => {
 
     const sendGetRequest = async (path) => {
       try {
-        const request = await fetch(`http://localhost:8080/api/${path}`)
+        const request = await fetch(`https://mycollection-server.herokuapp.com/api/${path}`)
         const response = await request.json();
         switch (path) {
           case 'gettags':
             const tagsArray = Object.keys(response).filter(tag=>tag!=='');
-            return tagsArray
-          case 'getuserstable':
-            return response
+            return {tagsArray, response}
           default:
-            break
+            return response
         }
       } catch (error) {
         console.log(error);

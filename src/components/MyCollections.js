@@ -5,7 +5,7 @@ import { ToastContainer } from 'react-toastify';
 import { useDispatch } from 'react-redux';
 import {setCollectionId, setProfileId} from '../store/reducers';
 import MDEditor from '@uiw/react-md-editor';
-
+import {useRequestHooks} from '../hooks/serverRequestHooks';
 
 export default function MyCollections() {
   const [owner, setOwner] = useState();
@@ -14,26 +14,15 @@ export default function MyCollections() {
   const navigate = useNavigate();
   const noImage = 'https://st4.depositphotos.com/14953852/24787/v/600/depositphotos_247872612-stock-illustration-no-image-available-icon-vector.jpg';
   const [collections, setCollections] = useState([]);
+  const {sendPostRequest} = useRequestHooks();
   const routeChange = function () {
     navigate('/createcollection')
   }
   const fetchCollections = async function(){
     try {
-      const request = await fetch('https://mycollection-server.herokuapp.com/api/fetchcollections', 
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({data: {
-            userId: userData.profileId
-          }})
-        });
-        const response = await request.json();
-        console.log(response);
-        setCollections(response.collections);
-        setOwner(response.owner);
-        
+      const response = await sendPostRequest('fetchcollections', 'userId', userData.profileId);
+      setCollections(response.collections);
+      setOwner(response.owner);
     } catch (error) {
       console.log(error);
     }

@@ -138,8 +138,8 @@ function CollectionTable() {
 
     const fetchTags = async function(){
       try {
-        const response = await sendGetRequest('gettags')
-        setTags([...response.map(tag => tag.substring(1))]);
+        const {tagsArray} = await sendGetRequest('gettags')
+        setTags(prev=>{return[...tagsArray.map(tag => tag.substring(1))]});
       } catch (e) {
         setError(e)
       }
@@ -196,7 +196,6 @@ function CollectionTable() {
     const uploadItem = async function(){
         try {
           checkTagsValidity()
-          console.log(itemFormValue)
           await sendPostRequest('uploaditem', 'items', itemFormValue, userData, collectionData)
           toast(userData.language==='en'?'item added successfully!':'предмет успешно добавлен в коллекцию!');
           fetchCollectionTable()
@@ -207,7 +206,11 @@ function CollectionTable() {
 
     const deleteItems = async function(){
       try {
-        await sendPostRequest('deleteitems', 'itemsToDelete', selectedItems, userData)
+        const itemsData = {
+          itemsToDelete: selectedItems,
+          collectionRef: userData.collectionId
+        }
+        await sendPostRequest('deleteitems', 'itemsData', itemsData, userData)
         toast(userData.language==='en'?'item(s) deleted successfully!':'Предметы(ы) удалены');
         uncheckSelectedItems()
         setSelectedItems([]);
@@ -220,7 +223,7 @@ function CollectionTable() {
     return (
       <>
         <div className='container main-container'> 
-        {userData.userId === collectionData.creator ?
+        {userData.userId === collectionData.creator || userData.admin?
         <>
           <button type="button" className="btn btn-primary mb-3" onClick={toggleCollectionDataForms}>{userData.language==='en'?'Edit collection info':'Изменить информацию о коллекции'}</button>
           <button type="button" className="btn btn-danger ms-3 mb-3" onClick={deleteCollection}>{userData.language==='en'?'Delete collection':'Удалить коллекцию'}</button>
@@ -311,16 +314,6 @@ function CollectionTable() {
                 return (
                   <div className="mb-3 form">
                     <span className="d-block" id="basic-addon1">{header.Header}</span>
-                    {/* <Typeahead
-                      multiple
-                      onChange={(e) => {
-                        setSelected(e)
-                        formChangeHandler(e)
-                      }}
-                      selected={selected}
-                      id='tags'
-                      options={tags}
-                    /> */}
                     <TextInput className='form-control' onChange={formChangeHandler} onSelect={formChangeHandler} trigger={["#"]} options={{"#": tags}} />
                   </div>
                 )

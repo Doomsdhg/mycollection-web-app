@@ -4,6 +4,7 @@ import MDEditor from '@uiw/react-md-editor';
 import {useDispatch} from 'react-redux';
 import {useNavigate} from 'react-router-dom';
 import {setItemId} from '../store/reducers';
+import {useRequestHooks} from '../hooks/serverRequestHooks';
 
 function SearchResults() {
     const navigate = useNavigate();
@@ -12,38 +13,27 @@ function SearchResults() {
     const userData = useSelector(state => state.userData);
     const [collectionsArray, setCollectionsArray] = useState();
     const [itemsArray, setItemsArray] = useState();
+    const {sendPostRequest} = useRequestHooks();
+
     useEffect(()=>{
         sendSearchQuery();
     },[])
 
+    const itemPageRedirect = async function (e){
+      console.log(e.target.parentNode.dataset.id);
+      dispatch(setItemId(e.target.parentNode.dataset.id));
+      navigate('/itempage')
+    }
+
     const sendSearchQuery = async function(){
         try {
-          console.log(userData.query);
-            console.log('trying')
-          const request = await fetch('https://mycollection-server.herokuapp.com/api/search', 
-            {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/json',
-              },
-              body: JSON.stringify({data: {
-                query: userData.query
-              }})
-            })
-            const response = await request.json();
-            console.log(response);
-            setCollectionsArray(response.collections);
-            setItemsArray(response.items);
+          const response = await sendPostRequest('search', 'query', userData.query);
+          console.log(response);
+          setCollectionsArray(response.collections);
+          setItemsArray(response.items);
         } catch (error) {
           console.log(error);
         }
-      }
-
-      const itemPageRedirect = async function (e){
-        console.log(e.target.parentNode.dataset.id);
-        dispatch(setItemId(e.target.parentNode.dataset.id));
-        navigate('/itempage')
-        
       }
 
     return (
@@ -52,7 +42,7 @@ function SearchResults() {
         <div className='d-flex p-2 bd-highlight mt-3 m-auto'>
             
             <div className="d-inline-flex p-2 bd-highlight align-items-start flex-column search-results">
-              <h2>{userData.language === 'en'?'Items found by seeking in item info/comments':'Предметы найденные по ключевым словам в инфмормации о предмете/комментариях'}</h2>
+              <h2>{userData.language === 'en'?'Items found by seeking in item info/comments':'Предметы найденные по ключевым словам в информации о предмете/комментариях'}</h2>
             {itemsArray?
             itemsArray.length !== 0?
             itemsArray.map((item, index)=>{
