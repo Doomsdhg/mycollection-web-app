@@ -75,11 +75,14 @@ function ItemInfo() {
           itemId: userData.itemId,
           userId: userData.userId
         };
-        const response = await sendPostRequest('getlikes', 'requiredData', requiredData)
+        const {response, error} = await sendPostRequest('getlikes', 'requiredData', requiredData)
+        if (error) {
+          throw new Error(error)
+        }
         setLiked(response.liked);
         setLikesAmount(response.likesAmount);
-      } catch (error) {
-        console.error(error)
+      } catch (e) {
+        toast('' + e)
       }
     }
 
@@ -90,47 +93,59 @@ function ItemInfo() {
           userId: userData.userId,
           reaction: liked
         }
-        await sendPostRequest('uploadreaction', 'reaction', reaction);
+        const {error} = await sendPostRequest('uploadreaction', 'reaction', reaction);
+        if (error) {
+          throw new Error(error)
+        }
         getLikes()
-      } catch (error) {
-        console.error(error)
+      } catch (e) {
+        toast('' + e)
       }
     }
 
     const getItem = async function(){
         try {
-          const {fields, response} = await sendPostRequest('getitem', 'itemId', userData.itemId, userData, headersArray)
+          const {fields, response, error} = await sendPostRequest('getitem', 'itemId', userData.itemId, userData, headersArray)
+          if (error) {
+            throw new Error(error)
+          }
           if (response.creator === userData.userId || userData.admin) {
             setDisplayButtons(true);
           }
           setItemData(response);
           dispatch(setCollectionId(response.collectionRef));
           setFieldsArray(fields);
-        } catch (error) {
-          console.error(error)
+        } catch (e) {
+          toast('' + e)
         }
     }
 
     const getHeaders = async function () {
         try {
-          let {headers} = await sendPostRequest('getcollectiontable', 'collectionId', userData.collectionId, userData, headersArray)
+          let {headers, error} = await sendPostRequest('getcollectiontable', 'collectionId', userData.collectionId, userData, headersArray)
+          if (error) {
+            throw new Error(error)
+          }
           headers.shift();
           setHeadersArray(prev=>{return[...headers]});
-        } catch (error) {
-          console.error(error)
+        } catch (e) {
+          toast('' + e)
         }
     }
 
     const deleteItem = async function(e){
       try {
         const itemsToDelete = [e.target.dataset.id];
-        await sendPostRequest('deleteitems', 'itemsToDelete', itemsToDelete)
+        const {error} = await sendPostRequest('deleteitems', 'itemsToDelete', itemsToDelete)
+        if (error) {
+          throw new Error(error)
+        }
         setTimeout(()=>{
           toast(userData.language === 'en'?'item deleted successfully!':'Предмет удалён');
         },100)
         navigate('/mycollections');
-      } catch (error) {
-        console.error(error)
+      } catch (e) {
+        toast('' + e)
       }
     }
 
@@ -140,22 +155,28 @@ function ItemInfo() {
               update: itemFormValue,
               itemId: userData.itemId
             };
-        await sendPostRequest('updateitem', 'updateData', updateData)
+        const {error} = await sendPostRequest('updateitem', 'updateData', updateData)
+        if (error) {
+          throw new Error(error)
+        }
         setTimeout(()=>{
           toast(userData.language === 'en'?'Item info updated successfully!':'Информация обновлена');
         },100)
         getItem()
-      } catch (error) {
-        console.error(error)
+      } catch (e) {
+        toast('' + e)
       }
     }
 
     const fetchTags = async function(){
       try {
-        const {tagsArray} = await sendGetRequest('gettags')
+        const {tagsArray, error} = await sendGetRequest('gettags')
+        if (error) {
+          throw new Error(error)
+        }
         setTags([...tagsArray.map(tag => tag.substring(1))]);
       } catch (e) {
-        setError(e)
+        toast('' + e)
       }
     }
 

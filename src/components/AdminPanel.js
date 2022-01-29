@@ -5,6 +5,7 @@ import {useDispatch, useSelector} from 'react-redux';
 import {setProfileId} from '../store/reducers';
 import {useTableRender} from '../hooks/tableHooks';
 import {useRequestHooks} from '../hooks/serverRequestHooks';
+import { toast, ToastContainer } from 'react-toastify';
 
 function AdminPanel() {
     const {sendPostRequest, sendGetRequest} = useRequestHooks();
@@ -12,6 +13,7 @@ function AdminPanel() {
     const userData = useSelector(state=>state.userData);
     const dispatch = useDispatch();
     const navigate = useNavigate();
+    const [error, setError] = useState();
     const [users, setUsers] = useState([]);
     const [headers, setHeaders] = useState([
         {
@@ -55,25 +57,32 @@ function AdminPanel() {
 
     const fetchUsers = async function(){
         try {
-          const response = await sendGetRequest('getuserstable')
+          const {error, response} = await sendGetRequest('getuserstable')
+          if (error) {
+            throw new Error(error)
+          }
           setUsers(response);
-        } catch (error) {
-          console.log(error);
+        } catch (e) {
+          toast('' + e)
         }
       }
     
     const interactWithUser = async function(userId, action){
         try {
-            await sendPostRequest(`${action}user`, 'userId', userId);
-            fetchUsers();
-          } catch (e) {
-            console.error(e)
+          const {error} = await sendPostRequest(`${action}user`, 'userId', userId);
+          if (error) {
+            throw new Error(error)
           }
+          fetchUsers();
+        } catch (e) {
+          toast('' + e)
+        }
     }
 
     return (
     <div className='container main-container'>
       {renderAdminTable(table, headers, interactWithUser, userPageRedirect, userData)}
+      <ToastContainer />
     </div>);
 }
 

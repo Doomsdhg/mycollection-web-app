@@ -66,8 +66,7 @@ function CreateCollection() {
         console.log(itemFields);
         setError('');
       } catch (e) {
-        setError(e);
-        console.log(e)
+        toast('' + e)
       }
     }
 
@@ -89,45 +88,60 @@ function CreateCollection() {
 
     const uploadImage = async function(image){
         try {
-          const response = await sendPostRequest('uploadimage', 'img', image)
+          const {error, response} = await sendPostRequest('uploadimage', 'img', image)
+          if (error) {
+            throw new Error(error);
+          } 
           const imageURL = response.url;
           dispatch(setImageURL(imageURL))      
           toast(userData.language === 'en'?'Image successfully uploaded to server!':'Картинка успешно загружена на сервер');
-        } catch (error) {
-          console.error(error)
+        } catch (e) {
+          toast('' + e)
         }
     }
 
     const uploadCollection = async function(){
       try {
         const updateData = {...formValue, imageURL: userData.imageURL}
-        await sendPostRequest('uploadcollection', 'updateData', updateData)
+        const {error} = await sendPostRequest('uploadcollection', 'updateData', updateData)
+        if (error) {
+          throw new Error(error)
+        }
         dispatch(setImageURL(''))
         navigate('/mycollections');
         setTimeout(()=>{
           toast(userData.language === 'en'?'Collection created successfully!':'Коллекция создана!');
         },100)
-      } catch (error) {
-        console.error(error)
+      } catch (e) {
+        if (String(e).includes('ValidationError')){
+          toast(userData.language==='en'?'you need to fill every required field':'нужно заполнить все обязательные поля')
+        } else {
+          toast('' + e)
+        }
       }
     }
 
     return (
         <div className='container main-container'>  
             <h3>{userData.language === 'en'?'Enter data for your future collection':'Введите информацию о коллекции'}</h3>
-            <div className="mb-3">
-              <span className="text" id="basic-addon1">{userData.language === 'en'?'Collection name':'Название коллекции'}</span>
+            <small className='text-danger'>* - обязательные поля</small>
+            <div className="mb-3 mt-2">
+              <span className="text" id="basic-addon1">{userData.language === 'en'?'Collection name':'Название коллекции'} *</span>
               <input type="text" className="form-control" name='name' placeholder={userData.language === 'en'?'My collection':'Моя коллекция'} onChange={changeHandler} aria-describedby="basic-addon1" />
             </div>
 
-            <MDEditor
+            <div className="mb-3">
+              <span className="text" id="basic-addon1">{userData.language === 'en'?'Collection description':'Описание коллекции'} *</span>
+              <MDEditor
                 value={markdownValue}
                 onChange={setMarkdownValue}
                 name='description'
               />
+            </div>
+            
 
             <div className="mb-3 mt-3">
-              <label className="-text" htmlFor="inputGroupSelect01">{userData.language === 'en'?'Topic':'Категория'}</label>
+              <label className="-text" htmlFor="inputGroupSelect01">{userData.language === 'en'?'Topic':'Категория'} *</label>
               <select className="form-select" name='topic' id="inputGroupSelect01" onChange={changeHandler}>
                 <option defaultValue={true}>{userData.language === 'en'?'Choose...':'Выберите...'}</option>
                 <option value="Books">{userData.language === 'en'?'Books':'Книги'}</option>

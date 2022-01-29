@@ -5,9 +5,11 @@ import {useDispatch, useSelector} from 'react-redux';
 import {useNavigate} from 'react-router-dom';
 import MDEditor from '@uiw/react-md-editor';
 import {useRequestHooks} from '../hooks/serverRequestHooks';
-import { ToastContainer } from 'react-toastify';
+import { ToastContainer, toast } from 'react-toastify';
+import { useTheme } from 'styled-components';
 
 function Main() {
+  const theme = useTheme();
   const noImage = 'https://st4.depositphotos.com/14953852/24787/v/600/depositphotos_247872612-stock-illustration-no-image-available-icon-vector.jpg';
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -27,6 +29,7 @@ function Main() {
   ];
 
   useEffect(()=>{
+    console.log(theme.color)
     fetchTags();
     fetchLastItems();
     fetchBiggestCollections()
@@ -34,27 +37,36 @@ function Main() {
 
   const fetchLastItems = async function(){
     try {
-      const response = await sendGetRequest('getlastitems');
-      console.log(response)
+      const {response, error} = await sendGetRequest('getlastitems');
+      if (error) {
+        throw new Error(error)
+      }
       setCurrentlyAddedItems(response);
-    } catch (error) {
-      console.log(error);
+    } catch (e) {
+      console.log(e)
+      toast('' + e)
     }
   }
 
   const fetchBiggestCollections = async function(){
     try {
-      const response = await sendGetRequest('getbiggestcollections');
-      console.log(response)
+      const {response, error} = await sendGetRequest('getbiggestcollections');
+      if (error) {
+        throw new Error(error)
+      }
       setBiggestCollections(response);
-    } catch (error) {
-      console.log(error);
+    } catch (e) {
+      console.log(e)
+      toast('' + e)
     }
   }
 
   const fetchTags = async function(){
     try {
-      const {response} = await sendGetRequest('gettags');
+      const {response, error} = await sendGetRequest('gettags');
+      if (error) {
+        throw new Error(error)
+      }
       const keys = Object.keys(response);
       let tagsArray = Object.values(response);
       tagsArray = tagsArray.map((tag, index)=>{
@@ -66,8 +78,9 @@ function Main() {
         )
       })
       setTags(tagsArray);
-    } catch (error) {
-      console.log(error);
+    } catch (e) {
+      console.log(e)
+      toast('' + e)
     }
   }
 
@@ -87,7 +100,7 @@ function Main() {
   }
 
     return (
-        <main className="container main-container">
+        <main className={'container main-container'}>
           <div className="d-flex align-items-center p-3 my-3 text-white bg-purple rounded shadow-sm">
             <div className="lh-1">
               <h1 className="display-1 text-dark">{userData.language === 'en'?'Feed':'Лента событий'}</h1>

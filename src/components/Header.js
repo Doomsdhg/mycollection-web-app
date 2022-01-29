@@ -2,7 +2,7 @@ import React, {useEffect, useState} from 'react';
 import {useSelector, useDispatch} from 'react-redux';
 import {useAuthHooks} from '../hooks/authHooks.js';
 import {useNavigate} from 'react-router-dom';
-import {setSearchQuery, setProfileId, setLanguage} from '../store/reducers';
+import {setSearchQuery, setProfileId, setLanguage, setTheme} from '../store/reducers';
 import themeSwitcher from 'theme-switcher';
 import {useRequestHooks} from '../hooks/serverRequestHooks';
 import { toast } from 'react-toastify';
@@ -26,7 +26,9 @@ function Header(props) {
   });
 
   useEffect(()=>{
-    checkUserData()
+    if (userData.isAuthenticated) {
+      checkUserData()
+    }
   },[])
 
   const navClickHandler = function(){
@@ -49,21 +51,12 @@ function Header(props) {
   }
 
   const switchTheme = function(){
-    const currentTheme = getTheme();
-    if (currentTheme === 'light') {
-      switcher({
-        theme: 'dark',
-      });
-    } else {
-      switcher({
-        theme: 'light',
-      });
-    }
-    console.log(getTheme());
+    dispatch(setTheme(userData.theme==='light'?'dark':'light'))
+    console.log(userData.theme)
   }
 
   const checkUserData = async function () {
-    const response = await sendPostRequest('checkuserdata', 'userData', userData);
+    const {response} = await sendPostRequest('checkuserdata', 'userData', userData);
     if (!response) {
       logout(dispatch);
       navigate('/');

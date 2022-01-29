@@ -5,6 +5,7 @@ import {useDispatch} from 'react-redux';
 import {useNavigate} from 'react-router-dom';
 import {setItemId} from '../store/reducers';
 import {useRequestHooks} from '../hooks/serverRequestHooks';
+import { ToastContainer, toast } from 'react-toastify';
 
 function SearchResults() {
     const navigate = useNavigate();
@@ -27,12 +28,14 @@ function SearchResults() {
 
     const sendSearchQuery = async function(){
         try {
-          const response = await sendPostRequest('search', 'query', userData.query);
-          console.log(response);
+          const {response, error} = await sendPostRequest('search', 'query', userData.query);
+          if (error) {
+            throw new Error(error)
+          }
           setCollectionsArray(response.collections);
           setItemsArray(response.items);
-        } catch (error) {
-          console.log(error);
+        } catch (e) {
+          toast('' + e)
         }
       }
 

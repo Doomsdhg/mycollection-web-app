@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import {useDispatch, useSelector} from 'react-redux';
 import {useAuthHooks} from '../hooks/authHooks.js';
 import {useRequestHooks} from '../hooks/serverRequestHooks';
+import { ToastContainer, toast } from 'react-toastify';
 
 function AuthenticationForm() {
   const navigate = useNavigate();
@@ -18,19 +19,18 @@ function AuthenticationForm() {
   
   const formChangeHandler = (e) => {
     setFormValue({...formValue, [e.target.name]: e.target.value});
-    console.log(formValue);
   }
 
   const loginClickHandler = async () => {
     try {
-      const response = await sendPostRequest('authentication', false, formValue, userData)
-      if (!response.token){
-        throw new Error(response.message);
+      const {response, error} = await sendPostRequest('authentication', false, formValue, userData)
+      if (error){
+        throw new Error(error);
       }
       login(response, dispatch);
       navigate('/');
-      } catch (e) {
-      setError(`${e}`);
+    } catch (e) {
+      toast('' + e);
     }
   }
 
@@ -72,6 +72,7 @@ function AuthenticationForm() {
                 </div>
               </div>
             </div>
+            <ToastContainer />
         </section>
     )
 }

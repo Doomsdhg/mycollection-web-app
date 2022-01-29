@@ -138,21 +138,27 @@ function CollectionTable() {
 
     const fetchTags = async function(){
       try {
-        const {tagsArray} = await sendGetRequest('gettags')
+        const {tagsArray, error} = await sendGetRequest('gettags')
+        if (error) {
+          throw new Error(error)
+        }
         setTags(prev=>{return[...tagsArray.map(tag => tag.substring(1))]});
       } catch (e) {
-        setError(e)
+        toast('' + e)
       }
     }
 
     const fetchCollectionData = async function(){
       try {
-        const response = await sendPostRequest('getcollectiondata', 'collectionId', userData.collectionId, userData);
+        const {response, error} = await sendPostRequest('getcollectiondata', 'collectionId', userData.collectionId, userData);
+        if (error) {
+          throw new Error(error)
+        }
         setCollectionData(response);
         setMarkdownValue(response.description);
         fetchCollectionTable()
       } catch (e) {
-        setError(e)
+        toast('' + e)
       }
     }
 
@@ -161,46 +167,59 @@ function CollectionTable() {
           const {
             responseHeaders, 
             itemFields, 
-            items} = await sendPostRequest('getcollectiontable', 'collectionId', userData.collectionId, userData, collectionData);
+            items,
+            error} = await sendPostRequest('getcollectiontable', 'collectionId', userData.collectionId, userData, collectionData);
+          if (error) {
+            throw new Error(error)
+          }
           setHeaders(responseHeaders);
           setItemFormValue(prev=>{return {...prev, ...itemFields}});
           setItems(items);
         } catch (e) {
-          setError(e);
+          toast('' + e)
         }
     }
 
     const updateCollectionData = async function (){
       try {
         const update = {...collectionFormValue, collectionId: userData.collectionId};
-        await sendPostRequest('updatecollection', 'update', update, userData)
+        const {error} = await sendPostRequest('updatecollection', 'update', update, userData)
+        if (error) {
+          throw new Error(error)
+        }
         fetchCollectionData()
         toast(userData.language==='en'?'changes saved successfully!':'изменения сохранены');
       } catch (e) {
-        setError(e)
+        toast('' + e)
       }
     }
 
     const deleteCollection = async function(){
       try {
-        await sendPostRequest('deletecollection', 'collectionId', userData.collectionId, userData)
+        const {error} = await sendPostRequest('deletecollection', 'collectionId', userData.collectionId, userData)
+        if (error) {
+          throw new Error(error)
+        }
         setTimeout(()=>{
           toast(userData.language==='en'?'Collection deleted successfully!':'Коллекция удалена');
         },100)
         navigate('/mycollections')
       } catch (e) {
-        setError(e);
+        toast('' + e)
       }
     }
 
     const uploadItem = async function(){
         try {
           checkTagsValidity()
-          await sendPostRequest('uploaditem', 'items', itemFormValue, userData, collectionData)
+          const {error} = await sendPostRequest('uploaditem', 'items', itemFormValue, userData, collectionData);
+          if (error) {
+            throw new Error(error)
+          }
           toast(userData.language==='en'?'item added successfully!':'предмет успешно добавлен в коллекцию!');
           fetchCollectionTable()
         } catch (e) {
-          setError(e)
+          toast('' + e)
         }
     }
 
@@ -210,13 +229,16 @@ function CollectionTable() {
           itemsToDelete: selectedItems,
           collectionRef: userData.collectionId
         }
-        await sendPostRequest('deleteitems', 'itemsData', itemsData, userData)
+        const {error} = await sendPostRequest('deleteitems', 'itemsData', itemsData, userData)
+        if (error) {
+          throw new Error(error)
+        }
         toast(userData.language==='en'?'item(s) deleted successfully!':'Предметы(ы) удалены');
         uncheckSelectedItems()
         setSelectedItems([]);
         fetchCollectionTable()
       } catch (e) {
-        setError(e)
+        toast('' + e)
       }
     }
 
