@@ -6,6 +6,7 @@ import {useNavigate} from 'react-router-dom';
 import {useDispatch} from 'react-redux';
 import {setCollectionId} from '../store/reducers';
 import {useRequestHooks} from '../hooks/serverRequestHooks';
+import TextInput from 'react-autocomplete-input';
 
 function ItemInfo() {
     const redHeart = 'https://img.icons8.com/external-kiranshastry-lineal-color-kiranshastry/50/000000/external-heart-miscellaneous-kiranshastry-lineal-color-kiranshastry.png';
@@ -18,15 +19,18 @@ function ItemInfo() {
     const [displayForms, setDisplayForms] = useState(false);
     const [itemData, setItemData] = useState();
     const [headersArray, setHeadersArray] = useState([]);
+    const [tags, setTags] = useState();
+    const [error, setError] = useState('');
     const userData = useSelector(store => store.userData);
     const [fieldsArray, setFieldsArray] = useState([]);
-    const {sendPostRequest} = useRequestHooks();
+    const {sendPostRequest, sendGetRequest} = useRequestHooks();
     const dispatch = useDispatch();
     const navigate = useNavigate();
 
     useEffect(()=>{
       getHeaders();
       getLikes();
+      fetchTags();
     },[])
 
     useEffect(()=>{
@@ -45,11 +49,14 @@ function ItemInfo() {
     }
 
     const formChangeHandler = function(e, fieldValue){
-      if (e.target.name.includes('checkbox')) {
+      if (!e.target) {
+        setItemFormValue(prev=>{return{...prev, tags: e}})
+        return null
+      } else if (e.target.name.includes('checkbox')) {
         console.log(e.target.checked)
-        setItemFormValue({...itemFormValue, [e.target.name]: String(e.target.checked)});
+        setItemFormValue(prev=>{return{...prev, [e.target.name]: String(e.target.checked)}});
       } else {
-        setItemFormValue({...itemFormValue, [e.target.name]: String(e.target.value)});
+        setItemFormValue(prev=>{return{...itemFormValue, [e.target.name]: String(e.target.value)}});
       }
     }
 
@@ -143,6 +150,15 @@ function ItemInfo() {
       }
     }
 
+    const fetchTags = async function(){
+      try {
+        const {tagsArray} = await sendGetRequest('gettags')
+        setTags([...tagsArray.map(tag => tag.substring(1))]);
+      } catch (e) {
+        setError(e)
+      }
+    }
+
     return (
         <div className='container main-container'>
            {(itemData && userData.userId === itemData.creator) || userData.admin ?
@@ -173,12 +189,19 @@ function ItemInfo() {
 
                   return (
                     <div className="mb-3 form" key={'checkbox' + index}>
-                    <input type="checkbox" checked={field.value === 'true'? true : false} name={field.type}
-                    onChange={(e)=>{
-                      field.value = field.value ? '' : 'true'
-                      formChangeHandler(e, field.value)}}/>
-                    <span className="text ms-3" id="basic-addon1">{field.name}</span>
-                  </div>
+                      <input type="checkbox" checked={field.value === 'true'? true : false} name={field.type}
+                      onChange={(e)=>{
+                        field.value = field.value ? '' : 'true'
+                        formChangeHandler(e, field.value)}}/>
+                      <span className="text ms-3" id="basic-addon1">{field.name}</span>
+                    </div>
+                  )
+                } else if (field.type === 'tags') {
+                  return (
+                    <div className="mb-3 form" key={'tags' + index}>
+                      <span className="text" id="basic-addon1">{field.name}</span>
+                      <TextInput className='form-control' defaultValue={field.value} onChange={formChangeHandler} onSelect={formChangeHandler} trigger={["#"]} options={{"#": tags}} />
+                    </div>
                   )
                 }
                 return (
@@ -204,7 +227,7 @@ function ItemInfo() {
               src={liked ? redHeart : whiteHeart} />{userData.language === 'en'?'Like':'Нравится'} | {likesAmount}</button>
             </h1>
             {fieldsArray.map((field, index)=>{
-                return field.name.includes('text')?
+                return field.type.includes('text')?
                     <div className="d-flex text-muted pt-3" key={index} >
                         <p className="pb-3 mb-0 small lh-sm border-bottom border-dark border-1">
                         <strong className="d-block text-gray-dark">{headersArray[index]?headersArray[index].Header:null}</strong>

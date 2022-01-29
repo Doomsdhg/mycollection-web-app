@@ -1,10 +1,10 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import {useAuthHooks} from '../hooks/authHooks.js';
 import {useDispatch, useSelector} from 'react-redux';
-import { Navigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+import {useRequestHooks} from '../hooks/serverRequestHooks';
 
 function SignUpForm() {
-    
     const [formValue, setFormValue] = useState({
       email: '',
       username: '',
@@ -15,7 +15,15 @@ function SignUpForm() {
     const [error, setError] = useState(null);
     const {login} = useAuthHooks();
     const dispatch = useDispatch();
+    const navigate = useNavigate();
     const userData = useSelector(state => state.userData);
+    const {sendPostRequest} = useRequestHooks();
+
+    useEffect(()=>{
+      if (userData.isAuthenticated) {
+        navigate('/');
+      }
+    },[userData.isAuthenticated])
 
     const formChangeHandler = (e) => {
       setFormValue({...formValue, [e.target.name]: e.target.value});
@@ -27,17 +35,9 @@ function SignUpForm() {
         if (formValue.password !== formValue.password2) {
           throw new Error(userData.language === 'en'? 'Passwords should be identical' : 'Пароли не совпадают');
         }
-        const response = await fetch('https://mycollection-server.herokuapp.com/api/register', 
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json;charset=utf-8',
-          },
-          body: JSON.stringify(formValue)
-        });
-        const data = await response.json();
-        if (!response.ok){
-          throw new Error(data.message);
+        const response = await sendPostRequest('register', false, formValue);
+        if (response.message !== 'Account is created successfully'){
+          throw new Error(response.message);
         }
         loginClickHandler()
       } catch (e) {
@@ -48,21 +48,8 @@ function SignUpForm() {
 
     const loginClickHandler = async () => {
       try {
-        const response = await fetch('https://mycollection-server.herokuapp.com/api/authentication', 
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: formValue?JSON.stringify(formValue):null
-        });
-        const data = await response.json();
-        console.log(data);
-        if (!response.ok){
-          throw new Error(data.message);
-        }
-        login(data, dispatch);
-        console.log(userData);
+        const response = await sendPostRequest('authentication', false, formValue);
+        login(response, dispatch);
         } catch (e) {
         setError(`${e}`);
         console.log(e)
@@ -104,11 +91,6 @@ function SignUpForm() {
                         <button className="btn btn-outline-light btn-lg px-5" type="submit" onClick={clickHandler}>{userData.language === 'en'?'Create an account':'Создать аккаунт'}</button>
 
                       </div>
-
-                      {(()=>{if (userData.isAuthenticated) {
-                        console.log(userData.isAuthenticated);
-                        return <Navigate to="/"/>
-                      }})()}
 
                       {(()=>{if(error){
                           return (
