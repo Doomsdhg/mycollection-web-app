@@ -89,6 +89,10 @@ export const GlobalStyles = createGlobalStyle`
             background-color: ${props=>props.theme.background_main} !important;
         }
 
+        .Toastify {
+            font: #000;
+        }
+
         .w-md-editor-text-pre.w-md-editor-text-input.w-md-editor-text.w-md-editor-text-pre {
             color: ${props=>props.theme.font} !important;
         }
