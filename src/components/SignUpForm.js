@@ -38,8 +38,10 @@ function SignUpForm() {
         const {error} = await sendPostRequest('register', false, formValue);
         if (error){
           throw new Error(error);
+        } else {
+          loginClickHandler()
         }
-        loginClickHandler()
+        
       } catch (e) {
         toast('' + e)
       }
@@ -75,7 +77,7 @@ function SignUpForm() {
                         </div>
 
                         <div className="form-outline form-white mb-4">
-                          <input type="text" name="userName" onChange={formChangeHandler} className="form-control form-control-lg" placeholder={userData.language === 'en'?'Username':'Имя пользователя'}/>
+                          <input type="text" name="username" onChange={formChangeHandler} className="form-control form-control-lg" placeholder={userData.language === 'en'?'Username':'Имя пользователя'}/>
                         </div>
 
                         <div className="form-outline form-white mb-4">
@@ -110,6 +112,7 @@ function SignUpForm() {
                 </div>
               </div>
             </div>
+            < ToastContainer />
         </section>
     )
 }

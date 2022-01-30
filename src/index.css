@@ -176,4 +176,18 @@ code {
   font-size: 0.5em;
 }
 
+.item-header {
+  font-size: 1.2em !important;
+}
+
+.like-button {
+  display: inline-block !important;
+  margin-top: -12px;
+}
+
+#delete-item-button {
+  margin-left: 0 !important;
+  margin-bottom: 0.5rem !important;
+}
+
 }

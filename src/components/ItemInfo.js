@@ -184,11 +184,11 @@ function ItemInfo() {
            {(itemData && userData.userId === itemData.creator) || userData.admin ?
             <div>
               <button type="button" className="btn btn-primary mb-3" onClick={toggleItemForms}>{!displayForms?userData.language === 'en'?'Edit item info':'Редактировать информацию о предмете':userData.language === 'en'?'Close editing console':'Закрыть консоль редактирования'}</button>
-              <button type="button" className="btn btn-danger ms-3 mb-3" 
+              <button type="button" className="btn btn-danger ms-3 mb-3" id="delete-item-button"
               data-id={userData.itemId} onClick={deleteItem}>{userData.language === 'en'?'Delete item':'Удалить предмет'}</button>
               <div>
               <div className={displayForms?"form-group":'display-none'}>
-              <h1 className="border-bottom pb-2 mb-0">{userData.language === 'en'?'Item info':'Информация о предмете'}</h1>
+              <h1 className="border-bottom pb-2 mb-0 item-header">{userData.language === 'en'?'Item info':'Информация о предмете'}</h1>
               {fieldsArray.map((field, index) => {
                 const type = field.type.substring(0, field.type.length - 6);
                 if (type === 'text') {
@@ -239,8 +239,8 @@ function ItemInfo() {
               : null
             }
             <div className={displayForms?"display-none":"my-3 p-3 bg-body rounded shadow-sm"}>
-            <h1 className="border-bottom pb-2 mb-0">{userData.language === 'en'?'Item info':'Информация о предмете'}
-              <button type="button" className="btn btn-primary mb-3 mt-1 ms-3 float-end" onClick={rate}>
+            <h1 className="border-bottom pb-2 mb-0 item-header">{userData.language === 'en'?'Item info':'Информация о предмете'}
+              <button type="button" className={`btn btn-primary mb-3 mt-1 ms-3 float-end like-button ${userData.isAuthenticated?null:'display-none'}`} onClick={rate}>
               <img 
               id="heart"
               src={liked ? redHeart : whiteHeart} />{userData.language === 'en'?'Like':'Нравится'} | {likesAmount}</button>

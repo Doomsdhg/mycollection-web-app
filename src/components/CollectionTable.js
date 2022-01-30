@@ -44,6 +44,7 @@ function CollectionTable() {
       useSortBy,);
 
     useEffect(()=>{
+      console.log(window.location.href.toString().substring(25))
       fetchTags();
       
       fetchCollectionData();
