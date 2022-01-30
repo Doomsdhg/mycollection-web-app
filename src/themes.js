@@ -89,6 +89,18 @@ export const GlobalStyles = createGlobalStyle`
             background-color: ${props=>props.theme.background_main} !important;
         }
 
+        .Toastify__toast {
+            color: #000;
+        }
+
+        .Toastify__toast--rtl {
+            color: #000;
+        }
+
+        .Toastify__toast-body {
+            color: #000;
+        }
+
         .Toastify {
             color: #000;
         }
