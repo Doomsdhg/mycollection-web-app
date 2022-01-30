@@ -90,7 +90,7 @@ export const GlobalStyles = createGlobalStyle`
         }
 
         .Toastify {
-            font: #000;
+            color: #000;
         }
 
         .w-md-editor-text-pre.w-md-editor-text-input.w-md-editor-text.w-md-editor-text-pre {
