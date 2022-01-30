@@ -29,7 +29,6 @@ function Main() {
   ];
 
   useEffect(()=>{
-    console.log(theme.color)
     fetchTags();
     fetchLastItems();
     fetchBiggestCollections()
@@ -43,7 +42,6 @@ function Main() {
       }
       setCurrentlyAddedItems(response);
     } catch (e) {
-      console.log(e)
       toast('' + e)
     }
   }
@@ -56,7 +54,6 @@ function Main() {
       }
       setBiggestCollections(response);
     } catch (e) {
-      console.log(e)
       toast('' + e)
     }
   }
@@ -79,7 +76,6 @@ function Main() {
       })
       setTags(tagsArray);
     } catch (e) {
-      console.log(e)
       toast('' + e)
     }
   }

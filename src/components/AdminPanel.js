@@ -13,7 +13,6 @@ function AdminPanel() {
     const userData = useSelector(state=>state.userData);
     const dispatch = useDispatch();
     const navigate = useNavigate();
-    const [error, setError] = useState();
     const [users, setUsers] = useState([]);
     const [headers, setHeaders] = useState([
         {
@@ -21,7 +20,7 @@ function AdminPanel() {
             accessor: 'id'
         },
         {
-            Header: userData.language==='en'?'username':'имя',
+            Header: userData.language==='en'?'name':'имя',
             accessor: 'username'
         },
         {
@@ -29,7 +28,7 @@ function AdminPanel() {
             accessor: 'email'
         },
         {
-            Header: userData.language==='en'?'actions':'действия',
+            Header: userData.language==='en'?'actions':'управление',
             accessor: 'useractions'
         }
     ]);
@@ -46,13 +45,34 @@ function AdminPanel() {
         {columns, data});
       
     useEffect(()=>{
-        console.log(userData.language);
+        setHeadersInitial()
         fetchUsers();
-    },[])
+    },[userData.language])
 
     const userPageRedirect = function(userId){
       dispatch(setProfileId(userId));
       navigate('/mycollections');
+    }
+
+    const setHeadersInitial = function(){
+      setHeaders([
+        {
+            Header: userData.language==='en'?'id':'идентифиактор',
+            accessor: 'id'
+        },
+        {
+            Header: userData.language==='en'?'name':'имя',
+            accessor: 'username'
+        },
+        {
+            Header: userData.language==='en'?'email':'почта',
+            accessor: 'email'
+        },
+        {
+            Header: userData.language==='en'?'actions':'управление',
+            accessor: 'useractions'
+        }
+      ]);
     }
 
     const fetchUsers = async function(){
@@ -81,6 +101,20 @@ function AdminPanel() {
 
     return (
     <div className='container main-container'>
+      <div className='d-block rounded p-2 mb-2 mobile-tip'>
+        <div className='mb-2'>
+          <button type="button" class="btn btn-danger">D</button><span> - {userData.language==='en'?'Delete user':'Удалить пользователя'}</span>
+        </div>
+        <div className='mb-2'>
+          <button type="button" class="btn btn-warning">B/U</button><span> - {userData.language==='en'?'Block/Unblock user':'Заблокировать/Разблокировать пользователя'}</span>
+        </div>
+        <div className='mb-2'>
+          <button type="button" class="btn btn-success">▲/▼</button><span> - {userData.language==='en'?'Give/Take admin role':'Дать/Забрать роль администратора'}</span>
+        </div>  
+        <div>
+          <button type="button" class="btn btn-primary">▶</button><span> - {userData.language==='en'?'Go to user`s collections page':'Открыть страницу коллекций пользователя'}</span>
+        </div>
+      </div>
       {renderAdminTable(table, headers, interactWithUser, userPageRedirect, userData)}
       <ToastContainer />
     </div>);

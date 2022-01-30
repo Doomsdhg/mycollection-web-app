@@ -28,7 +28,6 @@ function SignUpForm() {
 
     const formChangeHandler = (e) => {
       setFormValue({...formValue, [e.target.name]: e.target.value});
-      console.log(formValue);
     }
   
     const clickHandler = async () => {
@@ -90,7 +89,7 @@ function SignUpForm() {
 
                       <div className="mb-md-4 mt-md-4 pb-5">
 
-                        <button className="btn btn-outline-light btn-lg px-5" type="submit" onClick={clickHandler}>{userData.language === 'en'?'Create an account':'Создать аккаунт'}</button>
+                        <button className="btn btn-primary btn-lg px-5" type="submit" onClick={clickHandler}>{userData.language === 'en'?'Create an account':'Создать аккаунт'}</button>
 
                       </div>
 

@@ -53,11 +53,11 @@ function CommentSection() {
       <div className='d-block p-2 rounded'>
         <form>
             <div class="mb-3">
-                <label for="exampleFormControlTextarea1" class="form-label"><h5>Leave a comment</h5></label>
+                <label for="exampleFormControlTextarea1" class="form-label"><h5>{userData.language==='en'?'Leave a comment':'Оставить комментарий'}</h5></label>
                 <textarea class="form-control" id="exampleFormControlTextarea1" onChange={formChangeHandler} rows="3"></textarea>
             </div>
             <div class="col-auto">
-                <button type="button" class="btn btn-primary mb-3" onClick={sendComment}>send</button>
+                <button type="button" class="btn btn-primary mb-3" onClick={sendComment}>{userData.language==='en'?'send':'отправить'}</button>
             </div>
         </form>
         <div className='container d-block'>

@@ -34,8 +34,6 @@ export const useTableRender = () => {
                     return (
                       <tr {...row.getRowProps()}>
                         {row.cells.map((cell, index) => {
-                          console.log();
-                        
                           if (index === headers.length - 1) {
                             return (
                                 <td {...cell.getCellProps()}>
@@ -46,6 +44,13 @@ export const useTableRender = () => {
                                       <button type="button" class="btn btn-success" 
                                       onClick={e=>userAction(row.values.id, 'promote')}>{userData.language==='en'?row.original.admin?'demote to regular user':'promote to admin':row.original.admin?'сделать обычным пользователем':'сделать администратором'}</button>
                                       <button type="button" class="btn btn-primary" onClick={e=>redirect(row.original.id)}>{userData.language==='en'?'open':'открыть'}</button>
+                                    </div>
+                                    <div class="btn-group-vertical">
+                                    <button type="button" class="btn btn-danger" onClick={e=>userAction(row.original.id, 'delete')}>{'D'}</button>
+                                      <button type="button" class="btn btn-warning" onClick={e=>{userAction(row.values.id, 'block')}}>{row.original.blocked?'U':'B'}</button>
+                                      <button type="button" class="btn btn-success" 
+                                      onClick={e=>userAction(row.values.id, 'promote')}>{row.original.admin?'▼':'▲'}</button>
+                                      <button type="button" class="btn btn-primary" onClick={e=>redirect(row.original.id)}>{'▶'}</button>
                                     </div>
                                 </td>
                             )
@@ -110,7 +115,7 @@ export const useTableRender = () => {
       } = table;
 
       return (
-          <BTable striped bordered hover size="sm" {...getTableProps()}>
+          <BTable striped bordered hover size="sm" id='collection-table' {...getTableProps()}>
             <thead>
               {headerGroups.map(headerGroup => (
                 <tr {...headerGroup.getHeaderGroupProps()}>
@@ -144,7 +149,6 @@ export const useTableRender = () => {
                 return (
                   <tr {...row.getRowProps()}>
                     {row.cells.map((cell, index) => {
-                      console.log();
                       if (index === 0 && (userData.userId === collectionData.creator || userData.admin)) {
                         return (
                           <td {...cell.getCellProps()}>
@@ -157,8 +161,10 @@ export const useTableRender = () => {
                         return (
                           <td {...cell.getCellProps()}>
                           {cell.render('Cell')}
-                          <button type="button" className="btn btn-primary" data-id={row.values._id} onClick={(e)=>{redirect(e)}}>
+                          <button type="button" className="btn btn-primary btn-desktop" data-id={row.values._id} onClick={(e)=>{redirect(e)}}>
                           {userData.language==='en'?'Open':'Открыть'}</button>
+                          <button type="button" className="btn btn-primary btn-mobile" data-id={row.values._id} onClick={(e)=>{redirect(e)}}>
+                          {'▶'}</button>
                         </td>
                         )
                       }

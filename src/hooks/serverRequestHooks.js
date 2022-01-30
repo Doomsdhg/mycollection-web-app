@@ -73,7 +73,6 @@ export const useRequestHooks = () => {
     const defineItemFields = function (headers) {
       let headersObject = {};
       headers.map((header)=>{
-        console.log(header);
         headersObject = {...headersObject, 
           [header.fieldType]: '',
         }})
@@ -91,7 +90,6 @@ export const useRequestHooks = () => {
       indexesToDelete.push(keys.indexOf('collectionRef'));
       indexesToDelete.push(keys.indexOf('__v'));
       indexesToDelete.push(keys.indexOf('_id'));
-      console.log(indexesToDelete);
       indexesToDelete.map(index=>{
         delete keys[index];
         delete fields[index];
@@ -103,13 +101,9 @@ export const useRequestHooks = () => {
         return element !== undefined;
       });
       
-      console.log(fields);
       fields = fields.map((field, index)=>{
-        console.log(field)
         if (field === undefined) {return field}
         if (field === 'name') {
-          console.log(field)
-          console.log(headersArray[index]);
           return {
             name: headersArray[index].Header,
             value: field,
@@ -122,11 +116,6 @@ export const useRequestHooks = () => {
             type: 'tags'
           }
         } else {
-          console.log(keys);
-          console.log(fields);
-          console.log(field);
-          console.log(headersArray)
-          console.log(headersArray[index])
           return {
             name: headersArray[index].Header,
             value: field,
@@ -142,24 +131,18 @@ export const useRequestHooks = () => {
         try {
             const request = await fetch(`https://mycollection-server.herokuapp.com/api/${path}`, getRequestOptions(dataName, data))
             const response = await request.json();
-            console.log(response)
-            console.log(response.message && response.message.includes('Error')?true:false)
             if (response.message && response.message.includes('Error')){
-              console.log('error')
               throw new Error(response.message)
             } 
-            console.log('keep going')
             switch (path) {
               case 'getitem':
                 const fields = deleteUnnecessaryFields(response, extraArgument);
                 return {fields, response}
               case 'getcollectiontable': 
-                console.log(response);
                 const headers = response.headers;
                 const checkedHeaders = checkPermission(response.headers, userData, extraArgument)
                 const responseHeaders = localizeHeaders(checkedHeaders, userData.language);
                 const itemFields = defineItemFields(checkedHeaders);
-                console.log(itemFields);
                 const items = response.items;
                 return {responseHeaders, itemFields, items, headers}
               case 'getcollectiondata':
@@ -171,7 +154,6 @@ export const useRequestHooks = () => {
                 }
                 return {response}
               default:
-                console.log(response)
                 return {response}
             }
           } catch (error) {
@@ -185,7 +167,6 @@ export const useRequestHooks = () => {
         const request = await fetch(`https://mycollection-server.herokuapp.com/api/${path}`)
         const response = await request.json();
         if (response.message && response.message.includes('Error')){
-          console.log(response.message)
           throw new Error(response.message)
         }
         switch (path) {
