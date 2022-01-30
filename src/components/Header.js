@@ -67,7 +67,7 @@ function Header(props) {
   }
 
     return (
-        <nav className="navbar navbar-expand-lg fixed-top navbar-dark bg-dark" aria-label="Main navigation">
+        <nav className="navbar navbar-expand-lg fixed-top" aria-label="Main navigation">
           <div className="container-fluid">
             <a className="navbar-brand" href="/">MyCollection</a>
             <button className="navbar-toggler p-0 border-0" type="button" 
@@ -122,7 +122,7 @@ function Header(props) {
                 onChange={(e)=>{
                   setSearchFormValue(e.target.value)
                   }} />
-                <button className="btn btn-outline-success" type="submit" 
+                <button className="btn btn-success" type="submit" 
                   onClick={(e)=>{
                   dispatch(setSearchQuery(searchFormValue));
                   navigate('/search')

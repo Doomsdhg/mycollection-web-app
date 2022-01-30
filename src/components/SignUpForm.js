@@ -61,15 +61,15 @@ function SignUpForm() {
     return (
         <section className="mt-5 vh-100 gradient-custom">
             <div className="container py-0 h-100 main-container">
-              <div className="row d-flex justify-content-center align-items-center h-100">
+              <div id="signup-form" className="row d-flex justify-content-center align-items-center h-100">
                 <div className="col-12 col-md-8 col-lg-6 col-xl-5">
-                  <div className="card bg-dark text-white rounded">
+                  <div className="card rounded">
                     <div className="card-body p-5 text-center">
 
                       <div className="mb-md-5 mt-md-5 pb-0">
 
                         <h2 className="fw-bold mb-3 text-uppercase">{userData.language === 'en'?'Create new account':'Регистрация'}</h2>
-                        <p className="text-white-50 mb-5">{userData.language === 'en'?'Fill following fields with your data':'Заполните поля вашими данными'}</p>
+                        <p className="mb-5">{userData.language === 'en'?'Fill following fields with your data':'Заполните поля вашими данными'}</p>
 
                         <div className="form-outline form-white mb-4">
                           <input type="email" name="email" onChange={formChangeHandler} className="form-control form-control-lg" placeholder={userData.language === 'en'?'Email':'Элетронная почта'} />
@@ -103,7 +103,7 @@ function SignUpForm() {
                           }})()}
 
                       <div>
-                        <p className="mb-0">{userData.language === 'en'?'Already have an account?':'Уже есть аккаунт?'} <a href="/auth" className="text-white-50 fw-bold">{userData.language === 'en'?'Login Here':'Войти'}</a></p>
+                        <p className="mb-0">{userData.language === 'en'?'Already have an account?':'Уже есть аккаунт?'} <a href="/auth" className="fw-bold">{userData.language === 'en'?'Login Here':'Войти'}</a></p>
                       </div>
 
                     </div>

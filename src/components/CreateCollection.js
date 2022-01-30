@@ -123,6 +123,7 @@ function CreateCollection() {
 
     return (
         <div className='container main-container'>  
+          <div className='d-block p-2'>
             <h3>{userData.language === 'en'?'Enter data for your future collection':'Введите информацию о коллекции'}</h3>
             <small className='text-danger'>* - обязательные поля</small>
             <div className="mb-3 mt-2">
@@ -197,7 +198,7 @@ function CreateCollection() {
             </div>
 
             <div className="mt-3">
-              <span className="-text">{userData.language === 'en'?'Tags':'Тэги'}</span>
+              <span>{userData.language === 'en'?'Tags':'Тэги'}</span>
               <textarea className="form-control"  disabled={true} aria-label="With textarea" placeholder='#qwe #zxc'></textarea>
             </div>
             {itemFields.sort().map((item, index) => (
@@ -209,6 +210,7 @@ function CreateCollection() {
             ))}
             <button type="button" className="btn btn-success mt-3 mb-3" onClick={submitHandler}>{userData.language === 'en'?'Create':'Создать'}</button>
             <ToastContainer />
+          </div>
         </div>
     )
 }

@@ -49,7 +49,8 @@ function CommentSection() {
     }
 
     return (
-    <div className='container main-container'>
+    <div className='container'>
+      <div className='d-block p-2 rounded'>
         <form>
             <div class="mb-3">
                 <label for="exampleFormControlTextarea1" class="form-label"><h5>Leave a comment</h5></label>
@@ -59,7 +60,7 @@ function CommentSection() {
                 <button type="button" class="btn btn-primary mb-3" onClick={sendComment}>send</button>
             </div>
         </form>
-        <div className='container'>
+        <div className='container d-block'>
             <h2>{userData.language === 'en'?'Comments:':'Комментарии'}</h2>
         {comments.length !== 0?
         comments.map((comment, index)=>{
@@ -74,6 +75,7 @@ function CommentSection() {
         })
         :<h4 className='mb-5'>{userData.language === 'en'?'No comments yet:':'Комментариев пока нет'}</h4>}
         </div>
+      </div>
     </div>
     
     )
