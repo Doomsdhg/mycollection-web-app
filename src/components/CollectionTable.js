@@ -245,6 +245,7 @@ function CollectionTable() {
     return (
       <>
         <div className='container main-container'> 
+          
         {userData.userId === collectionData.creator || userData.admin?
         <>
           <button type="button" className="btn btn-primary mb-3" onClick={toggleCollectionDataForms}>{userData.language==='en'?'Edit collection info':'Изменить информацию о коллекции'}</button>
@@ -282,7 +283,7 @@ function CollectionTable() {
               </p>
             </div>
           </div>
-          <div className='form-group' style={collectionDataDisabled?{'display':'none'}:null}>
+          <div className='form-group p-2 d-block' style={collectionDataDisabled?{'display':'none'}:null}>
           <h1 className="border-bottom pb-2 mb-0">{userData.language==='en'?'Collection data':'Информация о коллекции'}</h1>
             <div className="mb-3 mt-3">
               <span className="text" id="basic-addon1">{userData.language==='en'?'Collection name':'Название коллекции'}</span>
@@ -327,7 +328,7 @@ function CollectionTable() {
                 {userData.language==='en'?displayForms?'Close console':'Open console of item adding':displayForms?'Закрыть консоль':'Открыть консоль добавления предмета'}</button>
             : null
           }
-          <div id='formWrapper' className='wrapper display-none'>
+          <div id='formWrapper' className='wrapper p-3 display-none'>
             {headers.map((header, index)=>{
               
               if (header.accessor === 'select' || header.accessor === '_id' || header.accessor === 'itemRef') return null
@@ -335,7 +336,7 @@ function CollectionTable() {
               if(header.accessor === 'tags') {
                 return (
                   <div className="mb-3 form">
-                    <span className="d-block" id="basic-addon1">{header.Header}</span>
+                    <span id="basic-addon1">{header.Header}</span>
                     <TextInput className='form-control' onChange={formChangeHandler} onSelect={formChangeHandler} trigger={["#"]} options={{"#": tags}} />
                   </div>
                 )
@@ -356,6 +357,7 @@ function CollectionTable() {
                   <MDEditor
                     value={itemFormValue[header.fieldType]}
                     name={header.fieldType}
+                    id={'markdown'}
                     onChange={(e)=>{markdownChangeHandler(e, header.fieldType)}}
                   />
                   </div>

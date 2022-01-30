@@ -37,15 +37,15 @@ function AuthenticationForm() {
     return (
         <section className="vh-100 gradient-custom">
             <div className="container main-container py-0 h-100">
-              <div className="row d-flex justify-content-center align-items-center h-100">
+              <div id="auth-container" className="row d-flex justify-content-center align-items-center h-100">
                 <div className="col-12 col-md-8 col-lg-6 col-xl-5">
-                  <div className="card bg-dark text-white rounded">
+                  <div id="auth-form" className="card bg-dark text-white rounded">
                     <div className="card-body p-5 text-center">
 
                       <div className="mb-md-5 mt-md-4 pb-5">
 
                         <h2 className="fw-bold mb-2 text-uppercase">{userData.language === 'en'?'Login':'Авторизация'}</h2>
-                        <p className="text-white-50 mb-5">{userData.language === 'en'?'Enter your email and password':'Введите ваш адрес электронной почты и пароль'}</p>
+                        <p className="mb-5">{userData.language === 'en'?'Enter your email and password':'Введите ваш адрес электронной почты и пароль'}</p>
 
                         <div className="form-outline form-white mb-4">
                           <input type="email" name="email" onChange={formChangeHandler} placeholder={userData.language === 'en'?'Email':'Адрес электронной почты'} className="form-control form-control-lg" />
@@ -64,7 +64,7 @@ function AuthenticationForm() {
                       {error}
                       </div>:null}
                       <div>
-                        <p className="mb-0">{userData.language === 'en'?"Don't have an account?":'Ещё нет аккаунта?'} <a href="/signup" className="text-white-50 fw-bold">{userData.language === 'en'?'Sign Up':'Зарегистрироваться'}</a></p>
+                        <p className="mb-0">{userData.language === 'en'?"Don't have an account?":'Ещё нет аккаунта?'} <a href="/signup" className="fw-bold">{userData.language === 'en'?'Sign Up':'Зарегистрироваться'}</a></p>
                       </div>
 
                     </div>

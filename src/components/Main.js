@@ -100,11 +100,11 @@ function Main() {
   }
 
     return (
-        <main className={'container main-container'}>
-          <div className="d-flex align-items-center p-3 my-3 text-white bg-purple rounded shadow-sm">
+        <main className={'container main-container rounded'}>
+          <div className="d-flex align-items-center p-3 my-3 bg-purple rounded shadow-sm">
             <div className="lh-1">
-              <h1 className="display-1 text-dark">{userData.language === 'en'?'Feed':'Лента событий'}</h1>
-              <small className='text-dark'>{userData.language === 'en'?'Latest updates':'Последние обновления'}</small>
+              <h1 className="display-1">{userData.language === 'en'?'Feed':'Лента событий'}</h1>
+              <small>{userData.language === 'en'?'Latest updates':'Последние обновления'}</small>
             </div>
           </div>
 
@@ -156,9 +156,9 @@ function Main() {
               }
             </div>
 
-          <div className="align-items-center p-3 my-3 text-white bg-purple rounded shadow-sm">
+          <div className="d-block align-items-center p-3 my-3 text-white bg-purple rounded shadow-sm">
             <div className="lh-1 text-center" id="tag-cloud-header " >
-              <h3 className='text-dark'>{userData.language === 'en'?'Tag cloud':'Облако тегов'}</h3>
+              <h3>{userData.language === 'en'?'Tag cloud':'Облако тегов'}</h3>
             </div>
             
           

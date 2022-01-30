@@ -85,7 +85,7 @@ export const useTableRender = () => {
         return (
           <span>
             Search:{' '}
-            <input className='table-filter'
+            <input className='table-filter form-control d-inline-block'
               value={value || ""}
               onChange={e => {
                 setValue(e.target.value);

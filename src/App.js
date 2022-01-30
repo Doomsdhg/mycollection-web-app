@@ -20,7 +20,7 @@ function App() {
         <Provider store={store}>
           <PersistGate loading={null} persistor={persistor}>
             <ThemeProvider theme={userData.theme === 'light'?lightTheme:darkTheme}>
-              {/* <GlobalStyles /> */}
+              <GlobalStyles />
                 {/* <StyledApp> */}
                   {routes}
                 {/* </StyledApp> */}
