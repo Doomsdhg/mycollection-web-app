@@ -85,24 +85,12 @@ export const GlobalStyles = createGlobalStyle`
             background-image: url("https://upload.wikimedia.org/wikipedia/commons/thumb/b/b2/Hamburger_icon.svg/1024px-Hamburger_icon.svg.png");
         }
 
+        .Toastify__toast-body div {
+            color: #000 !important;
+        }
+
         .form-group {
             background-color: ${props=>props.theme.background_main} !important;
-        }
-
-        .Toastify__toast {
-            color: #000;
-        }
-
-        .Toastify__toast--rtl {
-            color: #000;
-        }
-
-        .Toastify__toast-body {
-            color: #000;
-        }
-
-        .Toastify {
-            color: #000;
         }
 
         .w-md-editor-text-pre.w-md-editor-text-input.w-md-editor-text.w-md-editor-text-pre {
