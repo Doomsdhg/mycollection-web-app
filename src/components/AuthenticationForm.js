@@ -55,7 +55,7 @@ function AuthenticationForm() {
                           <input type="password" name="password" onChange={formChangeHandler} id="typePasswordX" placeholder={userData.language === 'en'?'Password':'Пароль'} className="form-control form-control-lg" />
                         </div>
                         
-                        <button className="btn btn-outline-light btn-lg px-5" onClick={loginClickHandler} type="submit">{userData.language === 'en'?'Login':'Войти'}</button>
+                        <button className="btn btn-primary btn-lg px-5" onClick={loginClickHandler} type="submit">{userData.language === 'en'?'Login':'Войти'}</button>
 
                       </div>
 

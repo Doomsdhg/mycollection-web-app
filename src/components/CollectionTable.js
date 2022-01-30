@@ -51,7 +51,7 @@ function CollectionTable() {
         collectionRef: userData.collectionId,
         creator: collectionData.creator,
       }})
-    }, [])
+    }, [userData.language])
 
     useEffect(()=>{
       if (error) {
@@ -279,11 +279,10 @@ function CollectionTable() {
               <p className="pb-3 mb-0 small lh-sm border-bottom">
                 <strong className="d-block text-gray-dark">{userData.language==='en'?'Collection topic':'Категория'}</strong>
                 {collectionData.topic}
-                {console.log(collectionData.topic)}
               </p>
             </div>
           </div>
-          <div className='form-group p-2 d-block' style={collectionDataDisabled?{'display':'none'}:null}>
+          <div className='form-group p-2' style={collectionDataDisabled?{'display':'none'}:null}>
           <h1 className="border-bottom pb-2 mb-0">{userData.language==='en'?'Collection data':'Информация о коллекции'}</h1>
             <div className="mb-3 mt-3">
               <span className="text" id="basic-addon1">{userData.language==='en'?'Collection name':'Название коллекции'}</span>

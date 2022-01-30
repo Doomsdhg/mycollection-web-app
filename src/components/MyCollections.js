@@ -34,7 +34,6 @@ export default function MyCollections() {
     fetchCollections()
   },[])
   const collectionPageRedirect = async function (e){
-    console.log(e.target.parentNode.dataset.id);
     dispatch(setCollectionId(e.target.parentNode.dataset.id));
     navigate('/collectionpage')
     

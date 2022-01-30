@@ -3,7 +3,6 @@ import {useSelector, useDispatch} from 'react-redux';
 import {useAuthHooks} from '../hooks/authHooks.js';
 import {useNavigate} from 'react-router-dom';
 import {setSearchQuery, setProfileId, setLanguage, setTheme} from '../store/reducers';
-import themeSwitcher from 'theme-switcher';
 import {useRequestHooks} from '../hooks/serverRequestHooks';
 import { toast } from 'react-toastify';
 
@@ -18,12 +17,6 @@ function Header(props) {
     logout(dispatch);
     navigate('/')
   }
-  const { switcher, getTheme } = themeSwitcher({
-    themeMap: {
-      dark: '../../node_modules/bootstrap/dist/css/bootstrap-dark.css',
-      light: '../../node_modules/bootstrap/dist/css/bootstrap.css',
-    }
-  });
 
   useEffect(()=>{
     if (userData.isAuthenticated) {
@@ -52,7 +45,6 @@ function Header(props) {
 
   const switchTheme = function(){
     dispatch(setTheme(userData.theme==='light'?'dark':'light'))
-    console.log(userData.theme)
   }
 
   const checkUserData = async function () {
@@ -88,7 +80,7 @@ function Header(props) {
                         <a className="nav-link" href='/mycollections' onClick={myCollectionsRedirect}>{userData.language === 'en'?'My collections':'Мои коллекции'}</a>
                       </li>
                       <li className="nav-item" >
-                      <button type="button" className="btn btn-secondary" onClick={clickHandler}>{userData.language === 'en'?'Log out':'Выйти'}</button>
+                      <button type="button" className="btn btn-primary" onClick={clickHandler}>{userData.language === 'en'?'Log out':'Выйти'}</button>
                       </li>
                       </>
                     )

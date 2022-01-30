@@ -80,6 +80,15 @@ export const GlobalStyles = createGlobalStyle`
             color: ${props=>props.theme.font} !important;
         }
 
+        .navbar-toggler-icon {
+            background-color: ${props=>props.theme.background_main} !important;
+            background-image: url("https://upload.wikimedia.org/wikipedia/commons/thumb/b/b2/Hamburger_icon.svg/1024px-Hamburger_icon.svg.png");
+        }
+
+        .form-group {
+            background-color: ${props=>props.theme.background_main} !important;
+        }
+
         .w-md-editor-text-pre.w-md-editor-text-input.w-md-editor-text.w-md-editor-text-pre {
             color: ${props=>props.theme.font} !important;
         }
@@ -165,7 +174,7 @@ export const GlobalStyles = createGlobalStyle`
             background-color: ${props=>props.theme.body} !important;
             color: ${props=>props.theme.font} !important;
         }
-        
+
         .react-autocomplete-input {
             background-color: ${props=>props.theme.body} !important;
             color: ${props=>props.theme.font} !important;

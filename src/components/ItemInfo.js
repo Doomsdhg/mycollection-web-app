@@ -31,7 +31,7 @@ function ItemInfo() {
       getHeaders();
       getLikes();
       fetchTags();
-    },[])
+    },[userData.language])
 
     useEffect(()=>{
       if (headersArray.length > 0) {
@@ -53,7 +53,6 @@ function ItemInfo() {
         setItemFormValue(prev=>{return{...prev, tags: e}})
         return null
       } else if (e.target.name.includes('checkbox')) {
-        console.log(e.target.checked)
         setItemFormValue(prev=>{return{...prev, [e.target.name]: String(e.target.checked)}});
       } else {
         setItemFormValue(prev=>{return{...itemFormValue, [e.target.name]: String(e.target.value)}});
@@ -191,7 +190,6 @@ function ItemInfo() {
               <div className={displayForms?"form-group":'display-none'}>
               <h1 className="border-bottom pb-2 mb-0">{userData.language === 'en'?'Item info':'Информация о предмете'}</h1>
               {fieldsArray.map((field, index) => {
-                console.log(field)
                 const type = field.type.substring(0, field.type.length - 6);
                 if (type === 'text') {
                   

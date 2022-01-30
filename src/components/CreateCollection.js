@@ -41,18 +41,15 @@ function CreateCollection() {
 
     useEffect(()=>{
       setFormValue({...formValue, description: markdownValue});
-      console.log(markdownValue);
     },[markdownValue])
 
     useEffect(()=>{
-      console.log(userData);
       setFormValue({creator: userData.profileId});
     },[]);
 
 
     const changeHandler = function(e){
       setFormValue({...formValue, [e.target.name]: e.target.value});
-      console.log(formValue)
     }
 
     const addField = function(e){
@@ -63,7 +60,6 @@ function CreateCollection() {
           throw new Error(userData.language === 'en'?'You can not add more than 3 fields of each type':'Вы не можете добавить больше 3-х полей каждого типа')
         }
         setItemFields(itemFields.concat([fieldType]));
-        console.log(itemFields);
         setError('');
       } catch (e) {
         toast('' + e)
