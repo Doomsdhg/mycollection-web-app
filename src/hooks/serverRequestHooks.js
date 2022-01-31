@@ -129,7 +129,7 @@ export const useRequestHooks = () => {
 
     const sendPostRequest = async (path, dataName, data, userData, extraArgument) => {
         try {
-            const request = await fetch(`https://mycollection-app.herokuapp.com/api/${path}`, getRequestOptions(dataName, data))
+            const request = await fetch(`https://mycollection-server.herokuapp.com/api/${path}`, getRequestOptions(dataName, data))
             const response = await request.json();
             console.log(request)
             if (response && response.message && response.message.includes('Error')){
@@ -161,7 +161,7 @@ export const useRequestHooks = () => {
 
     const sendGetRequest = async (path) => {
       try {
-        const request = await fetch(`https://mycollection-app.herokuapp.com/api/${path}`)
+        const request = await fetch(`https://mycollection-server.herokuapp.com/api/${path}`)
         const response = await request.json();
         if (response.message && response.message.includes('Error')){
           throw new Error(response.message)
