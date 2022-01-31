@@ -1,8 +1,7 @@
 import React, {useState, useEffect, useMemo} from 'react';
 import {useTable} from 'react-table';
 import {useNavigate} from 'react-router-dom';
-import {useDispatch, useSelector} from 'react-redux';
-import {setProfileId} from '../store/reducers';
+import {useSelector} from 'react-redux';
 import {useTableRender} from '../hooks/tableHooks';
 import {useRequestHooks} from '../hooks/serverRequestHooks';
 import { toast, ToastContainer } from 'react-toastify';
@@ -11,7 +10,6 @@ function AdminPanel() {
     const {sendPostRequest, sendGetRequest} = useRequestHooks();
     const {renderAdminTable} = useTableRender();
     const userData = useSelector(state=>state.userData);
-    const dispatch = useDispatch();
     const navigate = useNavigate();
     const [users, setUsers] = useState([]);
     const [headers, setHeaders] = useState([
@@ -50,8 +48,7 @@ function AdminPanel() {
     },[userData.language])
 
     const userPageRedirect = function(userId){
-      dispatch(setProfileId(userId));
-      navigate('/mycollections');
+      navigate(`/mycollections?id=${userId}`)
     }
 
     const setHeadersInitial = function(){

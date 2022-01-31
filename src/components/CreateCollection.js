@@ -99,12 +99,13 @@ function CreateCollection() {
     const uploadCollection = async function(){
       try {
         const updateData = {...formValue, imageURL: userData.imageURL}
+        console.log(updateData)
         const {error} = await sendPostRequest('uploadcollection', 'updateData', updateData)
         if (error) {
           throw new Error(error)
         }
         dispatch(setImageURL(''))
-        navigate('/mycollections');
+        navigate(`/mycollections?id=${userData.profileId}`);
         setTimeout(()=>{
           toast(userData.language === 'en'?'Collection created successfully!':'Коллекция создана!');
         },100)

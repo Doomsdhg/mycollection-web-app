@@ -8,7 +8,7 @@ import { ToastContainer, toast } from 'react-toastify';
 function SignUpForm() {
     const [formValue, setFormValue] = useState({
       email: '',
-      username: '',
+      userName: '',
       password: '',
       password2: '',
       admin: false
@@ -77,7 +77,7 @@ function SignUpForm() {
                         </div>
 
                         <div className="form-outline form-white mb-4">
-                          <input type="text" name="username" onChange={formChangeHandler} className="form-control form-control-lg" placeholder={userData.language === 'en'?'Username':'Имя пользователя'}/>
+                          <input type="text" name="userName" onChange={formChangeHandler} className="form-control form-control-lg" placeholder={userData.language === 'en'?'Username':'Имя пользователя'}/>
                         </div>
 
                         <div className="form-outline form-white mb-4">

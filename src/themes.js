@@ -18,7 +18,6 @@ export const darkTheme= {
     body: '#242424',
     font: '#fff',
     border: '#444444',
-    buttons: '',
     background_main: '#5c5c5c',
     success: '#38761d',
     button_font_color: '#fff',

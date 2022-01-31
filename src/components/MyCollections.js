@@ -14,13 +14,32 @@ export default function MyCollections() {
   const navigate = useNavigate();
   const noImage = 'https://st4.depositphotos.com/14953852/24787/v/600/depositphotos_247872612-stock-illustration-no-image-available-icon-vector.jpg';
   const [collections, setCollections] = useState([]);
-  const {sendPostRequest} = useRequestHooks();
+  const {sendPostRequest} = useRequestHooks();  
+
+  useEffect(() => {
+    fetchCollections();
+    const id = getUserId();
+    dispatch(setProfileId(id));
+  },[])
+
+  const getUserId = function () {
+    const indexOfId = window.location.href.indexOf('id=') + 3;
+    const id = window.location.href.substring(indexOfId);
+    return id
+  }
+  
+  const collectionPageRedirect = async function (e){
+    navigate(`/collectionpage?id=${e.target.parentNode.dataset.id}`)
+  }
+
   const routeChange = function () {
     navigate('/createcollection')
   }
+
   const fetchCollections = async function(){
     try {
-      const {response, error} = await sendPostRequest('fetchcollections', 'userId', userData.profileId);
+      const id = getUserId();
+      const {response, error} = await sendPostRequest('fetchcollections', 'userId', id);
       if (error) {
         throw new Error(error)
       }
@@ -30,14 +49,7 @@ export default function MyCollections() {
       toast('' + e);
     }
   }
-  useEffect(() => {
-    fetchCollections()
-  },[])
-  const collectionPageRedirect = async function (e){
-    dispatch(setCollectionId(e.target.parentNode.dataset.id));
-    navigate('/collectionpage')
-    
-  }
+
     return (
         <div className='container main-container'>  
               <div className="my-3 p-3 bg-body rounded shadow-sm">

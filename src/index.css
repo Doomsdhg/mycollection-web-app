@@ -40,7 +40,7 @@ td {
   text-align: center;
   vertical-align: middle;
   overflow: auto;
-
+  max-width: 70px;
 }
 
 table {
@@ -121,10 +121,6 @@ code {
 
 .navbar {
   border-bottom: 3px solid #000;
-}
-
-.mobile-tip {
-  display: none !important;
 }
 
 @media screen and (max-width: 992px) {

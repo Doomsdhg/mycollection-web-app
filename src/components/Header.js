@@ -33,8 +33,16 @@ function Header(props) {
     navigate('/adminpage')
   }
 
-  const myCollectionsRedirect = function(){
+  const redirectToSearchResults = function(e){
+    e.preventDefault()
+    console.log(searchFormValue)
+    navigate(`/search?query=${searchFormValue}`)
+  }
+
+  const myCollectionsRedirect = function(e){
+    e.preventDefault();
     dispatch(setProfileId(userData.userId))
+    navigate(`/mycollections?id=${userData.userId}`)
   }
   
   const changeLanguage = function(){
@@ -44,7 +52,7 @@ function Header(props) {
   }
 
   const switchTheme = function(){
-    dispatch(setTheme(userData.theme==='light'?'dark':'light'))
+    dispatch(setTheme(userData.theme==='light'?'dark':'light'));
   }
 
   const checkUserData = async function () {
@@ -77,7 +85,7 @@ function Header(props) {
                     return (
                       <>
                       <li className="nav-item">
-                        <a className="nav-link" href='/mycollections' onClick={myCollectionsRedirect}>{userData.language === 'en'?'My collections':'Мои коллекции'}</a>
+                        <a className="nav-link" href='/' onClick={(e)=>myCollectionsRedirect(e)}>{userData.language === 'en'?'My collections':'Мои коллекции'}</a>
                       </li>
                       <li className="nav-item" >
                       <button type="button" className="btn btn-primary" onClick={clickHandler}>{userData.language === 'en'?'Log out':'Выйти'}</button>
@@ -115,10 +123,8 @@ function Header(props) {
                   setSearchFormValue(e.target.value)
                   }} />
                 <button className="btn btn-success" type="submit" 
-                  onClick={(e)=>{
-                  dispatch(setSearchQuery(searchFormValue));
-                  navigate('/search')
-                  }}>{userData.language === 'en'?'Search':'Поиск'}</button>
+                  onClick={redirectToSearchResults}>
+                    {userData.language === 'en'?'Search':'Поиск'}</button>
               </form>
             </div>
           </div>

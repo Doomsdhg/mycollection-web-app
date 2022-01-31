@@ -81,18 +81,15 @@ function Main() {
   }
 
   const goToItemPage = function (e){
-    dispatch(setItemId(e.target.dataset.id));
-    navigate('/itempage')
+    navigate(`/itempage?id=${e.target.dataset.id}`)
   }
 
   const searchByTag = async function(query){
-    dispatch(setSearchQuery(query));
-    navigate('/search')
+    navigate(`/search?query=${query}`)
   }
 
   const redirectToCollection = function(e){
-    dispatch(setCollectionId(e.target.dataset.id));
-    navigate('/collectionpage')
+    navigate(`/collectionpage?id=${e.target.dataset.id}`)
   }
 
     return (

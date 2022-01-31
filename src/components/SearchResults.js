@@ -4,7 +4,7 @@ import MDEditor from '@uiw/react-md-editor';
 import {useDispatch} from 'react-redux';
 import { setSearchQuery } from '../store/reducers';
 import {useNavigate} from 'react-router-dom';
-import {setItemId} from '../store/reducers';
+import {setItemId, setQuery} from '../store/reducers';
 import {useRequestHooks} from '../hooks/serverRequestHooks';
 import { ToastContainer, toast } from 'react-toastify';
 
@@ -19,28 +19,37 @@ function SearchResults() {
 
     useEffect(()=>{
         sendSearchQuery();
-    },[])
+    },[window.location.href])
 
     const itemPageRedirect = async function (e){
-      dispatch(setItemId(e.target.parentNode.dataset.id));
-      navigate('/itempage')
+      navigate(`/itempage?id=${e.target.parentNode.dataset.id}`)
     }
 
-    const translateSearchQuery = function(){
-      if (userData.query === 'Книги' || userData.query === 'книги') {
+    const translateSearchQuery = function(query){
+      if (query.toLowerCase() === 'книги') {
         return 'Books'
-      } else if (userData.query === 'Алкоголь' || userData.query === 'алкоголь') {
+      } else if (query.toLowerCase() === 'алкоголь') {
         return 'Alcohol'
-      } else if (userData.query === 'Другое' || userData.query === 'другое') {
+      } else if (query.toLowerCase() === 'другое') {
         return 'Other'
       }
-      return userData.query
+      return query
+    }
+
+    const getQuery = function () {
+      const indexOfQuery = window.location.href.indexOf('query=') + 6;
+      const query = window.location.href.substring(indexOfQuery);
+      console.log(indexOfQuery)
+      console.log(query)
+      dispatch(setSearchQuery(query));
+      return query
     }
 
     const sendSearchQuery = async function(){
         try {
-          const query = translateSearchQuery();
-          const {response, error} = await sendPostRequest('search', 'query', query);
+          const query = getQuery();
+          const translatedQuery = translateSearchQuery(query);
+          const {response, error} = await sendPostRequest('search', 'query', translatedQuery);
           if (error) {
             throw new Error(error)
           }

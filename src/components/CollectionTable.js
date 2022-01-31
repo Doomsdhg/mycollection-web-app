@@ -5,15 +5,13 @@ import { ToastContainer, toast } from 'react-toastify';
 import {useNavigate} from 'react-router-dom';
 import MDEditor from '@uiw/react-md-editor';
 import { useDispatch } from 'react-redux';
-import {setItemId} from '../store/reducers';
+import {setItemId, setCollectionId} from '../store/reducers';
 import TextInput from 'react-autocomplete-input';
 import 'react-autocomplete-input/dist/bundle.css';
 import {useTableRender} from '../hooks/tableHooks';
 import {useRequestHooks} from '../hooks/serverRequestHooks';
 
 function CollectionTable() {
-    const [selected, setSelected] = useState('');
-    const [error, setError] = useState('');
     const [tags, setTags] = useState();
     const [selectedItems, setSelectedItems] = useState([]);
     const [markdownValue, setMarkdownValue] = useState();
@@ -44,22 +42,14 @@ function CollectionTable() {
       useSortBy,);
 
     useEffect(()=>{
-      console.log(window.location.href.toString().substring(25))
+      const collectionId = getCollectionId();
       fetchTags();
-      
       fetchCollectionData();
       setItemFormValue(prev=>{return{...prev, 
-        collectionRef: userData.collectionId,
+        collectionRef: collectionId,
         creator: collectionData.creator,
       }})
     }, [userData.language])
-
-    useEffect(()=>{
-      if (error) {
-        toast('' + error);
-        setError('')
-      }
-    }, [error])
     
     useEffect(()=>{
       setCollectionFormValue({...collectionFormValue, description: markdownValue});
@@ -125,9 +115,16 @@ function CollectionTable() {
       }
     }
 
+    const getCollectionId = function () {
+      const indexOfId = window.location.href.indexOf('id=') + 3;
+      const id = window.location.href.substring(indexOfId);
+      dispatch(setCollectionId(id));
+      return id
+    }
+
     const goToItemPage = function (e) {
       dispatch(setItemId(e.target.dataset.id));
-      navigate('/itempage');
+      navigate(`/itempage?id=${e.target.dataset.id}`);
     }
 
     const uncheckSelectedItems = function(){
@@ -151,28 +148,33 @@ function CollectionTable() {
 
     const fetchCollectionData = async function(){
       try {
-        const {response, error} = await sendPostRequest('getcollectiondata', 'collectionId', userData.collectionId, userData);
+        const collectionId = getCollectionId();
+        const {response, error} = await sendPostRequest('getcollectiondata', 'collectionId', collectionId, userData);
         if (error) {
           throw new Error(error)
         }
-        setCollectionData(response);
+        setCollectionData(prev=>{return response});
         setMarkdownValue(response.description);
-        fetchCollectionTable()
+        fetchCollectionTable(response)
       } catch (e) {
         toast('' + e)
       }
     }
 
-    const fetchCollectionTable = async function(){
+    const fetchCollectionTable = async function(response = collectionData){
         try {
+          const collectionId = getCollectionId();
+          console.log(collectionData);
+          console.log(userData)
           const {
             responseHeaders, 
             itemFields, 
             items,
-            error} = await sendPostRequest('getcollectiontable', 'collectionId', userData.collectionId, userData, collectionData);
+            error} = await sendPostRequest('getcollectiontable', 'collectionId', collectionId, userData, response);
           if (error) {
             throw new Error(error)
           }
+          console.log(responseHeaders)
           setHeaders(responseHeaders);
           setItemFormValue(prev=>{return {...prev, ...itemFields}});
           setItems(items);
@@ -204,7 +206,7 @@ function CollectionTable() {
         setTimeout(()=>{
           toast(userData.language==='en'?'Collection deleted successfully!':'Коллекция удалена');
         },100)
-        navigate('/mycollections')
+        navigate(`/mycollections?id=${userData.profileId}`)
       } catch (e) {
         toast('' + e)
       }
@@ -217,8 +219,7 @@ function CollectionTable() {
           if (error) {
             throw new Error(error)
           }
-          toast(userData.language==='en'?'item added successfully!':'предмет успешно добавлен в коллекцию!');
-          fetchCollectionTable()
+          window.location.reload()
         } catch (e) {
           toast('' + e)
         }
@@ -337,7 +338,7 @@ function CollectionTable() {
                 return (
                   <div className="mb-3 form">
                     <span id="basic-addon1">{header.Header}</span>
-                    <TextInput className='form-control' onChange={formChangeHandler} onSelect={formChangeHandler} trigger={["#"]} options={{"#": tags}} />
+                    <TextInput className='form-control tags' onChange={formChangeHandler} onSelect={formChangeHandler} trigger={["#"]} options={{"#": tags}} />
                   </div>
                 )
               }

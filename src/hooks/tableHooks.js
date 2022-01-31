@@ -39,11 +39,11 @@ export const useTableRender = () => {
                                 <td {...cell.getCellProps()}>
                                     {cell.render('Cell')}
                                     <div class="btn-group" role="group" aria-label="Basic mixed styles example">
-                                      <button type="button" class="btn btn-danger" onClick={e=>userAction(row.original.id, 'delete')}>{userData.language==='en'?'delete':'удалить'}</button>
-                                      <button type="button" class="btn btn-warning" onClick={e=>{userAction(row.values.id, 'block')}}>{userData.language==='en'?row.original.blocked?'unblock':'block':row.original.blocked?'разблокировать':'заблокировать'}</button>
+                                      <button type="button" class="btn btn-danger" onClick={e=>userAction(row.original.id, 'delete')}>{'D'}</button>
+                                      <button type="button" class="btn btn-warning" onClick={e=>{userAction(row.values.id, 'block')}}>{row.original.blocked?'U':'B'}</button>
                                       <button type="button" class="btn btn-success" 
-                                      onClick={e=>userAction(row.values.id, 'promote')}>{userData.language==='en'?row.original.admin?'demote to regular user':'promote to admin':row.original.admin?'сделать обычным пользователем':'сделать администратором'}</button>
-                                      <button type="button" class="btn btn-primary" onClick={e=>redirect(row.original.id)}>{userData.language==='en'?'open':'открыть'}</button>
+                                      onClick={e=>userAction(row.values.id, 'promote')}>{row.original.admin?'▼':'▲'}</button>
+                                      <button type="button" class="btn btn-primary" onClick={e=>redirect(row.original.id)}>{'▶'}</button>
                                     </div>
                                     <div class="btn-group-vertical">
                                     <button type="button" class="btn btn-danger" onClick={e=>userAction(row.original.id, 'delete')}>{'D'}</button>

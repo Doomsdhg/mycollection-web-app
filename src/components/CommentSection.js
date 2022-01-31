@@ -19,9 +19,16 @@ function CommentSection() {
       }, 3000)
     },[])
 
+    const getItemId = function () {
+      const indexOfId = window.location.href.indexOf('id=') + 3;
+      const id = window.location.href.substring(indexOfId);
+      return id
+    }
+
     const getComments = async function (){
         try {
-          const {response, error} = await sendPostRequest('getcomments', 'itemId', userData.itemId);
+          const itemId = getItemId();
+          const {response, error} = await sendPostRequest('getcomments', 'itemId', itemId);
           if (error) {
             throw new Error(error)
           }
@@ -33,23 +40,25 @@ function CommentSection() {
 
     const sendComment = async function(){
         try {
+            const itemId = getItemId();
             const commentData = {
               text: commentFormValue,
               userId: userData.userId,
-              itemId: userData.itemId
+              itemId: itemId
             };
             const {error} = await sendPostRequest('createcomment', 'comment', commentData, userData)
             if (error) {
               throw new Error(error)
             }
-            setTimeout(()=>{getComments()}, 1000);
+            getComments()
+            toast(userData.language==='en'?'Comment added successfully!':'Комментарий добавлен!')
         } catch (e) {
           toast('' + e)
         }
     }
 
     return (
-    <div className='container'>
+    <div className='container mb-3'>
       <div className='d-block p-2 rounded'>
         <form>
             <div class="mb-3">
