@@ -130,11 +130,13 @@ export const useRequestHooks = () => {
         try {
             const request = await fetch(`https://mycollection-server.herokuapp.com/api/${path}`, getRequestOptions(dataName, data))
             const response = await request.json();
+            console.log(response)
             if (response && response.message && response.message.includes('Error')){
               throw new Error(response.message)
             } 
             switch (path) {
               case 'getitem':
+                console.log(response)
                 const fields = deleteUnnecessaryFields(response, extraArgument);
                 return {fields, response}
               case 'getcollectiontable': 
