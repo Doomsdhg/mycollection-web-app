@@ -19,10 +19,10 @@ function SearchResults() {
 
     useEffect(()=>{
         sendSearchQuery();
-    },[window.location.href])
+    },[window.location.href])                                           //send new search query if there's new search input
 
     const itemPageRedirect = async function (e){
-      navigate(`/itempage?id=${e.target.parentNode.dataset.id}`)
+      navigate(`/itempage?id=${e.target.parentNode.dataset.id}`)                            //redirect to page of clicked item
     }
 
     const translateSearchQuery = function(query){
@@ -37,10 +37,8 @@ function SearchResults() {
     }
 
     const getQuery = function () {
-      const indexOfQuery = window.location.href.indexOf('query=') + 6;
+      const indexOfQuery = window.location.href.indexOf('query=') + 6;                              //get search query from address bar
       const query = window.location.href.substring(indexOfQuery);
-      console.log(indexOfQuery)
-      console.log(query)
       dispatch(setSearchQuery(query));
       return query
     }

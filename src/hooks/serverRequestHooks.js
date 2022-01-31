@@ -7,8 +7,8 @@ export const useRequestHooks = () => {
             headers: {
               'Content-Type': 'application/json',
             },
-            body: JSON.stringify(!dataName?
-            {...data}:
+            body: JSON.stringify(!dataName?                               //if dataname is defined, write data to field with such name inside 'data' object
+            {...data}:                                                    //otherwise just send data in 'body' of request    
             {data: {
               [dataName]: data
             }}
@@ -37,7 +37,7 @@ export const useRequestHooks = () => {
     const checkPermission = function(headers, userData, collectionData){
       if (userData.userId === collectionData.creator || userData.admin) {
         return headers = [{
-          Header: userData.language==='en'?'select':'Выбрать',
+          Header: userData.language==='en'?'select':'Выбрать',                          //if user is creator of collection or admin, add 'select' column
           accessor: 'select'
         },
         ...headers,
@@ -72,8 +72,8 @@ export const useRequestHooks = () => {
 
     const defineItemFields = function (headers) {
       let headersObject = {};
-      headers.map((header)=>{
-        headersObject = {...headersObject, 
+      headers.map((header)=>{                             
+        headersObject = {...headersObject,                      //define initial values for item fields
           [header.fieldType]: '',
         }})
       
@@ -89,12 +89,12 @@ export const useRequestHooks = () => {
       indexesToDelete.push(keys.indexOf('creator'));
       indexesToDelete.push(keys.indexOf('collectionRef'));
       indexesToDelete.push(keys.indexOf('__v'));
-      indexesToDelete.push(keys.indexOf('_id'));
-      indexesToDelete.map(index=>{
+      indexesToDelete.push(keys.indexOf('_id')); 
+      indexesToDelete.map(index=>{                                 //delete unnecessary fields from both arrays
         delete keys[index];
         delete fields[index];
       })
-      keys = keys.filter(function( element ) {
+      keys = keys.filter(function( element ) {                     //filter undefined fields after deletion
         return element !== undefined;
       });
       fields = fields.filter(function( element ) {
@@ -103,13 +103,13 @@ export const useRequestHooks = () => {
       
       fields = fields.map((field, index)=>{
         if (field === undefined) {return field}
-        if (field === 'name') {
+        if (field === 'name') {                           
           return {
             name: headersArray[index].Header,
             value: field,
             type: 'name'
           }
-        } else if (field === 'tags') {
+        } else if (field === 'tags') {                              //create objects with required data 
           return {
             name: headersArray[index].Header,
             value: field,
@@ -123,7 +123,6 @@ export const useRequestHooks = () => {
           }
         }
       })
-
       return fields
     }
 
@@ -131,7 +130,6 @@ export const useRequestHooks = () => {
         try {
             const request = await fetch(`https://mycollection-server.herokuapp.com/api/${path}`, getRequestOptions(dataName, data))
             const response = await request.json();
-            console.log(request)
             if (response && response.message && response.message.includes('Error')){
               throw new Error(response.message)
             } 
@@ -141,7 +139,7 @@ export const useRequestHooks = () => {
                 return {fields, response}
               case 'getcollectiontable': 
                 const headers = response.headers;
-                const checkedHeaders = checkPermission(response.headers, userData, extraArgument)
+                const checkedHeaders = checkPermission(response.headers, userData, extraArgument);
                 const responseHeaders = localizeHeaders(checkedHeaders, userData.language);
                 const itemFields = defineItemFields(checkedHeaders);
                 const items = response.items;

@@ -23,7 +23,7 @@ export default function MyCollections() {
   },[])
 
   const getUserId = function () {
-    const indexOfId = window.location.href.indexOf('id=') + 3;
+    const indexOfId = window.location.href.indexOf('id=') + 3;                    //get user id from address bar
     const id = window.location.href.substring(indexOfId);
     return id
   }
@@ -54,7 +54,10 @@ export default function MyCollections() {
         <div className='container main-container'>  
               <div className="my-3 p-3 bg-body rounded shadow-sm">
                 <div className='d-flex justify-content-between'>
-                  <h1 className='d-inline-block'>{owner && userData.profileId !== userData.userId ? userData.language === 'en' ? owner.name + "'s collections" : 'Коллекции ' + owner.name: userData.language === 'en' ? 'Your collections' : 'Ваши коллекции'} </h1>
+                  <h1 className='d-inline-block'>
+                    {owner && userData.profileId !== userData.userId ?                                      //if it's not current user's profile id, show name of owner
+                    userData.language === 'en' ? owner.name + "'s collections" : 'Коллекции ' + owner.name: 
+                    userData.language === 'en' ? 'Your collections' : 'Ваши коллекции'} </h1>
                   <button type="button" className="btn btn-success d-inline-block float-end" onClick={routeChange}>
                     + {userData.language === 'en'?'Create new collection':'Создать новую коллекцию'}</button>
                 </div>

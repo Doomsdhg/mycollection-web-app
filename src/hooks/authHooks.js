@@ -1,11 +1,7 @@
 import {setUserData, deleteUserData} from '../store/reducers';
-import React from 'react';
 
 export const useAuthHooks = () => {
-
-  
   const storageName = 'userData';
-  
   
   const login = (data, dispatch) => {
     if (data.token && data.userId) {
@@ -16,8 +12,6 @@ export const useAuthHooks = () => {
       }))
       dispatch(setUserData(data));
     }
-    
-
   }
 
   const logout = (dispatch) => {

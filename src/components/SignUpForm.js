@@ -9,11 +9,10 @@ function SignUpForm() {
     const [formValue, setFormValue] = useState({
       email: '',
       userName: '',
-      password: '',
+      password: '',                                         //define input forms
       password2: '',
       admin: false
     });
-    const [error, setError] = useState(null);
     const {login} = useAuthHooks();
     const dispatch = useDispatch();
     const navigate = useNavigate();
@@ -21,7 +20,7 @@ function SignUpForm() {
     const {sendPostRequest} = useRequestHooks();
 
     useEffect(()=>{
-      if (userData.isAuthenticated) {
+      if (userData.isAuthenticated) {                                         //redirect to main page if user is authenticated
         navigate('/');
       }
     },[userData.isAuthenticated])
@@ -94,15 +93,6 @@ function SignUpForm() {
                         <button className="btn btn-primary btn-lg px-5" type="submit" onClick={clickHandler}>{userData.language === 'en'?'Create an account':'Создать аккаунт'}</button>
 
                       </div>
-
-                      {(()=>{if(error){
-                          return (
-                            <div className='text-danger'>
-                            {error}
-                            </div>
-                          )
-                          }})()}
-
                       <div>
                         <p className="mb-0">{userData.language === 'en'?'Already have an account?':'Уже есть аккаунт?'} <a href="/auth" className="fw-bold">{userData.language === 'en'?'Login Here':'Войти'}</a></p>
                       </div>

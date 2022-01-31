@@ -42,7 +42,7 @@ function CollectionTable() {
       useSortBy,);
 
     useEffect(()=>{
-      const collectionId = getCollectionId();
+      const collectionId = getCollectionId();                //rerender if language changed
       fetchTags();
       fetchCollectionData();
       setItemFormValue(prev=>{return{...prev, 
@@ -52,52 +52,52 @@ function CollectionTable() {
     }, [userData.language])
     
     useEffect(()=>{
-      setCollectionFormValue({...collectionFormValue, description: markdownValue});
+      setCollectionFormValue({...collectionFormValue, description: markdownValue});                // handler for markdown input changes
     },[markdownValue])
 
     const toggleForms = function(){
-      const formWrapper = document.getElementById('formWrapper')
+      const formWrapper = document.getElementById('formWrapper')                // display/hide forms
       formWrapper.classList.toggle('display-none');
       setDisplayForms(prev=>!prev);
     }
 
-    const formChangeHandler = function(e){
+    const formChangeHandler = function(e){                                // handle input changes 
       if (!e.target) {
-        setItemFormValue(prev=>{return{...prev, tags: e}})
+        setItemFormValue(prev=>{return{...prev, tags: e}})                // handle autocomplete input
         return null
       } else if (e.target.name.includes('checkbox')) {
-        setItemFormValue(prev=>{return{...prev, [e.target.name]: String(e.target.checked)}})
+        setItemFormValue(prev=>{return{...prev, [e.target.name]: String(e.target.checked)}})          // handle checkbox input
         return null
       } else {
-        setItemFormValue(prev=>{return{...prev, [e.target.name]: String(e.target.value)}});
+        setItemFormValue(prev=>{return{...prev, [e.target.name]: String(e.target.value)}});          // handle regular input
         return null
       }
     }
 
     const collectionDataChangeHandler = async function(e){
-      setCollectionFormValue({...collectionFormValue, [e.target.name]: e.target.value});
+      setCollectionFormValue({...collectionFormValue, [e.target.name]: e.target.value});          // handle collection data changes input
     }
 
     const markdownChangeHandler = function(e, formName){
-      if (itemFormValue.formName) {
-        const newValue = itemFormValue.formName + e;
+      if (itemFormValue.formName) {                 
+        const newValue = itemFormValue.formName + e;                              // if field with such name already exists, add last input symbol to this field
         setItemFormValue (prev=>{return{...prev, [formName]: newValue}})
       } else {
-        setItemFormValue (prev=>{return{...prev, [formName]: e}})
+        setItemFormValue (prev=>{return{...prev, [formName]: e}})                 // else initialize field with this name
       }
     }
 
     const toggleCollectionDataForms = async function (){
-      setCollectionFormsDisabled(prev => !prev)
+      setCollectionFormsDisabled(prev => !prev)                                  // toggle collection data input forms
     }
 
-    const selectHandler = function(e){
+    const selectHandler = function(e){                                              // handler for item's select checkboxes
       if (e.target.checked) {
-        setSelectedItems((prev)=>{return prev.concat(e.target.dataset.id)})
+        setSelectedItems((prev)=>{return prev.concat(e.target.dataset.id)})        // if item is selected, add its id to array of selected items
       } else {
-        const indexOfItem = selectedItems.indexOf(e.target.dataset.id);
+        const indexOfItem = selectedItems.indexOf(e.target.dataset.id);  
         setSelectedItems((prev)=>{ 
-          prev.splice(indexOfItem, 1)
+          prev.splice(indexOfItem, 1)                                              // if user unchecked the item, remove its id from array
           return prev
         })
       }
@@ -105,10 +105,10 @@ function CollectionTable() {
 
     const checkTagsValidity = function () {
       if (itemFormValue.tags) {
-        const tags = itemFormValue.tags.split(' ').filter(tag => tag !== '' && tag !== ' ');
+        const tags = itemFormValue.tags.split(' ').filter(tag => tag !== '' && tag !== ' ');              // if user typed some tags, filter extra spaces and empty strings
         tags.map(tag=>{
           if (tag[0] !== '#') {
-            throw new Error (userData.language === 'en'?'Each tag should start with "#"':'Каждый тэг должен начинаться с "#"')
+            throw new Error (userData.language === 'en'?'Each tag should start with "#"':'Каждый тэг должен начинаться с "#"') 
           }
         })
         setItemFormValue(prev=>{return{...prev, tags: tags.join()}})
@@ -116,7 +116,7 @@ function CollectionTable() {
     }
 
     const getCollectionId = function () {
-      const indexOfId = window.location.href.indexOf('id=') + 3;
+      const indexOfId = window.location.href.indexOf('id=') + 3;                       //get collection id from address bar
       const id = window.location.href.substring(indexOfId);
       dispatch(setCollectionId(id));
       return id
@@ -164,8 +164,6 @@ function CollectionTable() {
     const fetchCollectionTable = async function(response = collectionData){
         try {
           const collectionId = getCollectionId();
-          console.log(collectionData);
-          console.log(userData)
           const {
             responseHeaders, 
             itemFields, 
@@ -174,7 +172,6 @@ function CollectionTable() {
           if (error) {
             throw new Error(error)
           }
-          console.log(responseHeaders)
           setHeaders(responseHeaders);
           setItemFormValue(prev=>{return {...prev, ...itemFields}});
           setItems(items);
@@ -204,9 +201,9 @@ function CollectionTable() {
           throw new Error(error)
         }
         setTimeout(()=>{
-          toast(userData.language==='en'?'Collection deleted successfully!':'Коллекция удалена');
+          toast(userData.language==='en'?'Collection deleted successfully!':'Коллекция удалена');         //show message after redirect
         },100)
-        navigate(`/mycollections?id=${userData.profileId}`)
+        navigate(`/mycollections?id=${userData.profileId}`)                        //redirect to last watched collection profile
       } catch (e) {
         toast('' + e)
       }
@@ -237,8 +234,8 @@ function CollectionTable() {
         }
         toast(userData.language==='en'?'item(s) deleted successfully!':'Предметы(ы) удалены');
         uncheckSelectedItems()
-        setSelectedItems([]);
-        fetchCollectionTable()
+        setSelectedItems([])                                            //remove deleted items from local array
+        fetchCollectionTable()                                          //rerender table
       } catch (e) {
         toast('' + e)
       }
@@ -332,9 +329,9 @@ function CollectionTable() {
           <div id='formWrapper' className='wrapper p-3 display-none'>
             {headers.map((header, index)=>{
               
-              if (header.accessor === 'select' || header.accessor === '_id' || header.accessor === 'itemRef') return null
-              const type = header.fieldType.substring(0, header.fieldType.length - 6);
-              if(header.accessor === 'tags') {
+              if (header.accessor === 'select' || header.accessor === '_id' || header.accessor === 'itemRef') return null      //not rendering input fields for unchangeable values
+              const type = header.fieldType.substring(0, header.fieldType.length - 6);                                         //get input type
+              if(header.accessor === 'tags') {                                                                                 //render autocomplete input for tags
                 return (
                   <div className="mb-3 form">
                     <span id="basic-addon1">{header.Header}</span>
@@ -351,7 +348,7 @@ function CollectionTable() {
                   </div>
                 )
               }
-              if (type === 'text') {
+              if (type === 'text') {                                                            //render markdown input for 'text' type columns
                 return (
                   <div className="mb-3 form" key={index}>
                   <span className="text" id="basic-addon1">{header.Header}</span>
@@ -365,8 +362,8 @@ function CollectionTable() {
                 )
               }
               return (
-            <div className="mb-3 form" key={index}>
-              <span className="text" id="basic-addon1">{header.Header}</span>
+            <div className="mb-3 form" key={index}>                                       {/*render regular input*/}
+              <span className="text" id="basic-addon1">{header.Header}</span>                                 
               <input type={type}
               className="form-control" 
               name={header.fieldType} 

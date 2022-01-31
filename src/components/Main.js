@@ -18,15 +18,7 @@ function Main() {
   const [biggestCollections, setBiggestCollections] = useState([]);
   const userData = useSelector(state=>state.userData);
   const {sendGetRequest} = useRequestHooks();
-  const defaultTags = [
-    { value: 'JavaScript', count: 38 },
-    { value: 'React', count: 30 },
-    { value: 'Nodejs', count: 28 },
-    { value: 'Express.js', count: 25 },
-    { value: 'HTML5', count: 33 },
-    { value: 'MongoDB', count: 18 },
-    { value: 'CSS3', count: 20 },
-  ];
+  const defaultTags = [];
 
   useEffect(()=>{
     fetchTags();
@@ -34,7 +26,7 @@ function Main() {
     fetchBiggestCollections()
   },[])
 
-  const fetchLastItems = async function(){
+  const fetchLastItems = async function(){                            //get last added items
     try {
       const {response, error} = await sendGetRequest('getlastitems');
       if (error) {
@@ -46,7 +38,7 @@ function Main() {
     }
   }
 
-  const fetchBiggestCollections = async function(){
+  const fetchBiggestCollections = async function(){                               //get collections with biggest amounts of items
     try {
       const {response, error} = await sendGetRequest('getbiggestcollections');
       if (error) {
@@ -69,7 +61,7 @@ function Main() {
       tagsArray = tagsArray.map((tag, index)=>{
         return (
           {
-            value: keys[index],
+            value: keys[index],                                                           //define required values for tags
             count: tag
           }
         )

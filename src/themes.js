@@ -79,6 +79,18 @@ export const GlobalStyles = createGlobalStyle`
             color: ${props=>props.theme.font} !important;
         }
 
+        textarea:disabled {
+            background-color: #000 !important;
+        }
+
+        input:disabled {
+            background-color: #000 !important;
+        }
+
+        .btn.btn-outline-success {
+            color: ${props=>props.theme.font} !important;
+        }
+
         .navbar-toggler-icon {
             background-color: ${props=>props.theme.background_main} !important;
             background-image: url("https://upload.wikimedia.org/wikipedia/commons/thumb/b/b2/Hamburger_icon.svg/1024px-Hamburger_icon.svg.png");

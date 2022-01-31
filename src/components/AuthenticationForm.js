@@ -18,12 +18,12 @@ function AuthenticationForm() {
   const {login} = useAuthHooks();
   
   const formChangeHandler = (e) => {
-    setFormValue({...formValue, [e.target.name]: e.target.value});
+    setFormValue({...formValue, [e.target.name]: e.target.value});                //handler for input changes
   }
 
   const loginClickHandler = async () => {
     try {
-      const {response, error} = await sendPostRequest('authentication', false, formValue, userData)
+      const {response, error} = await sendPostRequest('authentication', false, formValue, userData)                //login if data is correct
       if (error){
         throw new Error(error);
       }

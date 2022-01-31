@@ -14,7 +14,7 @@ function AdminPanel() {
     const [users, setUsers] = useState([]);
     const [headers, setHeaders] = useState([
         {
-            Header: userData.language==='en'?'id':'идентифиактор',
+            Header: userData.language==='en'?'id':'идентифиактор',             //initializing headers
             accessor: 'id'
         },
         {
@@ -43,7 +43,7 @@ function AdminPanel() {
         {columns, data});
       
     useEffect(()=>{
-        setHeadersInitial()
+        setHeadersInitial()             //rerender if language changed
         fetchUsers();
     },[userData.language])
 
@@ -54,7 +54,7 @@ function AdminPanel() {
     const setHeadersInitial = function(){
       setHeaders([
         {
-            Header: userData.language==='en'?'id':'идентифиактор',
+            Header: userData.language==='en'?'id':'идентифиактор',               //reinitializing headers
             accessor: 'id'
         },
         {
@@ -74,7 +74,7 @@ function AdminPanel() {
 
     const fetchUsers = async function(){
         try {
-          const {error, response} = await sendGetRequest('getuserstable')
+          const {error, response} = await sendGetRequest('getuserstable')                //getting users data for table
           if (error) {
             throw new Error(error)
           }
@@ -86,7 +86,7 @@ function AdminPanel() {
     
     const interactWithUser = async function(userId, action){
         try {
-          const {error} = await sendPostRequest(`${action}user`, 'userId', userId);
+          const {error} = await sendPostRequest(`${action}user`, 'userId', userId);                //interact with user
           if (error) {
             throw new Error(error)
           }

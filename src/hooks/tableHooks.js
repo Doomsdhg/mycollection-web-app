@@ -34,7 +34,7 @@ export const useTableRender = () => {
                     return (
                       <tr {...row.getRowProps()}>
                         {row.cells.map((cell, index) => {
-                          if (index === headers.length - 1) {
+                          if (index === headers.length - 1) {             //render buttons group for cells of last column
                             return (
                                 <td {...cell.getCellProps()}>
                                     {cell.render('Cell')}

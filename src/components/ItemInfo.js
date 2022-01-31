@@ -31,31 +31,30 @@ function ItemInfo() {
     },[userData.language])
 
     useEffect(()=>{
-      if (itemData && itemData.creator === userData.userId || userData.admin) {
+      if (itemData && itemData.creator === userData.userId || userData.admin) {                 //display managing buttons if user is creator or admin
         const managingButtons = document.getElementById('managing-buttons');
         managingButtons.classList.remove('display-none')
       }
     },[itemData])
 
     useEffect(()=>{
-      
-      if (headersArray.length > 0) {
+      if (headersArray.length > 0) {                                  //if headers are set, get item data
         getItem()
       }
     },[headersArray])
 
     const toggleItemForms = function(){
-      setDisplayForms(prev=>!prev)
+      setDisplayForms(prev=>!prev)                                          //toggle item data change forms
     }
 
     const rate = function (){
-      setLiked((prev)=>{return !prev});
+      setLiked((prev)=>{return !prev});                                      //set user reaction
       const itemId = getItemId();
       uploadReaction(itemId);
     }
 
     const getItemId = function () {
-      const indexOfId = window.location.href.indexOf('id=') + 3;
+      const indexOfId = window.location.href.indexOf('id=') + 3;                //get item id from address bar
       const id = window.location.href.substring(indexOfId);
       dispatch(setCollectionId(id));
       return id
@@ -63,21 +62,20 @@ function ItemInfo() {
 
     const formChangeHandler = function(e, fieldValue){
       if (!e.target) {
-        setItemFormValue(prev=>{return{...prev, tags: e}})
-        return null
+        setItemFormValue(prev=>{return{...prev, tags: e}})                                            //set autocomplete input value
       } else if (e.target.name.includes('checkbox')) {
-        setItemFormValue(prev=>{return{...prev, [e.target.name]: String(e.target.checked)}});
+        setItemFormValue(prev=>{return{...prev, [e.target.name]: String(e.target.checked)}});         //set checkbox input value
       } else {
-        setItemFormValue(prev=>{return{...itemFormValue, [e.target.name]: String(e.target.value)}});
+        setItemFormValue(prev=>{return{...itemFormValue, [e.target.name]: String(e.target.value)}});  //set regular input value
       }
     }
 
-    const markdownChangeHandler = function(e, formName){
+    const markdownChangeHandler = function(e, formName){                                              
       if (itemFormValue.formName) {
-        const newValue = itemFormValue.formName + e;
+        const newValue = itemFormValue.formName + e;                                                  //if field with such name already exists, add last input symbol to this field`s value
         setItemFormValue ({...itemFormValue, [formName]: newValue})
       } else {
-        setItemFormValue ({...itemFormValue, [formName]: e})
+        setItemFormValue ({...itemFormValue, [formName]: e})                                          //else initialize this field and add first symbol to its value
       }
     }
 
@@ -92,7 +90,7 @@ function ItemInfo() {
         if (error) {
           throw new Error(error)
         }
-        setLiked(response.liked);
+        setLiked(response.liked);                                                                 //check if user already liked this item
         setLikesAmount(response.likesAmount);
       } catch (e) {
         toast('' + e)
@@ -119,7 +117,6 @@ function ItemInfo() {
     const getItem = async function(){
         try {
           const itemId = getItemId();
-          console.log(itemId)
           const {fields, response, error} = await sendPostRequest('getitem', 'itemId', itemId, userData, headersArray)
           if (error) {
             throw new Error(error)
@@ -139,7 +136,7 @@ function ItemInfo() {
           if (error) {
             throw new Error(error)
           }
-          headers.shift();
+          headers.shift();                                              //delete unchangeable header
           setHeadersArray(prev=>{return[...headers]});
           dispatch(setCollectionId(collectionId));
         } catch (e) {
@@ -158,7 +155,7 @@ function ItemInfo() {
           throw new Error(error)
         }
         setTimeout(()=>{
-          toast(userData.language === 'en'?'item deleted successfully!':'Предмет удалён');
+          toast(userData.language === 'en'?'item deleted successfully!':'Предмет удалён');      //show message after redirect
         },100)
         navigate(`/mycollections?id=${userData.profileId}`);
       } catch (e) {
@@ -177,10 +174,8 @@ function ItemInfo() {
         if (error) {
           throw new Error(error)
         }
-        setTimeout(()=>{
-          toast(userData.language === 'en'?'Item info updated successfully!':'Информация обновлена');
-        },100)
-        getItem()
+        toast(userData.language === 'en'?'Item info updated successfully!':'Информация обновлена');
+        getItem()                                                                                   //rerender
       } catch (e) {
         toast('' + e)
       }
@@ -192,7 +187,7 @@ function ItemInfo() {
         if (error) {
           throw new Error(error)
         }
-        setTags([...tagsArray.map(tag => tag.substring(1))]);
+        setTags([...tagsArray.map(tag => tag.substring(1))]);                                   //get tags values without '#'
       } catch (e) {
         toast('' + e)
       }
@@ -211,7 +206,7 @@ function ItemInfo() {
               <h1 className="border-bottom pb-2 mb-0 item-header">{userData.language === 'en'?'Item info':'Информация о предмете'}</h1>
               {fieldsArray.map((field, index) => {
                 const type = field.type.substring(0, field.type.length - 6);
-                if (type === 'text') {
+                if (type === 'text') {                    //render markdown input
                   
                   return (
 
@@ -224,8 +219,7 @@ function ItemInfo() {
                         />
                     </div>
                   )
-                } else if (type === 'checkbox') {
-
+                } else if (type === 'checkbox') {                   //render checkbox input
                   return (
                     <div className="mb-3 form" key={'checkbox' + index}>
                       <input type="checkbox" checked={field.value === 'true'? true : false} name={field.type}
@@ -235,7 +229,7 @@ function ItemInfo() {
                       <span className="text ms-3" id="basic-addon1">{field.name}</span>
                     </div>
                   )
-                } else if (field.type === 'tags') {
+                } else if (field.type === 'tags') {                     //render autocomplete input
                   return (
                     <div className="mb-3 form" key={'tags' + index}>
                       <span className="text" id="basic-addon1">{field.name}</span>
@@ -244,7 +238,6 @@ function ItemInfo() {
                   )
                 }
                 return (
-
                 <div className="mb-3 mt-3" key={field.name + index}>
                 <span className="text" id="basic-addon1">{field.name}</span>
                 <input type={type} className="form-control" defaultValue={field.value} onChange={formChangeHandler} 
@@ -263,7 +256,7 @@ function ItemInfo() {
               id="heart"
               src={liked ? redHeart : whiteHeart} />{userData.language === 'en'?'Like':'Нравится'} | {likesAmount}</button>
             </h1>
-            {fieldsArray.map((field, index)=>{
+            {fieldsArray.map((field, index)=>{          //if input's type of this field is text, render markdown displayer
                 return field.type.includes('text')?
                     <div className="d-flex text-muted pt-3" key={index} >
                         <p className="pb-3 mb-0 small lh-sm border-bottom border-dark border-1">

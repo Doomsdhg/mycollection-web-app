@@ -19,13 +19,13 @@ function Header(props) {
   }
 
   useEffect(()=>{
-    if (userData.isAuthenticated) {
+    if (userData.isAuthenticated) {                                                         //check if user permission changed after each redirect
       checkUserData()
     }
   },[])
 
   const navClickHandler = function(){
-    const navbar = document.querySelector('#navbar');
+    const navbar = document.querySelector('#navbar');                                        //toggle mobile navbar
     navbar.classList.toggle('display-none');
   };
 
@@ -35,13 +35,12 @@ function Header(props) {
 
   const redirectToSearchResults = function(e){
     e.preventDefault()
-    console.log(searchFormValue)
     navigate(`/search?query=${searchFormValue}`)
   }
 
   const myCollectionsRedirect = function(e){
-    e.preventDefault();
-    dispatch(setProfileId(userData.userId))
+    e.preventDefault(); 
+    dispatch(setProfileId(userData.userId))         //if clicked on 'my collections' link, set collection profile id of current user
     navigate(`/mycollections?id=${userData.userId}`)
   }
   
@@ -57,7 +56,7 @@ function Header(props) {
 
   const checkUserData = async function () {
     const {response} = await sendPostRequest('checkuserdata', 'userData', userData);
-    if (!response) {
+    if (!response) {                                                                                  //if userdata changed since last redirect, log this user out
       logout(dispatch);
       navigate('/');
       setTimeout(()=>{
@@ -81,7 +80,7 @@ function Header(props) {
                 <li className="nav-item">
                   <a className="nav-link active" aria-current="page" href="/">{userData.language === 'en'?'Home':'Домой'}</a>
                 </li>
-                {(() => {if (userData.isAuthenticated) {
+                {(() => {if (userData.isAuthenticated) {                  //if user is authenticated show him buttons to log out and to redirect to his collections
                     return (
                       <>
                       <li className="nav-item">
@@ -92,7 +91,7 @@ function Header(props) {
                       </li>
                       </>
                     )
-                  } else {
+                  } else {                                                //if user is not authenticated show him buttons to sign up and login
                     return (
                         <>
                         <li className="nav-item">
@@ -104,7 +103,7 @@ function Header(props) {
                         </>
                     )
                   }})()}
-                  {userData.admin ? 
+                  {userData.admin ?                                               //if user is admin, show him admin panel button
                     <li className="nav-item">
                       <button className="btn btn-warning ms-3 adm" href="/adminpanel" onClick={adminPanelRedirect}>{userData.language === 'en'?'Admin panel':'Панель администратора'}</button>
                     </li>

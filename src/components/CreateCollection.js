@@ -12,7 +12,6 @@ function CreateCollection() {
     const navigate = useNavigate();
     const userData = useSelector(state => state.userData);
     const [formValue, setFormValue] = useState({});
-    const [error, setError] = useState();
     const [itemFields, setItemFields] = useState([]);
     const [drag, setDrag] = useState(false);
     const {sendPostRequest} = useRequestHooks();
@@ -25,7 +24,7 @@ function CreateCollection() {
         setDrag(false);
     }
     const dropHandler = async function (e) {
-      e.preventDefault();
+        e.preventDefault();
         let files = [...e.dataTransfer.files];
         const formData = new FormData();
         formData.append('file', files[0]);
@@ -60,13 +59,12 @@ function CreateCollection() {
           throw new Error(userData.language === 'en'?'You can not add more than 3 fields of each type':'Вы не можете добавить больше 3-х полей каждого типа')
         }
         setItemFields(itemFields.concat([fieldType]));
-        setError('');
       } catch (e) {
         toast('' + e)
       }
     }
 
-    const getIndex = function(formName, formIndex){
+    const getIndex = function(formName, formIndex){                             //get index for name of input
       const fieldsArr = [...itemFields];
       fieldsArr.sort();
       if (formIndex === fieldsArr.indexOf(formName)) {
@@ -104,10 +102,10 @@ function CreateCollection() {
         if (error) {
           throw new Error(error)
         }
-        dispatch(setImageURL(''))
-        navigate(`/mycollections?id=${userData.profileId}`);
+        dispatch(setImageURL(''))                                                                     //nullify image url
+        navigate(`/mycollections?id=${userData.profileId}`);                                          //redirect to last seen collectioner profile 
         setTimeout(()=>{
-          toast(userData.language === 'en'?'Collection created successfully!':'Коллекция создана!');
+          toast(userData.language === 'en'?'Collection created successfully!':'Коллекция создана!');  //show message after redirect
         },100)
       } catch (e) {
         if (String(e).includes('ValidationError')){
@@ -122,7 +120,7 @@ function CreateCollection() {
         <div className='container main-container'>  
           <div className='d-block p-2'>
             <h3>{userData.language === 'en'?'Enter data for your future collection':'Введите информацию о коллекции'}</h3>
-            <small className='text-danger'>* - обязательные поля</small>
+            <small className='text-danger'>* - {userData.language==='en'?'required fields':'обязательные поля'}</small>
             <div className="mb-3 mt-2">
               <span className="text" id="basic-addon1">{userData.language === 'en'?'Collection name':'Название коллекции'} *</span>
               <input type="text" className="form-control" name='name' placeholder={userData.language === 'en'?'My collection':'Моя коллекция'} onChange={changeHandler} aria-describedby="basic-addon1" />
@@ -149,7 +147,7 @@ function CreateCollection() {
             </div>
 
             
-              {userData.imageURL?
+              {userData.imageURL?                                                     //show image if it's already uploaded to server
               <img src={userData.imageURL} alt='unable to upload'/>:
               <div className="drag-n-drop-area">
                 {drag?
@@ -170,17 +168,12 @@ function CreateCollection() {
             <div className='wrapper mt-3'>
               <h3>{userData.language === 'en'?'Fields for each collection item':'Поля, которые будут применены для каждого предмета коллекции'}</h3>
               <p>{userData.language === 'en'?'(You can add up to 3 fields of each type)':'Вы можете добавить до 3-х полей каждого типа'}</p>
-              {(()=>{
-                if (error) {
-                  return <p className='text-danger'>{error.message}</p>
-                }
-              })()}
               <div className="btn-group" role="group" aria-label="Basic outlined example">
-                <button type="button" className="btn btn-outline-success" name="number" onClick={e => addField(e)}>Add numeric field</button>
-                <button type="button" className="btn btn-outline-success" name="string" onClick={e => addField(e)}>Add string field</button>
-                <button type="button" className="btn btn-outline-success" name="text" onClick={e => addField(e)}>Add text field</button>
-                <button type="button" className="btn btn-outline-success" name="date" onClick={e => addField(e)}>Add date field</button>
-                <button type="button" className="btn btn-outline-success" name="checkbox" onClick={e => addField(e)}>Add checkbox</button>
+                <button type="button" className="btn btn-outline-success" name="number" onClick={e => addField(e)}>{userData.language==='en'?'Add numeric field':'Добавить числовое поле'}</button>
+                <button type="button" className="btn btn-outline-success" name="string" onClick={e => addField(e)}>{userData.language==='en'?'Add string field':'Добавить строковое поле'}</button>
+                <button type="button" className="btn btn-outline-success" name="text" onClick={e => addField(e)}>{userData.language==='en'?'Add text field':'Добавить текстовое поле'}</button>
+                <button type="button" className="btn btn-outline-success" name="date" onClick={e => addField(e)}>{userData.language==='en'?'Add date field':'Добавить поле с датой'}</button>
+                <button type="button" className="btn btn-outline-success" name="checkbox" onClick={e => addField(e)}>{userData.language==='en'?'Add checkbox field':'Добавить поле с чекбоксом'}</button>
               </div>
             </div>
               <p>{userData.language === 'en'?'Each item in this collection will include following fields:':'Каждый предмет в этой коллекции будет содержать следующие поля:'}</p>
@@ -200,7 +193,7 @@ function CreateCollection() {
             </div>
             {itemFields.sort().map((item, index) => (
               <div className="mt-3" key={index}>
-              <span className="-text">{item} field</span>
+              <span className="text">{item} field</span>
               <textarea className="form-control" name={item + "Field" + getIndex(item, index)} aria-label="With textarea" onChange={changeHandler} placeholder={userData.language === 'en'?'Type field name here':'Введите название поля'}>
               </textarea>
               </div>

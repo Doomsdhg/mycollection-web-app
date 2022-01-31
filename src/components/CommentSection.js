@@ -12,15 +12,15 @@ function CommentSection() {
         setCommentFormValue(e.target.value);
     }
 
-    useEffect(()=>{
+    useEffect(()=>{                                                                                 //get comments every 3 seconds
       getComments()
       setInterval(()=>{
         getComments()
-      }, 3000)
+      }, 4000)
     },[])
 
     const getItemId = function () {
-      const indexOfId = window.location.href.indexOf('id=') + 3;
+      const indexOfId = window.location.href.indexOf('id=') + 3;                                    //get item id from address bar
       const id = window.location.href.substring(indexOfId);
       return id
     }
@@ -50,7 +50,7 @@ function CommentSection() {
             if (error) {
               throw new Error(error)
             }
-            getComments()
+            getComments()                                                                         //rerender comments after adding new one
             toast(userData.language==='en'?'Comment added successfully!':'Комментарий добавлен!')
         } catch (e) {
           toast('' + e)
@@ -71,7 +71,7 @@ function CommentSection() {
         </form>
         <div className='container d-block'>
             <h2>{userData.language === 'en'?'Comments:':'Комментарии'}</h2>
-        {comments.length !== 0?
+        {comments.length !== 0?                                                         //render comments if exist
         comments.map((comment, index)=>{
             return (
             <div class="card mt-1 mb-3">
@@ -85,6 +85,7 @@ function CommentSection() {
         :<h4 className='mb-5'>{userData.language === 'en'?'No comments yet:':'Комментариев пока нет'}</h4>}
         </div>
       </div>
+      
     </div>
     
     )
